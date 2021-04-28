@@ -2,9 +2,9 @@ use rusttype::OutlineBuilder;
 use tiny_skia::PathBuilder;
 
 #[derive(Debug)]
-struct GlyphTracer {
-    path_builder: PathBuilder,
-    position: rusttype::Point<f32>,
+pub struct GlyphTracer {
+    pub path_builder: PathBuilder,
+    pub position: rusttype::Point<f32>,
 }
 
 impl GlyphTracer {

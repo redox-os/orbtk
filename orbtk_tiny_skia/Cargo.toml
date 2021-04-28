@@ -20,3 +20,4 @@ orbtk_core = { path = "../orbtk_core" }
 tiny-skia = "0.5.1"
 rusttype = "0.9.2"
 font-loader = "0.11.0"
+atomic_refcell = "0.1.7"

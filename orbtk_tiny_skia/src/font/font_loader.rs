@@ -195,7 +195,7 @@ impl FontLoader {
         Ok(())
     }
 
-    pub fn font(&self, family: &str) -> Option<Font<'static>> {
-        self.fonts.get(family).cloned()
+    pub fn font(&self, family: &str) -> Option<&Font<'static>> {
+        self.fonts.get(family)
     }
 }
