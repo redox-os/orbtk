@@ -63,7 +63,7 @@ impl<'a> orbtk_core::RenderContext2D for TinySkiaRenderContext2D<'a> {
                     &Paint {
                         shader: tiny_skia::Shader::SolidColor(tiny_skia::Color::WHITE),
                         blend_mode: tiny_skia::BlendMode::default(),
-                        anti_alias: false,
+                        anti_alias: true,
                         force_hq_pipeline: false,
                     },
                     FillRule::Winding,
