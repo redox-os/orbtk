@@ -33,13 +33,26 @@ where
 
     fn layout(&mut self) {}
 
-    fn draw(&mut self, rtx: &mut dyn RenderContext2D) {
-        let mut render_query = <&components::RenderComponent>::query();
-        // let mut rtx = Ren
+    fn draw_entity(&mut self, entity: Entity, rtx: &mut dyn RenderContext2D) {
+        // if let Some(entry) = self.world.entry(entity) {
+        //     if let Ok(render_component) = entry.get_component::<components::RenderComponent>() {
+        //         render_component.draw(entry, rtx);
+        //     }
+        // }
+    }
 
-        for render in render_query.iter(&self.world) {
-            render.draw(&self.world, rtx)
+    fn draw(&mut self, rtx: &mut dyn RenderContext2D) {
+        if self.tree.is_none() {
+            return;
         }
+
+        // if let Some(tree) = &self.tree {
+        //     self.draw_entity(tree.root(), rtx);
+        // }
+
+        // for render in render_query.iter(&self.world) {
+        //     render.draw(&self.world, rtx)
+        // }
 
         // for bounds in render_query.iter(&self.world) {
         //     println!("{:?}", bounds);

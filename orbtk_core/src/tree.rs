@@ -10,6 +10,11 @@ pub struct Tree {
 }
 
 impl Tree {
+    /// Returns the root entity of the tree.
+    pub fn root(&self) -> Entity {
+        self.root
+    }
+
     /// Creates a new tree from entity.
     pub fn new(root: Entity) -> Self {
         let mut children = HashMap::new();

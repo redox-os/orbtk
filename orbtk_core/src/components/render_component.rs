@@ -1,4 +1,4 @@
-use legion::World;
+use legion::world::Entry;
 
 use crate::*;
 
@@ -14,7 +14,7 @@ impl RenderComponent {
         }
     }
 
-    pub fn draw(&self, world: &World, rtx: &mut dyn RenderContext2D) {
-        self.render_object.draw(world, rtx);
+    pub fn draw(&self, entry: Entry, rtx: &mut dyn RenderContext2D) {
+        self.render_object.draw(entry, rtx);
     }
 }
