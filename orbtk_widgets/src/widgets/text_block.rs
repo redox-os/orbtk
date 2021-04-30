@@ -35,10 +35,12 @@ impl TextBlock {
 }
 
 impl Widget for TextBlock {
-    fn build(self, btx: &mut BuildContext) {
-        let mut builder = btx.create_entity::<Self>();
-        builder.push(self.font);
-        builder.push(self.text);
-        builder.push(RenderComponent::new(TextRenderObject));
+    fn build(self) -> Node {
+        let mut node = Node::new::<Self>();
+        node.push(self.font);
+        node.push(self.text);
+        node.push(RenderComponent::new(TextRenderObject));
+
+        node
     }
 }

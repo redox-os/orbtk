@@ -1,6 +1,6 @@
 pub use orbtk::*;
 
-fn view(state: &mut String) -> BuildContext {
+fn view(state: &mut String) -> Node {
     TextBlock::new()
         .font_family("Roboto Regular")
         .font_size(12)

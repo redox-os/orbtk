@@ -85,7 +85,7 @@ where
     /// Builder method that is used to define the view builder fn for the ui of the window.
     pub fn view<F>(mut self, view_builder: F) -> Self
     where
-        F: Fn(&mut S) -> BuildContext + 'static,
+        F: Fn(&mut S) -> Node + 'static,
     {
         self.ui.set_view(view_builder);
         self

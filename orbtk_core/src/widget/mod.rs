@@ -1,24 +1,22 @@
-use std::fmt;
+use std::{any::Any, fmt, ops::DerefMut};
 
 use legion::*;
 
 mod build_context;
-mod entity_builder;
+mod node;
 
 pub use self::build_context::*;
-pub use self::entity_builder::*;
+pub use self::node::*;
 
 pub trait Widget: fmt::Debug {
-    fn build(self, btx: &mut BuildContext);
+    fn build(self) -> Node;
 }
 
-impl<W> From<W> for BuildContext
+impl<W> From<W> for Node
 where
     W: Widget,
 {
     fn from(widget: W) -> Self {
-        let mut btx = BuildContext::new();
-        widget.build(&mut btx);
-        btx
+        widget.build()
     }
 }
