@@ -16,7 +16,6 @@ where
     resizeable: bool,
     borderless: bool,
     centered: bool,
-    font_loader: FontLoader,
     ui: Ui<S>,
 }
 
@@ -31,7 +30,6 @@ where
             position: (0, 0),
             size: (100, 100),
             title: String::default(),
-            font_loader: FontLoader::new(),
             resizeable: false,
             borderless: false,
             centered: false,
@@ -93,16 +91,6 @@ where
         self
     }
 
-    /// Builder method that is used to register fonts to the window.
-    pub fn register_fonts<F>(mut self, register_fn: F) -> Result<Self, Error>
-    where
-        F: Fn(&mut FontLoader) -> Result<(), orbtk_tiny_skia::error::Error>,
-    {
-        register_fn(&mut self.font_loader).map_err(|_| Error::CannotLoadFont)?;
-
-        Ok(self)
-    }
-
     /// Creates a new window with the given builder settings.
     pub fn build(self) -> Result<Window<S>, Error> {
         let mut flags = vec![];
@@ -139,11 +127,7 @@ where
             self.title.as_str(),
             &flags,
         ) {
-            return Ok(Window {
-                inner,
-                ui: self.ui,
-                font_loader: self.font_loader,
-            });
+            return Ok(Window { inner, ui: self.ui });
         }
 
         Err(Error::CannotCreateWindow)

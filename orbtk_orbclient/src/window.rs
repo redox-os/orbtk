@@ -14,7 +14,6 @@ where
 {
     pub(crate) inner: orbclient::Window,
     pub(crate) ui: Ui<S>,
-    pub(crate) font_loader: FontLoader,
 }
 
 impl<S> Window<S>
@@ -90,17 +89,14 @@ where
     S: Default + Clone + PartialEq,
 {
     /// Runs the inner logic of the window.
-    fn run(&mut self) -> Result<bool, Error> {
+    fn run(&mut self, font_loader: &FontLoader) -> Result<bool, Error> {
         if !self.drain_events() {
             return Ok(false);
         }
 
-        let mut rtx = TinySkiaRenderContext2D::new(
-            self.inner.width(),
-            self.inner.height(),
-            &self.font_loader,
-        )
-        .map_err(|_| crate::error::Error::CannotCreateRenderContext2d)?;
+        let mut rtx =
+            TinySkiaRenderContext2D::new(self.inner.width(), self.inner.height(), font_loader)
+                .map_err(|_| crate::error::Error::CannotCreateRenderContext2d)?;
 
         self.ui.run(&mut rtx);
 

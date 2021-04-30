@@ -1,14 +1,30 @@
+use orbtk_tiny_skia::FontLoader;
+
 use crate::*;
 
 /// Manges the initial setup of the application, its startup and the application loop.
 pub struct App {
     windows: Vec<Box<dyn Runner>>,
+    font_loader: FontLoader,
 }
 
 impl App {
     /// Creates a new app, that can be configured using the builder pattern.
     pub fn new() -> Self {
-        App { windows: vec![] }
+        App {
+            windows: vec![],
+            font_loader: FontLoader::new(),
+        }
+    }
+
+    /// Builder method that is used to register fonts to the window.
+    pub fn register_fonts<F>(mut self, register_fn: F) -> Result<Self, Error>
+    where
+        F: Fn(&mut FontLoader) -> Result<(), orbtk_tiny_skia::error::Error>,
+    {
+        register_fn(&mut self.font_loader).map_err(|_| Error::CannotLoadFont)?;
+
+        Ok(self)
     }
 
     /// Builder method that is used add a new window to the app.
@@ -54,7 +70,7 @@ impl App {
             }
 
             // removes the window from the list if run returns false
-            if !self.windows[i].run()? {
+            if !self.windows[i].run(&self.font_loader)? {
                 self.windows.remove(i);
             }
         }

@@ -13,20 +13,17 @@ fn main() -> Result<(), Error> {
     let height = 480;
 
     App::new()
+        .register_fonts(|font_loader| {
+            font_loader
+                .load_font_from_bytes("Roboto Regular", orbtk::fonts::ROBOTO_REGULAR_FONT)?;
+            font_loader.load_font_from_bytes("Roboto Medium", orbtk::fonts::ROBOTO_MEDIUM_FONT)?;
+            Ok(())
+        })?
         .window(
             Window::create("Hello World".to_string())
                 .title("OrbTk - 01_hello_world")
                 .size(width, height)
                 .centered(true)
-                .register_fonts(|mut font_loader| {
-                    font_loader.load_font_from_bytes(
-                        "Roboto Regular",
-                        orbtk::fonts::ROBOTO_REGULAR_FONT,
-                    )?;
-                    font_loader
-                        .load_font_from_bytes("Roboto Medium", orbtk::fonts::ROBOTO_MEDIUM_FONT)?;
-                    Ok(())
-                })?
                 .view(view),
         )?
         .start()?;
