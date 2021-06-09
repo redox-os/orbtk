@@ -491,7 +491,6 @@ dependencies = [
  "dces",
  "euc",
  "orbtk_core",
- "orbtk_localization",
  "orbtk_proc_macros",
  "orbtk_render",
  "orbtk_shell",
@@ -512,7 +511,6 @@ dependencies = [
  "derive_more",
  "dirs-next",
  "memchr",
- "orbtk_localization",
  "orbtk_proc_macros",
  "orbtk_render",
  "orbtk_shell",
@@ -526,15 +524,6 @@ dependencies = [
  "smallvec",
  "stdweb",
  "threadpool",
-]
-
-[[package]]
-name = "orbtk_localization"
-version = "0.3.1-alpha4"
-dependencies = [
- "ron",
- "serde",
- "serde_derive",
 ]
 
 [[package]]

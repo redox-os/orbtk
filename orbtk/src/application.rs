@@ -6,7 +6,6 @@ use dces::prelude::Entity;
 
 use crate::{
     core::{application::WindowAdapter, *},
-    localization::*,
     shell::{Shell, ShellRequest},
 };
 

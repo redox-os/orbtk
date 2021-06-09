@@ -3,7 +3,6 @@ members = [
     "orbtk",
     "orbtk_core",
     "orbtk_widgets",
-    "localization",
     "proc_macros",
     "shell",
     "theming",

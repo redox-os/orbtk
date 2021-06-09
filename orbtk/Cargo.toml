@@ -27,7 +27,6 @@ opt-level = 1
 [dependencies]
 orbtk_proc_macros = { version = "0.3.1-alpha4", path = "../proc_macros" }
 orbtk_core = { version = "0.3.1-alpha4", path = "../orbtk_core", default-features = false }
-orbtk_localization = { version = "0.3.1-alpha4", path = "../localization", default-features = false }
 orbtk_render = { version = "0.3.1-alpha4", path = "../render", default-features = false }
 orbtk_shell = { version = "0.3.1-alpha4", path = "../shell", default-features = false }
 orbtk_theming = { version = "0.3.1-alpha4", path="../theming" }
@@ -43,6 +42,6 @@ serde = "1.0.106"
 serde_derive = "1.0.106"
 
 [features]
-default = ["orbtk_shell/orbraq", "orbtk_core/orbraq", "orbtk_render/orbraq", "orbtk_widgets/orbraq", "orbtk_localization/ron"]
+default = ["orbtk_shell/orbraq", "orbtk_core/orbraq", "orbtk_render/orbraq", "orbtk_widgets/orbraq"]
 log = ["orbtk_shell/log"]
 debug = ["orbtk_core/debug"]
