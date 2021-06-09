@@ -1,6 +1,6 @@
 /*!
 
-This crate provides a index (entity) based tree structure compatible to the [DCES](https://gitlab.redox-os.org/redox-os/dces-rust)
+This module provides a index (entity) based tree structure compatible to the [DCES](https://gitlab.redox-os.org/redox-os/dces-rust)
 Entity Component System. The tree could be used as entity storage.
 
 # Example
@@ -22,8 +22,6 @@ tree.append_child(0, 1);
 use std::{cell::Cell, collections::BTreeMap};
 
 use dces::{entity::EntityStore, prelude::Entity};
-
-pub mod prelude;
 
 /// Used as return type if a requested entity is not found on the tree.
 #[derive(Debug, PartialEq, Eq)]

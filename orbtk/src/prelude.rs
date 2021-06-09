@@ -9,6 +9,6 @@ pub use std::{
 pub use dces::prelude::*;
 
 pub use crate::{
-    core::macros::*, core::*, proc_macros::*, render::prelude::*, tree::prelude::*,
-    utils::prelude::*, widgets::prelude::*, Application,
+    core::macros::*, core::*, proc_macros::*, render::prelude::*, utils::prelude::*,
+    widgets::prelude::*, Application,
 };

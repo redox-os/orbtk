@@ -494,7 +494,6 @@ dependencies = [
  "orbtk_proc_macros",
  "orbtk_render",
  "orbtk_shell",
- "orbtk_tree",
  "orbtk_utils",
  "orbtk_widgets",
  "serde",
@@ -513,7 +512,6 @@ dependencies = [
  "orbtk_proc_macros",
  "orbtk_render",
  "orbtk_shell",
- "orbtk_tree",
  "orbtk_utils",
  "raw-window-handle",
  "ron",
@@ -559,13 +557,6 @@ dependencies = [
  "raw-window-handle",
  "sdl2",
  "stdweb",
-]
-
-[[package]]
-name = "orbtk_tree"
-version = "0.3.1-alpha4"
-dependencies = [
- "dces",
 ]
 
 [[package]]

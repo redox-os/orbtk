@@ -9,6 +9,7 @@ pub mod core {
     pub use orbtk_core::macros;
     pub use orbtk_core::prelude::*;
     pub use orbtk_core::theming;
+    pub use orbtk_core::tree;
 }
 
 pub mod proc_macros {
@@ -21,10 +22,6 @@ pub mod render {
 
 pub mod shell {
     pub use orbtk_shell::prelude::*;
-}
-
-pub mod tree {
-    pub use orbtk_tree::*;
 }
 
 pub mod utils {

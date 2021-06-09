@@ -12,6 +12,7 @@ pub use crate::render_object::*;
 pub use crate::services::*;
 pub use crate::systems::*;
 pub use crate::theming::*;
+pub use crate::tree::*;
 pub use crate::widget_base::*;
 
 pub use crate::{into_property_source, trigger_event, widget};
