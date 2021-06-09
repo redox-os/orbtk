@@ -5,7 +5,7 @@ use std::sync::mpsc;
 use dces::prelude::Entity;
 
 use crate::{
-    api::{application::WindowAdapter, *},
+    core::{application::WindowAdapter, *},
     localization::*,
     shell::{Shell, ShellRequest},
 };

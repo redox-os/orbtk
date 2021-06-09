@@ -490,7 +490,7 @@ version = "0.3.1-alpha4"
 dependencies = [
  "dces",
  "euc",
- "orbtk_api",
+ "orbtk_core",
  "orbtk_localization",
  "orbtk_proc_macros",
  "orbtk_render",
@@ -505,7 +505,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "orbtk_api"
+name = "orbtk_core"
 version = "0.3.1-alpha4"
 dependencies = [
  "dces",
@@ -608,7 +608,7 @@ version = "0.3.1-alpha4"
 dependencies = [
  "dces",
  "lazy_static",
- "orbtk_api",
+ "orbtk_core",
  "orbtk_proc_macros",
  "orbtk_render",
  "orbtk_shell",

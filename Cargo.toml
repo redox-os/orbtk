@@ -1,12 +1,12 @@
 [workspace]
 members = [
     "orbtk",
-    "api",
+    "orbtk_core",
+    "orbtk_widgets",
     "localization",
     "proc_macros",
     "shell",
     "theming",
     "tree",
     "utils",
-    "orbtk_widgets"
 ]

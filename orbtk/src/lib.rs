@@ -3,10 +3,10 @@
 
 pub use orbtk_shell::prelude::initialize;
 
-pub mod api {
-    pub use orbtk_api::application;
-    pub use orbtk_api::macros;
-    pub use orbtk_api::prelude::*;
+pub mod core {
+    pub use orbtk_core::application;
+    pub use orbtk_core::macros;
+    pub use orbtk_core::prelude::*;
 }
 
 pub mod localization {
