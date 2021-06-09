@@ -4,7 +4,7 @@ use orbtk::{
     theming::config::ThemeConfig,
 };
 
-static DARK_EXT: &str = include_str!("../assets/calculator/calculator_dark.ron");
+static DARK_EXT: &str = include_str!("assets/calculator/calculator_dark.ron");
 
 fn theme() -> Theme {
     register_default_fonts(Theme::from_config(

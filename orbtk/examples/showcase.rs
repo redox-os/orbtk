@@ -1,7 +1,7 @@
 use orbtk::prelude::*;
 
 // German localization file.
-static SHOWCASE_DE_DE: &str = include_str!("../assets/showcase/showcase_de_DE.ron");
+static SHOWCASE_DE_DE: &str = include_str!("assets/showcase/showcase_de_DE.ron");
 
 fn main() {
     // use this only if you want to run it as web application.
@@ -348,7 +348,7 @@ impl Template for ImageView {
         self.child(
             ImageWidget::new()
                 .margin(16)
-                .image("assets/showcase/orbtk_logo.png")
+                .image("orbtk/examples/assets/showcase/orbtk_logo.png")
                 .build(ctx),
         )
     }

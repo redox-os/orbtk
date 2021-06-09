@@ -1,71 +1,15 @@
-[package]
-name = "orbtk"
-version = "0.3.1-alpha4"
-authors = [
-    "Florian Blasius <flovanpt@posteo.de>",
-    "Jeremy Soller <jackpot51@gmail.com>"
-]
-description = "The Orbital Widget Toolkit"
-documentation = "https://docs.rs/orbtk"
-repository = "https://github.com/redox-os/orbtk"
-readme = "README.md"
-license = "MIT"
-keywords = [
-    "orbital",
-    "redox",
-    "ui",
-]
-edition = "2018"
-
-[lib]
-name = "orbtk"
-path = "src/lib.rs"
-
-[profile.dev]
-opt-level = 1
-
-[dependencies]
-orbtk_proc_macros = { version = "0.3.1-alpha4", path = "crates/proc_macros" }
-orbtk_api = { version = "0.3.1-alpha4", path = "crates/api", default-features = false }
-orbtk_localization = { version = "0.3.1-alpha4", path = "crates/localization", default-features = false }
-orbtk_render = { version = "0.3.1-alpha4", path = "crates/render", default-features = false }
-orbtk_shell = { version = "0.3.1-alpha4", path = "crates/shell", default-features = false }
-orbtk_theme_default = { version = "0.3.1-alpha4", path="crates/theme_default" }
-orbtk_theme_fluent = { version = "0.3.1-alpha4", path="crates/theme_fluent", optional = true }
-orbtk_theme_redox = { version = "0.3.1-alpha4", path="crates/theme_redox", optional = true }
-orbtk_theming = { version = "0.3.1-alpha4", path="crates/theming" }
-orbtk_utils = { version = "0.3.1-alpha4", path = "crates/utils" }
-orbtk_tree = { version = "0.3.1-alpha4", path="crates/tree" }
-orbtk_widgets = { version = "0.3.1-alpha4", path="crates/widgets", default-features = false }
-dces = { git = "https://gitlab.redox-os.org/redox-os/dces-rust.git", branch = "before_resource" }
-
-[dev-dependencies]
-euc = "0.5.0"
-vek = { version = "0.12.1", default-features = false, features = ["rgb", "rgba"] }
-serde = "1.0.106"
-serde_derive = "1.0.106"
-
-[features]
-default = ["orbtk_shell/orbraq", "orbtk_api/orbraq", "orbtk_render/orbraq", "orbtk_widgets/orbraq", "orbtk_localization/ron", "fluent", "redox"]
-log = ["orbtk_shell/log"]
-debug = ["orbtk_api/debug"]
-
-# enable optional themes
-fluent = ["orbtk_theme_fluent"]
-redox = ["orbtk_theme_redox"]
-
 [workspace]
 members = [
-    "crates/localization",
-    "crates/utils",
-    "crates/tree",
-    "crates/proc_macros",
-    "crates/api",
-    "crates/render",
-    "crates/shell",
-    "crates/theme_default",
-    "crates/theme_fluent",
-    "crates/theme_redox",
-    "crates/theming",
-    "crates/widgets"
+    "orbtk",
+    "api",
+    "localization",
+    "proc_macros",
+    "shell",
+    "theme_default",
+    "theme_fluent",
+    "theme_redox",
+    "theming",
+    "tree",
+    "utils",
+    "widgets"
 ]
