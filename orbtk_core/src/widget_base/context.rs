@@ -9,7 +9,6 @@ use crate::{
     prelude::*,
     render::RenderContext2D,
     shell::{ShellRequest, WindowRequest},
-    theming::prelude::*,
     tree::Tree,
 };
 

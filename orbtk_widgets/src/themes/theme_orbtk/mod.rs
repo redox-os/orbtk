@@ -5,7 +5,7 @@ It provides fonts, icons and colors.
 
  */
 
-use orbtk_theming::{config::ThemeConfig, prelude::*};
+use orbtk_core::theming::*;
 
 /// provides `constants` to reference colors.
 pub mod colors;

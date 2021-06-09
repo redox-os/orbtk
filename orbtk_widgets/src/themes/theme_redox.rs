@@ -1,4 +1,4 @@
-use orbtk_theming::{config::ThemeConfig, prelude::*};
+use orbtk_core::theming::*;
 
 use super::theme_orbtk::{register_default_fonts, MATERIAL_ICONS};
 

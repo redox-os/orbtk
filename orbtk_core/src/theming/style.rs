@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use crate::State;
+use super::ThemeState;
 
 use ron::Value;
 
@@ -11,7 +11,7 @@ pub struct Style {
     pub properties: HashMap<String, Value>,
 
     /// Represents the list of states.
-    pub states: Vec<State>,
+    pub states: Vec<ThemeState>,
 }
 
 impl Style {

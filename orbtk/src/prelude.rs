@@ -9,14 +9,6 @@ pub use std::{
 pub use dces::prelude::*;
 
 pub use crate::{
-    core::macros::*, core::*, proc_macros::*, render::prelude::*, theming::prelude::*,
-    tree::prelude::*, utils::prelude::*, widgets::prelude::*, Application,
+    core::macros::*, core::*, proc_macros::*, render::prelude::*, tree::prelude::*,
+    utils::prelude::*, widgets::prelude::*, Application,
 };
-
-// optional uses
-
-#[cfg(feature = "fluent")]
-pub use crate::theme_fluent::prelude::*;
-
-#[cfg(feature = "redox")]
-pub use crate::theme_redox::prelude::*;

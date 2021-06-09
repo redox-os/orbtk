@@ -4,7 +4,7 @@ This crate provides the default theme resources of OrbTks fluent theme dark and 
 It provides fonts, icons and colors.
 
  */
-use orbtk_theming::{config::ThemeConfig, prelude::*};
+use orbtk_core::theming::*;
 
 /// provides `constants` associated to fonts.
 pub mod fluent_fonts;

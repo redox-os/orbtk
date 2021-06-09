@@ -5,7 +5,6 @@ members = [
     "orbtk_widgets",
     "proc_macros",
     "shell",
-    "theming",
     "tree",
     "utils",
 ]

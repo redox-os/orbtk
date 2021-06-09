@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use ron::{de::from_str, Value};
 use serde_derive::{Deserialize, Serialize};
 
-use crate::config::StyleConfig;
+use crate::theming::config::StyleConfig;
 
 pub static BASE_STYLE: &str = "base";
 pub static RESOURCE_KEY: &str = "$";

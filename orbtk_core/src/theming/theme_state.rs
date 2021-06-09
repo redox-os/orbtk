@@ -6,17 +6,17 @@ use ron::Value;
 
 /// Contains a list of properties corresponding to the state key.
 #[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize)]
-pub struct State {
+pub struct ThemeState {
     #[serde(default)]
     pub key: String,
     #[serde(default)]
     pub properties: HashMap<String, Value>,
 }
 
-impl State {
+impl ThemeState {
     /// Creates a new state.
     pub fn new(key: String) -> Self {
-        State {
+        ThemeState {
             key,
             ..Default::default()
         }

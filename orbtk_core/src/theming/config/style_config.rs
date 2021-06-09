@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use ron::Value;
 use serde_derive::{Deserialize, Serialize};
 
-use crate::State;
+use crate::theming::ThemeState;
 
 /// Defines a style. A style could be base on other styles and contains a list for properties
 /// and a list of state properties.
@@ -13,7 +13,7 @@ pub struct StyleConfig {
     #[serde(default)]
     pub base: String,
     #[serde(default)]
-    pub states: Vec<State>,
+    pub states: Vec<ThemeState>,
     #[serde(default)]
     pub properties: HashMap<String, Value>,
 }

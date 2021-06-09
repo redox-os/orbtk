@@ -2,9 +2,9 @@ use std::collections::HashMap;
 
 use ron::Value;
 
-use crate::{
+use crate::theming::{
     config::{ThemeConfig, RESOURCE_KEY},
-    Selector, State, Style,
+    Selector, Style, ThemeState,
 };
 
 /// Theme is used to read properties for a given selector with a internal state.
@@ -111,7 +111,7 @@ impl Theme {
 
                 // reads the states
                 for state in &style_config.states {
-                    let mut new_state = State::new(state.key.clone());
+                    let mut new_state = ThemeState::new(state.key.clone());
 
                     for (property_key, property_value) in &state.properties {
                         new_state.properties.insert(

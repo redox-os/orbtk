@@ -2,9 +2,7 @@ use std::{cell::RefCell, collections::BTreeMap, rc::Rc};
 
 use dces::prelude::*;
 
-use crate::{prelude::*, render_object::RenderObject, theming::Theme, tree::Tree};
-
-use super::State;
+use crate::{prelude::*, render_object::RenderObject, tree::Tree};
 
 pub type WidgetBuildContext = Option<Box<dyn Fn(&mut BuildContext, usize) -> Entity + 'static>>;
 

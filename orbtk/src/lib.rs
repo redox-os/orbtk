@@ -5,9 +5,10 @@ pub use orbtk_shell::prelude::initialize;
 
 pub mod core {
     pub use orbtk_core::application;
-    pub use orbtk_core::localization::*;
+    pub use orbtk_core::localization;
     pub use orbtk_core::macros;
     pub use orbtk_core::prelude::*;
+    pub use orbtk_core::theming;
 }
 
 pub mod proc_macros {
@@ -20,10 +21,6 @@ pub mod render {
 
 pub mod shell {
     pub use orbtk_shell::prelude::*;
-}
-
-pub mod theming {
-    pub use orbtk_theming::*;
 }
 
 pub mod tree {

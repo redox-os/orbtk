@@ -1,6 +1,5 @@
 use orbtk::{
     prelude::*,
-    theming::config::ThemeConfig,
     widgets::themes::theme_orbtk::{THEME_DEFAULT, THEME_DEFAULT_COLORS_DARK, THEME_DEFAULT_FONTS},
 };
 

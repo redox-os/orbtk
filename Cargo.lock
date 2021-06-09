@@ -494,7 +494,6 @@ dependencies = [
  "orbtk_proc_macros",
  "orbtk_render",
  "orbtk_shell",
- "orbtk_theming",
  "orbtk_tree",
  "orbtk_utils",
  "orbtk_widgets",
@@ -514,7 +513,6 @@ dependencies = [
  "orbtk_proc_macros",
  "orbtk_render",
  "orbtk_shell",
- "orbtk_theming",
  "orbtk_tree",
  "orbtk_utils",
  "raw-window-handle",
@@ -564,15 +562,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "orbtk_theming"
-version = "0.3.1-alpha4"
-dependencies = [
- "ron",
- "serde",
- "serde_derive",
-]
-
-[[package]]
 name = "orbtk_tree"
 version = "0.3.1-alpha4"
 dependencies = [
@@ -601,7 +590,6 @@ dependencies = [
  "orbtk_proc_macros",
  "orbtk_render",
  "orbtk_shell",
- "orbtk_theming",
  "orbtk_utils",
  "rust_decimal",
 ]

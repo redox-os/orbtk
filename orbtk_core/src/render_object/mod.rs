@@ -4,10 +4,7 @@ use std::{any::Any, collections::BTreeMap};
 
 use dces::prelude::*;
 
-use crate::{
-    application::ContextProvider, prelude::*, render::RenderContext2D, theming::*, tree::*,
-    utils::*,
-};
+use crate::{application::ContextProvider, prelude::*, render::RenderContext2D, tree::*, utils::*};
 
 pub use self::cursor::*;
 pub use self::default::*;
