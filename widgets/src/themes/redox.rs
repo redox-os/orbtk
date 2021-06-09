@@ -1,15 +1,6 @@
-/*!
-
-This crate provides the redox theme resources of OrbTks redox theme dark and light.
-It provides fonts, icons and colors.
-
- */
-
 use orbtk_theming::{config::ThemeConfig, prelude::*};
 
-pub mod prelude;
-
-use orbtk_theme_default::{register_default_fonts, MATERIAL_ICONS};
+use super::orbtk::{register_default_fonts, MATERIAL_ICONS};
 
 /// Resource file of redox theme
 pub const THEME_REDOX: &str = include_str!("../theme/theme_redox.ron");

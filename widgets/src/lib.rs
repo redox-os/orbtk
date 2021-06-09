@@ -8,7 +8,6 @@ pub(crate) use orbtk_api as api;
 pub(crate) use orbtk_proc_macros as proc_macros;
 pub(crate) use orbtk_render as render;
 pub(crate) use orbtk_shell as shell;
-pub(crate) use orbtk_theme_default as theme_default;
 
 pub use self::button::*;
 pub use self::canvas::*;
@@ -36,6 +35,7 @@ pub use self::switch::*;
 pub use self::tab_widget::*;
 pub use self::text_block::*;
 pub use self::text_box::*;
+pub use self::themes::*;
 pub use self::toggle_button::*;
 pub use self::window::*;
 
@@ -66,5 +66,6 @@ mod switch;
 mod tab_widget;
 mod text_block;
 mod text_box;
+mod themes;
 mod toggle_button;
 mod window;

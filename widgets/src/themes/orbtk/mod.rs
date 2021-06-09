@@ -11,9 +11,9 @@ use orbtk_theming::{config::ThemeConfig, prelude::*};
 pub mod colors;
 /// provides `constants` associated to fonts.
 pub mod fonts;
-pub mod prelude;
+
 /// provides information processed by the `graphic render` (e.g. glyphs, icons).
-pub mod vector_graphics;
+pub mod material_icons_font;
 
 /// Resource file of default theme
 pub const THEME_DEFAULT: &str = include_str!("../theme/theme_default.ron");

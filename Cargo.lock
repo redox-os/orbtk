@@ -495,9 +495,6 @@ dependencies = [
  "orbtk_proc_macros",
  "orbtk_render",
  "orbtk_shell",
- "orbtk_theme_default",
- "orbtk_theme_fluent",
- "orbtk_theme_redox",
  "orbtk_theming",
  "orbtk_tree",
  "orbtk_utils",
@@ -519,7 +516,6 @@ dependencies = [
  "orbtk_proc_macros",
  "orbtk_render",
  "orbtk_shell",
- "orbtk_theme_default",
  "orbtk_theming",
  "orbtk_tree",
  "orbtk_utils",
@@ -579,32 +575,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "orbtk_theme_default"
-version = "0.3.1-alpha4"
-dependencies = [
- "lazy_static",
- "orbtk_theming",
-]
-
-[[package]]
-name = "orbtk_theme_fluent"
-version = "0.3.1-alpha4"
-dependencies = [
- "lazy_static",
- "orbtk_theme_default",
- "orbtk_theming",
-]
-
-[[package]]
-name = "orbtk_theme_redox"
-version = "0.3.1-alpha4"
-dependencies = [
- "lazy_static",
- "orbtk_theme_default",
- "orbtk_theming",
-]
-
-[[package]]
 name = "orbtk_theming"
 version = "0.3.1-alpha4"
 dependencies = [
@@ -642,7 +612,7 @@ dependencies = [
  "orbtk_proc_macros",
  "orbtk_render",
  "orbtk_shell",
- "orbtk_theme_default",
+ "orbtk_theming",
  "orbtk_utils",
  "rust_decimal",
 ]

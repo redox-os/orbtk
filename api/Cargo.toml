@@ -26,7 +26,6 @@ orbtk_utils = { path = "../utils", version = "0.3.1-alpha4" }
 orbtk_tree = { path = "../tree", version = "0.3.1-alpha4" }
 orbtk_render = { path = "../render", version = "0.3.1-alpha4", default-features = false }
 orbtk_shell = { path = "../shell", version = "0.3.1-alpha4", default-features = false }
-orbtk_theme_default = { path = "../theme_default", version = "0.3.1-alpha4" }
 orbtk_theming = { path = "../theming", version = "0.3.1-alpha4" }
 raw-window-handle = "0.3"
 
