@@ -1,4 +1,4 @@
-use crate::{api::prelude::*, proc_macros::*, theme_default::prelude::*};
+use crate::{api::prelude::*, proc_macros::*, themes::theme_orbtk::*};
 
 widget!(
     /// The `FontIconBlock` widget is used to draw text. It is not interactive.
@@ -25,7 +25,7 @@ impl Template for FontIconBlock {
             .style("font-icon-block")
             .icon("")
             .icon_brush(colors::LINK_WATER_COLOR)
-            .icon_size(fonts::ICON_FONT_SIZE_12)
+            .icon_size(orbtk_fonts::ICON_FONT_SIZE_12)
             .icon_font("MaterialIcons-Regular")
     }
 

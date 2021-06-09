@@ -1,4 +1,4 @@
-use crate::{api::prelude::*, proc_macros::*, theme_default::prelude::*};
+use crate::{api::prelude::*, proc_macros::*, themes::theme_orbtk::*};
 
 enum TextAction {
     Localize,
@@ -80,7 +80,7 @@ impl Template for TextBlock {
         self.name("TextBlock")
             .text("")
             .foreground(colors::LINK_WATER_COLOR)
-            .font_size(fonts::FONT_SIZE_12)
+            .font_size(orbtk_fonts::FONT_SIZE_12)
             .font("Roboto-Regular")
             .localizable(true)
             .on_changed("text", move |ctx, _| {

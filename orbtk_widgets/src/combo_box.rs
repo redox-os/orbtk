@@ -5,7 +5,7 @@ use std::{
 
 use super::behaviors::{MouseBehavior, SelectionBehavior};
 
-use crate::{api::prelude::*, prelude::*, proc_macros::*, theme_default::prelude::*};
+use crate::{api::prelude::*, prelude::*, proc_macros::*, themes::theme_orbtk::*};
 
 // --- KEYS --
 
@@ -459,7 +459,7 @@ impl Template for ComboBox {
             .style("combo_box")
             .icon(material_icons_font::MD_ARROW_DROP_DOWN)
             .icon_font("MaterialIcons-Regular")
-            .icon_size(fonts::ICON_FONT_SIZE_12)
+            .icon_size(orbtk_fonts::ICON_FONT_SIZE_12)
             .icon_brush(colors::LINK_WATER_COLOR)
             .height(32.0)
             .min_width(80.0)

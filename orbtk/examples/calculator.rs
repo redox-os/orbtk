@@ -1,13 +1,13 @@
 use orbtk::{
     prelude::*,
-    theme_default::{THEME_DEFAULT, THEME_DEFAULT_COLORS_DARK, THEME_DEFAULT_FONTS},
     theming::config::ThemeConfig,
+    widgets::themes::theme_orbtk::{THEME_DEFAULT, THEME_DEFAULT_COLORS_DARK, THEME_DEFAULT_FONTS},
 };
 
 static DARK_EXT: &str = include_str!("assets/calculator/calculator_dark.ron");
 
 fn theme() -> Theme {
-    register_default_fonts(Theme::from_config(
+    orbtk::widgets::themes::theme_orbtk::register_default_fonts(Theme::from_config(
         ThemeConfig::from(DARK_EXT)
             .extend(ThemeConfig::from(THEME_DEFAULT))
             .extend(ThemeConfig::from(THEME_DEFAULT_COLORS_DARK))

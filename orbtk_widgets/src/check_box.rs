@@ -1,5 +1,5 @@
 use super::behaviors::{MouseBehavior, SelectionBehavior};
-use crate::{api::prelude::*, prelude::*, proc_macros::*, theme_default::prelude::*};
+use crate::{api::prelude::*, prelude::*, proc_macros::*, themes::theme_orbtk::*};
 
 widget!(
     /// The `CheckBox` widget can be switch its selected state. It contains a selection box and a text.
@@ -69,11 +69,11 @@ impl Template for CheckBox {
             .padding((8.0, 0.0, 8.0, 0.0))
             .foreground(colors::LINK_WATER_COLOR)
             .text("")
-            .font_size(fonts::FONT_SIZE_12)
+            .font_size(orbtk_fonts::FONT_SIZE_12)
             .font("Roboto-Regular")
             .icon(material_icons_font::MD_CHECK)
             .icon_font("MaterialIcons-Regular")
-            .icon_size(fonts::ICON_FONT_SIZE_12)
+            .icon_size(orbtk_fonts::ICON_FONT_SIZE_12)
             .icon_brush(colors::LINK_WATER_COLOR)
             .pressed(false)
             .child(

@@ -1,6 +1,6 @@
 use super::behaviors::MouseBehavior;
 
-use crate::{api::prelude::*, prelude::*, proc_macros::*, theme_default::prelude::*};
+use crate::{api::prelude::*, prelude::*, proc_macros::*, themes::theme_orbtk::*};
 
 // --- KEYS --
 const TAB_HEADER_CONTAINER: &str = "tab_header_container";
@@ -167,11 +167,11 @@ impl Template for TabHeader {
             .padding((16, 0, 16, 0))
             .foreground(colors::LINK_WATER_COLOR)
             .text("Unnamed Tab")
-            .font_size(fonts::FONT_SIZE_12)
+            .font_size(orbtk_fonts::FONT_SIZE_12)
             .font("Roboto-Regular")
             .icon("")
             .icon_font("MaterialIcons-Regular")
-            .icon_size(fonts::ICON_FONT_SIZE_12)
+            .icon_size(orbtk_fonts::ICON_FONT_SIZE_12)
             .icon_brush(colors::LINK_WATER_COLOR)
             .spacing(4)
             .close_button(Visibility::Visible)

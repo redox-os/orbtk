@@ -3,7 +3,7 @@ use crate::{
     proc_macros::*,
     render::TextMetrics,
     shell::prelude::{Key, KeyEvent},
-    theme_default::fonts,
+    themes::theme_orbtk::orbtk_fonts,
     Cursor, TextBlock,
 };
 
@@ -844,7 +844,7 @@ widget!(
 impl Template for TextBehavior {
     fn template(self, id: Entity, _: &mut BuildContext) -> Self {
         self.name("TextBehavior")
-            .font_size(fonts::FONT_SIZE_12)
+            .font_size(orbtk_fonts::FONT_SIZE_12)
             .font("Roboto-Regular")
             .text("")
             .selection(TextSelection::default())

@@ -1,12 +1,9 @@
-use orbtk::prelude::*;
+use orbtk::{prelude::*, widgets::themes::*};
 
 // German localization file.
 static SHOWCASE_DE_DE: &str = include_str!("assets/showcase/showcase_de_DE.ron");
 
 fn main() {
-    // use this only if you want to run it as web application.
-    orbtk::initialize();
-
     // if no dictionary is set for the default language e.g. english the content of the text property will drawn.
     let localization = RonLocalization::create()
         .language("en_US")

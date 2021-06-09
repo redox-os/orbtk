@@ -33,7 +33,7 @@ orbtk_shell = { version = "0.3.1-alpha4", path = "../shell", default-features = 
 orbtk_theming = { version = "0.3.1-alpha4", path="../theming" }
 orbtk_utils = { version = "0.3.1-alpha4", path = "../utils" }
 orbtk_tree = { version = "0.3.1-alpha4", path="../tree" }
-orbtk_widgets = { version = "0.3.1-alpha4", path="../widgets", default-features = false }
+orbtk_widgets = { version = "0.3.1-alpha4", path="../orbtk_widgets", default-features = false }
 dces = { git = "https://gitlab.redox-os.org/redox-os/dces-rust.git", branch = "before_resource" }
 
 [dev-dependencies]

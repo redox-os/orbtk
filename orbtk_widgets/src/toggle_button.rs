@@ -1,6 +1,6 @@
 use super::behaviors::{MouseBehavior, SelectionBehavior};
 
-use crate::{api::prelude::*, prelude::*, proc_macros::*, theme_default::prelude::*};
+use crate::{api::prelude::*, prelude::*, proc_macros::*, themes::theme_orbtk::*};
 
 widget!(
     /// The `ToggleButton` widget can be clicked by user and could switch between selected / not selected.
@@ -75,11 +75,11 @@ impl Template for ToggleButton {
             .padding((16.0, 0.0, 16.0, 0.0))
             .foreground(colors::LINK_WATER_COLOR)
             .text("")
-            .font_size(fonts::FONT_SIZE_12)
+            .font_size(orbtk_fonts::FONT_SIZE_12)
             .font("Roboto-Regular")
             .icon("")
             .icon_font("MaterialIcons-Regular")
-            .icon_size(fonts::ICON_FONT_SIZE_12)
+            .icon_size(orbtk_fonts::ICON_FONT_SIZE_12)
             .icon_brush(colors::LINK_WATER_COLOR)
             .pressed(false)
             .spacing(8.0)

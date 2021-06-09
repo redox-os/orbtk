@@ -11,6 +11,7 @@ use crate::{
     shell,
     shell::{ShellRequest, WindowRequest, WindowSettings},
     systems::*,
+    theming::Theme,
     tree::Tree,
     utils::{Constraint, Point, Rectangle},
     widget_base::*,

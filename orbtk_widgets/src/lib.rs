@@ -35,7 +35,6 @@ pub use self::switch::*;
 pub use self::tab_widget::*;
 pub use self::text_block::*;
 pub use self::text_box::*;
-pub use self::themes::*;
 pub use self::toggle_button::*;
 pub use self::window::*;
 
@@ -66,6 +65,6 @@ mod switch;
 mod tab_widget;
 mod text_block;
 mod text_box;
-mod themes;
+pub mod themes;
 mod toggle_button;
 mod window;

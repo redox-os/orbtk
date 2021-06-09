@@ -4,11 +4,13 @@
 pub use orbtk_shell::prelude::initialize;
 
 pub mod api {
-    pub use orbtk_api::*;
+    pub use orbtk_api::application;
+    pub use orbtk_api::macros;
+    pub use orbtk_api::prelude::*;
 }
 
 pub mod localization {
-    pub use orbtk_localization::*;
+    pub use orbtk_localization::prelude::*;
 }
 
 pub mod proc_macros {
@@ -20,7 +22,7 @@ pub mod render {
 }
 
 pub mod shell {
-    pub use orbtk_shell::*;
+    pub use orbtk_shell::prelude::*;
 }
 
 pub mod theming {
@@ -40,3 +42,7 @@ pub mod widgets {
 }
 
 pub mod prelude;
+
+mod application;
+
+pub use self::application::*;

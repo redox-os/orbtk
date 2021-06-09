@@ -8,5 +8,5 @@ members = [
     "theming",
     "tree",
     "utils",
-    "widgets"
+    "orbtk_widgets"
 ]

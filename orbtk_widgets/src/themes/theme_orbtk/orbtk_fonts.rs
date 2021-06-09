@@ -19,33 +19,36 @@
 // (and WOFF2, a more highly compressed WOFF, for the newest browsers that support it.)
 
 /// The `regular` TrueType font, offering glyphs maintained in the `Material Incos Font` project.
-pub const MATERIAL_ICONS_FONT: &[u8] = include_bytes!("../assets/fonts/MaterialIcons.ttf");
+pub const MATERIAL_ICONS_FONT: &[u8] =
+    include_bytes!("../../../assets/fonts/material/MaterialIcons.ttf");
 
 /// The baseline variant of the woff2 encoded font, offering glyphs maintained in the `Material Incos Font` project.
 pub const MATERIAL_ICONS_BASELINE_FONT: &[u8] =
-    include_bytes!("../assets/fonts/MaterialIcons-Baseline.woff2");
+    include_bytes!("../../../assets/fonts/material/MaterialIcons-Baseline.woff2");
 
 /// The 'outlined' variant of the woff2 encoded font, offering glyphs maintained in the `Material Incos Font` project.
 pub const MATERIAL_ICONS_OUTLINED_FONT: &[u8] =
-    include_bytes!("../assets/fonts/MaterialIcons-Outlined.woff2");
+    include_bytes!("../../../assets/fonts/material/MaterialIcons-Outlined.woff2");
 
 /// The `round` variant of the woff2 encoded font, offering glyphs maintained in the `Material Incos Font` project.
 pub const MATERIAL_ICONS_ROUND_FONT: &[u8] =
-    include_bytes!("../assets/fonts/MaterialIcons-Round.woff2");
+    include_bytes!("../../../assets/fonts/material/MaterialIcons-Round.woff2");
 
 /// The `sharp` variant of the woff2 encoded font, offering glyphs maintained in the `Material Incos Font` project.
 pub const MATERIAL_ICONS_SHARP_FONT: &[u8] =
-    include_bytes!("../assets/fonts/MaterialIcons-Sharp.woff2");
+    include_bytes!("../../../assets/fonts/material/MaterialIcons-Sharp.woff2");
 
 /// The `twotone` variant of the woff2 encoded font, offering glyphs maintained in the `Material Incos Font` project.
 pub const MATERIAL_ICONS_TWOTONE_FONT: &[u8] =
-    include_bytes!("../assets/fonts/MaterialIcons-TwoTone.woff2");
+    include_bytes!("../../../assets/fonts/material/MaterialIcons-TwoTone.woff2");
 
 /// The `regular` variant of the `Roboto` font family.
-pub const ROBOTO_REGULAR_FONT: &[u8] = include_bytes!("../assets/fonts/Roboto-Regular.ttf");
+pub const ROBOTO_REGULAR_FONT: &[u8] =
+    include_bytes!("../../../assets/fonts/roboto/Roboto-Regular.ttf");
 
 /// The `medium` variant of the `Roboto` font family.
-pub const ROBOTO_MEDIUM_FONT: &[u8] = include_bytes!("../assets/fonts/Roboto-Medium.ttf");
+pub const ROBOTO_MEDIUM_FONT: &[u8] =
+    include_bytes!("../../../assets/fonts/roboto/Roboto-Medium.ttf");
 
 /// Use fixed `font size` of 12pt.
 pub const FONT_SIZE_12: f64 = 12.0;
