@@ -1,7 +1,7 @@
 #![crate_name = "orbtk"]
 #![crate_type = "lib"]
 
-pub use orbtk_shell::prelude::initialize;
+pub use orbtk_orbclient::prelude::initialize;
 
 pub mod core {
     pub use orbtk_core::application;
@@ -21,7 +21,7 @@ pub mod render {
 }
 
 pub mod shell {
-    pub use orbtk_shell::prelude::*;
+    pub use orbtk_orbclient::prelude::*;
 }
 
 pub mod utils {

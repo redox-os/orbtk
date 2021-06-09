@@ -23,7 +23,7 @@ dces = { git = "https://gitlab.redox-os.org/redox-os/dces-rust.git",  branch = "
 orbtk_proc_macros = { path = "../proc_macros", version = "0.3.1-alpha4" }
 orbtk_utils = { path = "../utils", version = "0.3.1-alpha4" }
 orbtk_render = { path = "../render", version = "0.3.1-alpha4", default-features = false }
-orbtk_shell = { path = "../shell", version = "0.3.1-alpha4", default-features = false }
+orbtk_orbclient = { path = "../orbtk_orbclient", version = "0.3.1-alpha4", default-features = false }
 raw-window-handle = "0.3"
 
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
@@ -33,6 +33,6 @@ threadpool = "1.8"
 stdweb = "0.4"
 
 [features]
-default = ["orbtk_shell/orbraq"]
-orbraq = ["orbtk_shell/orbraq"]
+default = ["orbtk_orbclient/orbraq"]
+orbraq = ["orbtk_orbclient/orbraq"]
 debug = []

@@ -3,7 +3,7 @@ members = [
     "orbtk",
     "orbtk_core",
     "orbtk_widgets",
+    "orbtk_orbclient",
     "proc_macros",
-    "shell",
     "utils",
 ]

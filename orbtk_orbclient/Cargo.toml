@@ -1,5 +1,5 @@
 [package]
-name = "orbtk_shell"
+name = "orbtk_orbclient"
 version = "0.3.1-alpha4"
 authors = ["Florian Blasius <flovanpt@posteo.de>"]
 description = "Window shell crate used by OrbTk."

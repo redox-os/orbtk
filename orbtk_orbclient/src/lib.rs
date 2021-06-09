@@ -8,7 +8,7 @@ Basic usage of the shell:
 
 ```rust,no_run
 
-use orbtk_shell::prelude::*;
+use orbtk_orbclient::prelude::*;
 
 let shell = WindowBuilder::new(MyCustomWindowAdapter::new())
                         .title("Window")

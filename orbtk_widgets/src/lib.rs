@@ -5,9 +5,9 @@
 pub mod prelude;
 
 pub(crate) use orbtk_core as api;
+pub(crate) use orbtk_orbclient as shell;
 pub(crate) use orbtk_proc_macros as proc_macros;
 pub(crate) use orbtk_render as render;
-pub(crate) use orbtk_shell as shell;
 
 pub use self::button::*;
 pub use self::canvas::*;

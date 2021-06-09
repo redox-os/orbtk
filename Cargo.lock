@@ -491,9 +491,9 @@ dependencies = [
  "dces",
  "euc",
  "orbtk_core",
+ "orbtk_orbclient",
  "orbtk_proc_macros",
  "orbtk_render",
- "orbtk_shell",
  "orbtk_utils",
  "orbtk_widgets",
  "serde",
@@ -509,9 +509,9 @@ dependencies = [
  "derive_more",
  "dirs-next",
  "memchr",
+ "orbtk_orbclient",
  "orbtk_proc_macros",
  "orbtk_render",
- "orbtk_shell",
  "orbtk_utils",
  "raw-window-handle",
  "ron",
@@ -520,6 +520,21 @@ dependencies = [
  "smallvec",
  "stdweb",
  "threadpool",
+]
+
+[[package]]
+name = "orbtk_orbclient"
+version = "0.3.1-alpha4"
+dependencies = [
+ "console_error_panic_hook",
+ "image",
+ "lazy_static",
+ "orbclient",
+ "orbtk_render",
+ "orbtk_utils",
+ "raw-window-handle",
+ "sdl2",
+ "stdweb",
 ]
 
 [[package]]
@@ -545,21 +560,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "orbtk_shell"
-version = "0.3.1-alpha4"
-dependencies = [
- "console_error_panic_hook",
- "image",
- "lazy_static",
- "orbclient",
- "orbtk_render",
- "orbtk_utils",
- "raw-window-handle",
- "sdl2",
- "stdweb",
-]
-
-[[package]]
 name = "orbtk_utils"
 version = "0.3.1-alpha4"
 dependencies = [
@@ -578,9 +578,9 @@ dependencies = [
  "dces",
  "lazy_static",
  "orbtk_core",
+ "orbtk_orbclient",
  "orbtk_proc_macros",
  "orbtk_render",
- "orbtk_shell",
  "orbtk_utils",
  "rust_decimal",
 ]
