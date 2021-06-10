@@ -9,6 +9,9 @@ license = "MIT"
 keywords = ["shell", "window", "ui"]
 edition = "2018"
 
+[lib]
+doctest = false
+
 [target.wasm32-unknown-unknown.dependencies]
 stdweb = "0.4.20"
 console_error_panic_hook = "0.1.6"

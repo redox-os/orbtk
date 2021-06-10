@@ -817,10 +817,8 @@ impl State for InteractiveState {
         }
 
         // load result
-        for message in messages.read::<SettingsResult<SettingsData>>() {
-            if let Ok(data) = message {
-                InteractiveView::settings_text_set(&mut ctx.widget(), data.0);
-            }
+        for message in messages.read::<SettingsResult<SettingsData>>().flatten() {
+            InteractiveView::settings_text_set(&mut ctx.widget(), message.0);
         }
     }
 }
