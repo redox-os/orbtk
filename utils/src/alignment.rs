@@ -82,27 +82,27 @@ mod tests {
         let measure = 50.0;
 
         let alignment = Alignment::Stretch;
-        assert_eq!(
+        crate::f64_assert(
             alignment.align_position(available_measure, measure, 0.0, 0.0),
-            0.0
+            0.0,
         );
 
         let alignment = Alignment::Center;
-        assert_eq!(
+        crate::f64_assert(
             alignment.align_position(available_measure, measure, 0.0, 0.0),
-            25.0
+            25.0,
         );
 
         let alignment = Alignment::Start;
-        assert_eq!(
+        crate::f64_assert(
             alignment.align_position(available_measure, measure, 0.0, 0.0),
-            0.0
+            0.0,
         );
 
         let alignment = Alignment::End;
-        assert_eq!(
+        crate::f64_assert(
             alignment.align_position(available_measure, measure, 0.0, 0.0),
-            50.0
+            50.0,
         );
     }
 
@@ -112,27 +112,27 @@ mod tests {
         let measure = 50.0;
 
         let alignment = Alignment::Stretch;
-        assert_eq!(
+        crate::f64_assert(
             alignment.align_measure(available_measure, measure, 0.0, 0.0),
-            available_measure
+            available_measure,
         );
 
         let alignment = Alignment::Center;
-        assert_eq!(
+        crate::f64_assert(
             alignment.align_measure(available_measure, measure, 0.0, 0.0),
-            measure
+            measure,
         );
 
         let alignment = Alignment::Start;
-        assert_eq!(
+        crate::f64_assert(
             alignment.align_measure(available_measure, measure, 0.0, 0.0),
-            measure
+            measure,
         );
 
         let alignment = Alignment::End;
-        assert_eq!(
+        crate::f64_assert(
             alignment.align_measure(available_measure, measure, 0.0, 0.0),
-            measure
+            measure,
         );
     }
 

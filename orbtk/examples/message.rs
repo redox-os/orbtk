@@ -9,7 +9,7 @@ enum Message {
 #[derive(Default, AsAny)]
 struct MainState {
     count: i32,
-    my_thread: Option<thread::JoinHandle<()>>,
+    _my_thread: Option<thread::JoinHandle<()>>,
 }
 
 impl State for MainState {
@@ -18,7 +18,7 @@ impl State for MainState {
         let message_adapter = ctx.message_adapter();
 
         // increments a counter and send the result as message to `MainView`.
-        self.my_thread = Some(thread::spawn(move || {
+        self._my_thread = Some(thread::spawn(move || {
             let duration = time::Duration::from_secs(1);
             loop {
                 thread::sleep(duration);

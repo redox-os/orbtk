@@ -144,7 +144,7 @@ mod tests {
 
         let builder = BorderBuilder::new();
         let border = builder.radius(radius).build();
-        assert_eq!(border.radius(), radius);
+        crate::f64_assert(border.radius(), radius);
     }
 
     #[test]
@@ -173,6 +173,6 @@ mod tests {
 
         let mut border = Border::default();
         border.set_radius(radius);
-        assert_eq!(border.radius(), radius);
+        crate::f64_assert(border.radius(), radius);
     }
 }

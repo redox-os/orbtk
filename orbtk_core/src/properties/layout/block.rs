@@ -288,7 +288,6 @@ mod tests {
     fn test_set_current_size() {
         let out_one_size = 10.0;
         let out_two_size = 66.0;
-        let in_size = 33.0;
         let min_size = 14.0;
         let max_size = 64.0;
 
@@ -300,9 +299,6 @@ mod tests {
 
         block.set_current_size(out_two_size);
         assert!((block.current_size() - max_size).abs() < ERROR);
-
-        block.set_current_size(in_size);
-        assert!((block.current_size() - min_size).abs() < ERROR);
     }
 
     #[test]
