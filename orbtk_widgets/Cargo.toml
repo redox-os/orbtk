@@ -9,6 +9,9 @@ license = "MIT"
 keywords = ["ui", "widgets"]
 edition = "2018"
 
+[lib]
+doctest = false
+
 [dependencies]
 rust_decimal = "1.7"
 lazy_static = "1.4"

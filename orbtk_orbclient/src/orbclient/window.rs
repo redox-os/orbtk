@@ -218,7 +218,7 @@ where
             }
         };
 
-        self.adapter.key_event(KeyEvent { key, text, state });
+        self.adapter.key_event(KeyEvent { state, key, text });
     }
 
     /// Updates the clipboard.
