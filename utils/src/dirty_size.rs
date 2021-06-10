@@ -84,7 +84,7 @@ mod tests {
 
         dirty_size.set_width(width);
 
-        crate::f64_assert(dirty_size.width(), width);
+        assert!(crate::f64_cmp(dirty_size.width(), width));
         assert!(dirty_size.dirty());
     }
 
@@ -95,7 +95,7 @@ mod tests {
         let mut dirty_size = DirtySize::default();
         dirty_size.set_height(height);
 
-        crate::f64_assert(dirty_size.height(), height);
+        assert!(crate::f64_cmp(dirty_size.height(), height));
         assert!(dirty_size.dirty());
     }
 

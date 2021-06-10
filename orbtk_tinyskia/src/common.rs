@@ -71,7 +71,7 @@ pub fn cubic_bezier_rect(p0: Point, p1: Point, p2: Point, p3: Point) -> Rectangl
     res = res - coefficient_a * coefficient_c;
     if res.x() > 0.0 || res.y() > 0.0 {
         // The control point is outside of the ends rectangle, possibly the AABB of the curve is larger.
-        let sqrt = res.abs().sqrt();
+        let sqrt = res.sqrt();
         let t1 = ((-coefficient_b - sqrt) / coefficient_a).clamp(0.0, 1.0);
         let t2 = ((-coefficient_b + sqrt) / coefficient_a).clamp(0.0, 1.0);
         let s1 = Point::from(1.0) - t1;
@@ -351,19 +351,19 @@ mod tests {
         rect.record_line_to(100.0, 20.0);
         rect.record_line_to(60.0, 10.0);
         let urect = rect.get_rect().unwrap();
-        assert!(0.0 - urect.x().abs() < f64::EPSILON);
-        assert!(0.0 - urect.y().abs() < f64::EPSILON);
-        assert!(100.0 - urect.width().abs() < f64::EPSILON);
-        assert!(20.0 - urect.height().abs() < f64::EPSILON);
+        assert!(orbtk_utils::f64_cmp(0.0, urect.x()));
+        assert!(orbtk_utils::f64_cmp(0.0, urect.y()));
+        assert!(orbtk_utils::f64_cmp(100.0, urect.width()));
+        assert!(orbtk_utils::f64_cmp(20.0, urect.height()));
         rect.rebirth();
         rect.record_move_to(30.0, 900.0);
         rect.record_line_to(-10.0, 859.0);
         rect.record_line_to(24.0, 800.0);
         let urect = rect.get_rect().unwrap();
-        assert!(-10.0 - urect.x().abs() < f64::EPSILON);
-        assert!(800.0 - urect.y().abs() < f64::EPSILON);
-        assert!(40.0 - urect.width().abs() < f64::EPSILON);
-        assert!(100.0 - urect.height().abs() < f64::EPSILON);
+        assert!(orbtk_utils::f64_cmp(-10.0, urect.x()));
+        assert!(orbtk_utils::f64_cmp(800.0, urect.y()));
+        assert!(orbtk_utils::f64_cmp(40.0, urect.width()));
+        assert!(orbtk_utils::f64_cmp(100.0, urect.height()));
     }
 
     #[test]
@@ -371,17 +371,17 @@ mod tests {
         let mut rect = PathRect::new(None);
         rect.record_arc(40.0, 20.0, 5.0, 0.0, f64::to_radians(320.0));
         let urect = rect.get_rect().unwrap();
-        assert!(35.0 - urect.x().abs() < f64::EPSILON);
-        assert!(15.0 - urect.y().abs() < f64::EPSILON);
-        assert!(10.0 - urect.width().abs() < f64::EPSILON);
-        assert!(10.0 - urect.height().abs() < f64::EPSILON);
+        assert!(orbtk_utils::f64_cmp(35.0, urect.x()));
+        assert!(orbtk_utils::f64_cmp(15.0, urect.y()));
+        assert!(orbtk_utils::f64_cmp(10.0, urect.width()));
+        assert!(orbtk_utils::f64_cmp(10.0, urect.height()));
         rect.rebirth();
         rect.record_arc(40.0, 20.0, 5.0, 0.0, f64::to_radians(30.0));
         let urect = rect.get_rect().unwrap();
-        assert!(44.33012701892219 - urect.x().abs() < f64::EPSILON);
-        assert!(20.0 - urect.y().abs() < f64::EPSILON);
-        assert!(0.669872981077809 - urect.width().abs() < f64::EPSILON);
-        assert!(2.5 - urect.height().abs() < f64::EPSILON);
+        assert!(orbtk_utils::f64_cmp(44.33012701892219, urect.x()));
+        assert!(orbtk_utils::f64_cmp(20.0, urect.y()));
+        assert!(orbtk_utils::f64_cmp(0.669872981077809, urect.width()));
+        assert!(orbtk_utils::f64_cmp(2.5, urect.height()));
     }
 
     #[test]
@@ -391,10 +391,10 @@ mod tests {
         rect.record_rect(49.0, 23.0, 60.0, 1.0);
         rect.record_rect(-1.0, -100.0, 20.0, 430.0);
         let urect = rect.get_rect().unwrap();
-        assert!(-1.0 - urect.x().abs() < f64::EPSILON);
-        assert!(10.0 - urect.y().abs() < f64::EPSILON);
-        assert!(61.0 - urect.width().abs() < f64::EPSILON);
-        assert!(420.0 - urect.height().abs() < f64::EPSILON);
+        assert!(orbtk_utils::f64_cmp(-1.0, urect.x()));
+        assert!(orbtk_utils::f64_cmp(-100.0, urect.y()));
+        assert!(orbtk_utils::f64_cmp(110.0, urect.width()));
+        assert!(orbtk_utils::f64_cmp(430.0, urect.height()));
     }
 
     #[test]
@@ -403,10 +403,10 @@ mod tests {
         rect.record_move_to(2.0, -1.0);
         rect.record_quadratic_curve_to(50.0, 6.0, 0.76, 30.0);
         let urect = rect.get_rect().unwrap();
-        assert!(0.76 - urect.x().abs() < f64::EPSILON);
-        assert!(-1.0 - urect.y().abs() < f64::EPSILON);
-        assert!(24.933953105717812 - urect.width().abs() < f64::EPSILON);
-        assert!(31.0 - urect.height().abs() < f64::EPSILON);
+        assert!(orbtk_utils::f64_cmp(0.76, urect.x()));
+        assert!(orbtk_utils::f64_cmp(-1.0, urect.y()));
+        assert!(orbtk_utils::f64_cmp(24.933953105717812, urect.width()));
+        assert!(orbtk_utils::f64_cmp(31.0, urect.height()));
     }
 
     #[test]
@@ -415,9 +415,9 @@ mod tests {
         rect.record_move_to(98.0, -100.0);
         rect.record_bezier_curve_to(20.0, 0.0, 15.0, 200.0, 0.0, 0.0);
         let urect = rect.get_rect().unwrap();
-        assert!(0.0 - urect.x().abs() < f64::EPSILON);
-        assert!(-100.0 - urect.y().abs() < f64::EPSILON);
-        assert!(98.0 - urect.width().abs() < f64::EPSILON);
-        assert!(185.57550765359252 - urect.height().abs() < f64::EPSILON);
+        assert!(orbtk_utils::f64_cmp(0.0, urect.x()));
+        assert!(orbtk_utils::f64_cmp(-100.0, urect.y()));
+        assert!(orbtk_utils::f64_cmp(98.0, urect.width()));
+        assert!(orbtk_utils::f64_cmp(185.57550765359252, urect.height()));
     }
 }

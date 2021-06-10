@@ -82,28 +82,28 @@ mod tests {
         let measure = 50.0;
 
         let alignment = Alignment::Stretch;
-        crate::f64_assert(
+        assert!(crate::f64_cmp(
             alignment.align_position(available_measure, measure, 0.0, 0.0),
             0.0,
-        );
+        ));
 
         let alignment = Alignment::Center;
-        crate::f64_assert(
+        assert!(crate::f64_cmp(
             alignment.align_position(available_measure, measure, 0.0, 0.0),
             25.0,
-        );
+        ));
 
         let alignment = Alignment::Start;
-        crate::f64_assert(
+        assert!(crate::f64_cmp(
             alignment.align_position(available_measure, measure, 0.0, 0.0),
             0.0,
-        );
+        ));
 
         let alignment = Alignment::End;
-        crate::f64_assert(
+        assert!(crate::f64_cmp(
             alignment.align_position(available_measure, measure, 0.0, 0.0),
             50.0,
-        );
+        ));
     }
 
     #[test]
@@ -112,28 +112,28 @@ mod tests {
         let measure = 50.0;
 
         let alignment = Alignment::Stretch;
-        crate::f64_assert(
+        assert!(crate::f64_cmp(
             alignment.align_measure(available_measure, measure, 0.0, 0.0),
             available_measure,
-        );
+        ));
 
         let alignment = Alignment::Center;
-        crate::f64_assert(
+        assert!(crate::f64_cmp(
             alignment.align_measure(available_measure, measure, 0.0, 0.0),
             measure,
-        );
+        ));
 
         let alignment = Alignment::Start;
-        crate::f64_assert(
+        assert!(crate::f64_cmp(
             alignment.align_measure(available_measure, measure, 0.0, 0.0),
             measure,
-        );
+        ));
 
         let alignment = Alignment::End;
-        crate::f64_assert(
+        assert!(crate::f64_cmp(
             alignment.align_measure(available_measure, measure, 0.0, 0.0),
             measure,
-        );
+        ));
     }
 
     macro_rules! value {

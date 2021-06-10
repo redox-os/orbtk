@@ -198,10 +198,10 @@ mod tests {
     fn test_new() {
         let rect = Rectangle::new((5.0, 10.0), (20.0, 30.0));
 
-        crate::f64_assert(rect.x(), 5.0);
-        crate::f64_assert(rect.y(), 10.0);
-        crate::f64_assert(rect.width(), 20.0);
-        crate::f64_assert(rect.height(), 30.0);
+        assert!(crate::f64_cmp(rect.x(), 5.0));
+        assert!(crate::f64_cmp(rect.y(), 10.0));
+        assert!(crate::f64_cmp(rect.width(), 20.0));
+        assert!(crate::f64_cmp(rect.height(), 30.0));
     }
 
     #[test]
