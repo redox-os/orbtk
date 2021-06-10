@@ -13,7 +13,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * `Clipboard` service
 * `MasterDetail `responsive navigation widget
 * TextBehavior: Copy Ctrl+C, Paste Ctrl+V, Cut Ctrl+X
-* `orbraq` backend (Orbclient and raqote)
 * Temporary remove `glupath` backend
 * Refactor on_changed callback, add key parameter
 * Access RawWindowHandle from Context

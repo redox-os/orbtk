@@ -17,7 +17,7 @@ pub mod proc_macros {
 }
 
 pub mod render {
-    pub use orbtk_render::*;
+    pub use orbtk_tinyskia::*;
 }
 
 pub mod shell {

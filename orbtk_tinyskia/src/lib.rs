@@ -6,25 +6,11 @@ pub mod prelude;
 
 pub use orbtk_utils::prelude as utils;
 
-#[cfg(all(any(feature = "default", feature = "orbraq")))]
 mod common;
 
-#[cfg(any(feature = "default", feature = "orbraq", target_arch = "wasm32"))]
-pub use self::platform::*;
+pub use tinyskia::*;
 
-#[cfg(all(
-    not(target_arch = "wasm32"),
-    any(feature = "default", feature = "orbraq"),
-))]
-#[path = "raqote/mod.rs"]
-pub mod platform;
-
-#[cfg(target_arch = "wasm32")]
-#[path = "web/mod.rs"]
-pub mod platform;
-
-#[cfg(target_arch = "wasm32")]
-pub use platform::RenderContext2D;
+pub mod tinyskia;
 
 pub use self::render_target::*;
 

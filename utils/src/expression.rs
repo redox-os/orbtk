@@ -241,9 +241,9 @@ impl Default for Expression {
     }
 }
 
-impl Into<Number> for Expression {
-    fn into(self) -> Number {
-        match self {
+impl From<Expression> for Number {
+    fn from(e: Expression) -> Self {
+        match e {
             Expression::Number(num, _) => num,
             _ => Number::default(),
         }

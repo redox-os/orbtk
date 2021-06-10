@@ -211,13 +211,7 @@ impl Pager {
 
         let current_index = *Pager::current_index_ref(&ctx.get_widget(entity));
 
-        let child_entity = {
-            if let Some(child) = ctx.try_child_from_index(index) {
-                Some(child.entity())
-            } else {
-                None
-            }
-        };
+        let child_entity = ctx.try_child_from_index(index).map(|child| child.entity());
 
         if let Some(child) = child_entity {
             ctx.remove_child_from(child, entity);

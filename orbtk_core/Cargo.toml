@@ -22,7 +22,7 @@ derive_more = { version = "0.99", default-features = false, features = ["constru
 dces = { git = "https://gitlab.redox-os.org/redox-os/dces-rust.git",  branch = "before_resource" }
 orbtk_proc_macros = { path = "../proc_macros", version = "0.3.1-alpha4" }
 orbtk_utils = { path = "../utils", version = "0.3.1-alpha4" }
-orbtk_render = { path = "../render", version = "0.3.1-alpha4", default-features = false }
+orbtk_tinyskia = { path = "../orbtk_tinyskia", version = "0.3.1-alpha4", default-features = false }
 orbtk_orbclient = { path = "../orbtk_orbclient", version = "0.3.1-alpha4", default-features = false }
 raw-window-handle = "0.3"
 
@@ -33,6 +33,4 @@ threadpool = "1.8"
 stdweb = "0.4"
 
 [features]
-default = ["orbtk_orbclient/orbraq"]
-orbraq = ["orbtk_orbclient/orbraq"]
 debug = []

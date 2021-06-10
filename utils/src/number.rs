@@ -31,9 +31,9 @@ macro_rules! impl_float {
             }
         }
 
-        impl Into<$t> for Number {
-            fn into(self) -> $t {
-                match self {
+        impl From<Number> for $t {
+            fn from(n: Number) -> Self {
+                match n {
                     Number::Real(n) => n as $t,
                     Number::Float(n) => n as $t,
                 }
@@ -50,9 +50,9 @@ macro_rules! impl_real {
             }
         }
 
-        impl Into<$t> for Number {
-            fn into(self) -> $t {
-                match self {
+        impl From<Number> for $t {
+            fn from(n: Number) -> $t {
+                match n {
                     Number::Real(n) => n as $t,
                     Number::Float(n) => n as $t,
                 }

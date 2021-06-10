@@ -1,0 +1,19 @@
+[package]
+name = "orbtk_tinyskia"
+version = "0.3.1-alpha4"
+authors = ["Florian Blasius <flovanpt@posteo.de>"]
+description = "2D Render library use by OrbTk."
+repository = "https://github.com/redox-os/orbtk"
+readme = "README.md"
+license = "MIT"
+keywords = ["2D", "orbtk_tinyskia", "canvas"]
+edition = "2018"
+
+[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+image = { version = "0.23",  default-features = false, features = ["ico"] }
+tiny-skia = "0.5.1"
+rusttype = { version = "0.9" }
+smallvec = "1"
+
+[dependencies]
+orbtk_utils = { path = "../utils", version = "0.3.1-alpha4" }

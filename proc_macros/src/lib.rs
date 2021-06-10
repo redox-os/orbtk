@@ -56,9 +56,9 @@ pub fn derive_into_render_object(input: TokenStream) -> TokenStream {
     let ident = &input.ident;
 
     let gen = quote! {
-        impl Into<Box<dyn RenderObject>> for #ident {
-            fn into(self) -> Box<dyn RenderObject> {
-                Box::new(self)
+        impl From<#ident> for Box<dyn RenderObject> {
+            fn from(i: #ident) -> Box<dyn RenderObject> {
+                Box::new(i)
             }
         }
     };
@@ -73,9 +73,9 @@ pub fn derive_into_layout(input: TokenStream) -> TokenStream {
     let ident = &input.ident;
 
     let gen = quote! {
-        impl Into<Box<dyn Layout>> for #ident {
-            fn into(self) -> Box<dyn Layout> {
-                Box::new(self)
+        impl From<#ident> for Box<dyn Layout> {
+            fn from(i: #ident) -> Box<dyn Layout> {
+                Box::new(i)
             }
         }
     };
@@ -103,9 +103,9 @@ pub fn derive_into_handler(input: TokenStream) -> TokenStream {
     let ident = &input.ident;
 
     let gen = quote! {
-        impl Into<Rc<dyn EventHandler>> for #ident {
-            fn into(self) -> Rc<dyn EventHandler> {
-                Rc::new(self)
+        impl From<#ident> for Rc<dyn EventHandler> {
+            fn from(i: #ident) -> Rc<dyn EventHandler> {
+                Rc::new(i)
             }
         }
     };

@@ -7,7 +7,7 @@ extern crate derive_more;
 
 pub(crate) use orbtk_orbclient::prelude as shell;
 pub(crate) use orbtk_proc_macros as proc_macros;
-pub(crate) use orbtk_render::prelude as render;
+pub(crate) use orbtk_tinyskia::prelude as render;
 pub(crate) use orbtk_utils::prelude as utils;
 
 pub mod application;

@@ -27,10 +27,9 @@ lazy_static = "1.4.0"
 raw-window-handle = "0.3"
 
 # orbtk
-orbtk_render = { path = "../render", version = "0.3.1-alpha4", default-features = false }
+orbtk_tinyskia = { path = "../orbtk_tinyskia", version = "0.3.1-alpha4", default-features = false }
 orbtk_utils = { path = "../utils", version = "0.3.1-alpha4" }
 
 [features]
 default = ["orbclient", "sdl2"]
-orbraq = ["orbclient", "sdl2"]
 log = []

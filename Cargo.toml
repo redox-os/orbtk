@@ -4,6 +4,7 @@ members = [
     "orbtk_core",
     "orbtk_widgets",
     "orbtk_orbclient",
+    "orbtk_tinyskia",
     "proc_macros",
     "utils",
 ]

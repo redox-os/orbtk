@@ -33,21 +33,12 @@ pub mod window_adapter;
 
 pub use orbtk_utils::prelude as utils;
 
-#[cfg(all(
-    not(target_arch = "wasm32"),
-    any(feature = "default", feature = "orbraq")
-))]
-#[path = "orbclient/mod.rs"]
-pub mod platform;
+pub mod orbclient;
 
 #[cfg(not(target_arch = "wasm32"))]
 pub mod native;
 
-#[cfg(target_arch = "wasm32")]
-#[path = "web/mod.rs"]
-pub mod platform;
-
-pub use orbtk_render::prelude as render;
+pub use orbtk_tinyskia::prelude as render;
 
 use std::{collections::HashMap, sync::mpsc};
 

@@ -27,7 +27,7 @@ opt-level = 1
 [dependencies]
 orbtk_proc_macros = { version = "0.3.1-alpha4", path = "../proc_macros" }
 orbtk_core = { version = "0.3.1-alpha4", path = "../orbtk_core", default-features = false }
-orbtk_render = { version = "0.3.1-alpha4", path = "../render", default-features = false }
+orbtk_tinyskia = { version = "0.3.1-alpha4", path = "../orbtk_tinyskia", default-features = false }
 orbtk_orbclient = { version = "0.3.1-alpha4", path = "../orbtk_orbclient", default-features = false }
 orbtk_utils = { version = "0.3.1-alpha4", path = "../utils" }
 orbtk_widgets = { version = "0.3.1-alpha4", path="../orbtk_widgets", default-features = false }
@@ -40,6 +40,5 @@ serde = "1.0.106"
 serde_derive = "1.0.106"
 
 [features]
-default = ["orbtk_orbclient/orbraq", "orbtk_core/orbraq", "orbtk_render/orbraq", "orbtk_widgets/orbraq"]
 log = ["orbtk_orbclient/log"]
 debug = ["orbtk_core/debug"]

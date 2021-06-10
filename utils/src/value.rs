@@ -22,20 +22,20 @@ impl From<ron::Value> for Value {
     }
 }
 
-impl Into<String> for Value {
-    fn into(self) -> String {
-        self.get::<String>()
+impl From<Value> for String {
+    fn from(v: Value) -> String {
+        v.get::<String>()
     }
 }
 
-impl Into<f64> for Value {
-    fn into(self) -> f64 {
-        self.get::<f64>()
+impl From<Value> for f64 {
+    fn from(v: Value) -> f64 {
+        v.get::<f64>()
     }
 }
 
-impl Into<f32> for Value {
-    fn into(self) -> f32 {
-        self.get::<f32>()
+impl From<Value> for f32 {
+    fn from(v: Value) -> f32 {
+        v.get::<f32>()
     }
 }

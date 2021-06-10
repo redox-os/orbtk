@@ -1,4 +1,4 @@
-# orbtk_render
+# orbtk_tinyskia
 
 Cross platform 2D/3D render library. It's part of [OrbTk](https://gitlab.redox-os.org/redox-os/orbtk) - The Rust UI-Toolkit.
 
