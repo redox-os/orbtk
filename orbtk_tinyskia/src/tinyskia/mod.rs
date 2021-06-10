@@ -173,8 +173,13 @@ impl RenderContext2D {
             self.fill_paint =
                 Self::paint_from_brush(&self.config.fill_style, rect, self.config.alpha as f32);
             self.pixmap.fill_rect(
-                tiny_skia::Rect::from_xywh(x as f32, y as f32, width as f32, height as f32)
-                    .unwrap(),
+                tiny_skia::Rect::from_xywh(
+                    (x as f32).floor(),
+                    (y as f32).floor(),
+                    width as f32,
+                    height as f32,
+                )
+                .unwrap(),
                 &self.fill_paint,
                 tiny_skia::Transform::identity(),
                 None,
