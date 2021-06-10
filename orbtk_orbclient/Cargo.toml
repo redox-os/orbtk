@@ -12,27 +12,16 @@ edition = "2018"
 [lib]
 doctest = false
 
-[target.wasm32-unknown-unknown.dependencies]
-stdweb = "0.4.20"
-console_error_panic_hook = "0.1.6"
-
-[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
-image = { version = "0.23",  default-features = false, features = ["ico"] }
-
-# orbclient
-orbclient = { git = "https://gitlab.redox-os.org/redox-os/orbclient.git", branch = "master", optional = true }
-
-[target.'cfg(all(not(target_os = "redox"), not(target_arch = "wasm32")))'.dependencies]
-sdl2 = { version = "0.34", features = ["bundled", "static-link", "raw-window-handle"], optional = true }
-
 [dependencies]
 lazy_static = "1.4.0"
 raw-window-handle = "0.3"
+image = { version = "0.23",  default-features = false, features = ["ico"] }
+orbclient = "0.3.31"
+sdl2 = { version = "0.34", features = ["bundled", "static-link", "raw-window-handle"] }
 
 # orbtk
 orbtk_tinyskia = { path = "../orbtk_tinyskia", version = "0.3.1-alpha4", default-features = false }
 orbtk_utils = { path = "../utils", version = "0.3.1-alpha4" }
 
 [features]
-default = ["orbclient", "sdl2"]
 log = []
