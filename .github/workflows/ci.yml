@@ -62,12 +62,12 @@ jobs:
       - name: redoxer build
         run: redoxer build
         
-  build_web:
-    name: Build (web)
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v1
-      - name: Install cargo-web
-        run: cargo install --force cargo-web
-      - name: Build
-        run: cargo web build
+  # build_web:
+  #   name: Build (web)
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v1
+  #     - name: Install cargo-web
+  #       run: cargo install --force cargo-web
+  #     - name: Build
+  #       run: cargo web build
