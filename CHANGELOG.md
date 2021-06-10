@@ -8,6 +8,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### 0.3.1-alpha4 (wip)
 
+* removed crates dir
+* moved stuff of localization crate to orbtk_core crate
+* moved stuff of theming crate to orbtk_core crate
+* renamed orbtk_api to orbtk_core
+* renamed render crate to orbtk_tinyskia
+* renamed shell crate to orbtk_orbclient
+* created workspace Crago.toml
+* use tiny-skia as only renderer
 * `PasswordBox` widget
 * `Pager `navigation widget
 * `Clipboard` service
