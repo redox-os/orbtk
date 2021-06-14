@@ -13,7 +13,7 @@
 //! the rust [`DCES`][dces] crate, that provides an Entity Component
 //! System. Interaction with `DCES` is managed via the `Entity
 //! Component Manager`(ECM), a wrapper API, that transparently mapps `OrbTK` widgets
-//! to `ECM`  entities and `OrbTK` properties to `ECM` componets.
+//! to `ECM`  entities and `OrbTK` properties to `ECM` components.
 //!
 //! The main goals of `OrbTk` are speed, ease of use, and cross-platform compatibility.
 //!
