@@ -1,5 +1,6 @@
 use std::ops::Neg;
 
+/// Valid number types (64bit)
 #[derive(Debug, PartialOrd, PartialEq, Copy, Clone)]
 pub enum Number {
     Real(i64),

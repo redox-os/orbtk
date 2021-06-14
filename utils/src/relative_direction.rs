@@ -1,5 +1,6 @@
 use crate::Point;
 
+/// Describes the relative position of the object.
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]
 pub enum RelativeDir {
     Top,
