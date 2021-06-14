@@ -2,8 +2,8 @@ use std::{any::Any, collections::HashMap};
 
 use dces::prelude::Component;
 
-/// The struct `Registry` represents a global registry. It is used to register and call
-/// global elements like services.
+/// The struct `Registry` represents a global registry. It is used to
+/// register and call global elements like services.
 #[derive(Default)]
 pub struct Registry {
     registry: HashMap<String, Box<dyn Any>>,
@@ -24,7 +24,8 @@ impl Registry {
     ///
     /// # Panics
     ///
-    /// Panics if the there is no element for the given key or the given service type is wrong.
+    /// Panics if the there is no element for the given key or the
+    /// given service type is wrong.
     pub fn get<C: Component>(&self, key: &str) -> &C {
         self.registry
             .get(&key.to_string())
@@ -37,7 +38,8 @@ impl Registry {
     ///
     /// # Panics
     ///
-    /// Panics if the there is no service for the given key or the given service type is wrong.
+    /// Panics if the there is no service for the given key or the
+    /// given service type is wrong.
     pub fn get_mut<C: Component>(&mut self, key: &str) -> &mut C {
         self.registry
             .get_mut(&key.to_string())

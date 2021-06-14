@@ -53,7 +53,8 @@ impl<'a> StatesContext<'a> {
     ///
     /// # Panics
     ///
-    /// Panics if the there is no state for the given entity or the given state type is wrong.
+    /// Panics if the there is no state for the given entity or the
+    /// given state type is wrong.
     pub fn get<S: Component>(&self, entity: Entity) -> &S {
         self.states
             .get(&entity)
@@ -77,7 +78,8 @@ impl<'a> StatesContext<'a> {
     ///
     /// # Panics
     ///
-    /// Panics if the there is no state for the given entity or the given state type is wrong.
+    /// Panics if the there is no state for the given entity or the
+    /// given state type is wrong.
     pub fn get_mut<S: Component>(&mut self, entity: Entity) -> &mut S {
         self.mark_as_dirty(entity);
         self.states

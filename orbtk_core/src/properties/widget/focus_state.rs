@@ -44,7 +44,8 @@ impl FocusState {
         }
     }
 
-    /// Remove the focus of the given entity. If the given entity is not the focused entity nothing will happen.
+    /// Remove the focus of the given entity. If the given entity is
+    /// not the focused entity nothing will happen.
     pub fn remove_focus(&mut self, entity: impl Into<Entity>, ctx: &mut Context) {
         let entity = entity.into();
 

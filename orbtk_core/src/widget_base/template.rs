@@ -4,10 +4,10 @@ use crate::{layout::*, render_object::*};
 
 use super::BuildContext;
 
-/// The `Template` trait defines the template of a particular type of a widget.
+/// The `Template` trait defines the template for a particular type of a widget.
 ///
-/// A widget's `Template` consists three type of objects:
-/// * default values of its properties, children, handlers
+/// A widget's `Template` handles three type of objects:
+/// * default property values, children, handlers
 /// * a render object
 /// * a layout object
 pub trait Template: Sized {
@@ -18,8 +18,8 @@ pub trait Template: Sized {
     /// * `_context`: The BuildContext used to build and instantiate new widgets
     ///
     /// # Example
-    /// Define a widget called MyWidget with min, max and val properties with type of usize,
-    /// and then set default values and add a TextBlock child.
+    /// Define a widget called MyWidget with min, max and val properties with
+    /// type of usize, and then set default values and add a TextBlock child.
     ///
     /// ```
     /// widget!(MyWidget {
@@ -50,16 +50,20 @@ pub trait Template: Sized {
         self
     }
 
-    /// Returns a pointer to a heap allocated object
-    /// which specifies how the widget should be drawn on the canvas.
-    /// For the list of available render objects, see the [`render_object`] module.
+    /// Returns a pointer to a heap allocated object.
+    ///
+    /// `layout` takes care, how widget objects are arranged inside
+    /// the canvas. This process will respect the given properties
+    /// of the widget objects, that defines the contraints. For the list
+    /// of available layout objects, see the [`render_object`] module.
     fn render_object(&self) -> Box<dyn RenderObject> {
         DefaultRenderObject.into()
     }
 
-    /// Returns a pointer to a heap allocated object
-    /// which specifies the way in which the widget are arranged or laid out on the canvas.
-    /// For the list of available layout objects, see the [`layout`] module.
+    /// Returns a pointer to a heap allocated object which specifies
+    /// the way in which the widget are arranged or laid out on the
+    /// canvas.  For the list of available layout objects, see the
+    /// [`layout`] module.
     fn layout(&self) -> Box<dyn Layout> {
         GridLayout::new().into()
     }

@@ -22,19 +22,32 @@ use crate::{
 /// Temporary solution to share dependencies. Will be refactored soon.
 #[derive(Clone)]
 pub struct ContextProvider {
+    /// Reference counted cells of render objects.
     pub render_objects: Rc<RefCell<BTreeMap<Entity, Box<dyn RenderObject>>>>,
+    /// Reference counted cells of layouts objects.
     pub layouts: Rc<RefCell<BTreeMap<Entity, Box<dyn Layout>>>>,
+    /// Reference counted cells of handler_map objects.
     pub handler_map: Rc<RefCell<EventHandlerMap>>,
+    /// Reference counted cells of handler_states.
     pub states: Rc<RefCell<BTreeMap<Entity, Box<dyn State>>>>,
+    /// Event adapter objects.
     pub event_adapter: EventAdapter,
+    /// Message adapter objects.
     pub message_adapter: MessageAdapter,
+    /// Reference counted cells of mouse_positions defined as `points`
     pub mouse_position: Rc<Cell<Point>>,
+    /// A window_sender object, used for multiparty session-typed communication.
     pub window_sender: mpsc::Sender<WindowRequest>,
+    /// A shell_sender object, used for multiparty session-typed communication.
     pub shell_sender: mpsc::Sender<ShellRequest<WindowAdapter>>,
+    /// Holds the application name.
     pub application_name: String,
+    /// Reference counted cell to track the `first_run`
     pub first_run: Rc<Cell<bool>>,
+    /// Holds a raw window handler object.
     pub raw_window_handle: Option<raw_window_handle::RawWindowHandle>,
-    // todo thread safe
+    // TODO: make it thread safe
+    /// Reference counted cells that hold the supported localization identifiers.
     pub localization: Option<Rc<RefCell<Box<dyn Localization>>>>,
 }
 

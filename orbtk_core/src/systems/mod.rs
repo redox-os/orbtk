@@ -1,5 +1,7 @@
-//! Contains all system used in OrbTk. Systems are meant as systems in OrbTks Entity Component System.
-//! These are used for event handling, building layout and drawing.
+//! Contains all `system` that are handeled in OrbTk.
+//! Using the idiom `system` is ment as system objects inside OrbTks
+//! Entity Component System.  These are used for event handling,
+//! building layout and drawing.
 
 pub use self::cleanup_system::*;
 pub use self::event_state_system::*;

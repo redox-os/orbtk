@@ -49,6 +49,8 @@ pub trait Event: Any {
     }
 }
 
+/// Assign the `EventHandlerMap` type.
 pub type EventHandlerMap = BTreeMap<Entity, Vec<Rc<dyn EventHandler>>>;
 
+/// Assign the `TriggerHandler` type.
 pub type TriggerHandler = dyn Fn(&mut StatesContext, Entity) + 'static;

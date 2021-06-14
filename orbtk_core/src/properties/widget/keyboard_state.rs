@@ -8,8 +8,9 @@ use crate::shell::Key;
 ///
 /// The key state is stored in a lazy-loaded HashMap.
 ///
-/// There are several convenience methods to check common modifiers (ctrl, shift, alt, etc).
-/// This is useful if you don't care which shift key is down.
+/// There are several convenience methods to check common modifiers
+/// (ctrl, shift, alt, etc).  This is useful if you don't care which
+/// shift key is down.
 #[derive(Default, Clone, Debug, PartialEq)]
 pub struct KeyboardState {
     key_list: HashMap<Key, bool>,

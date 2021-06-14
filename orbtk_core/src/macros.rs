@@ -1,3 +1,5 @@
+//! This module contains the macros, to ease common processing tasks inside the OrbTk tree.
+
 pub use crate::{theming::*, utils::prelude::*};
 pub use dces::prelude::*;
 
@@ -559,10 +561,12 @@ macro_rules! widget {
 #[macro_export]
 macro_rules! trigger_event {
     ($event:ident, $event_handler:ident, $trait:ident, $method:tt) => {
+        /// Structure that triggers an activation event for a given entity.
         pub struct $event(pub Entity);
 
         impl Event for $event {}
 
+        /// Structure that triggers an activation event for a handler of an entity.
         pub struct $event_handler(Rc<TriggerHandler>);
 
         impl EventHandler for $event_handler {
@@ -585,6 +589,7 @@ macro_rules! trigger_event {
             }
         }
 
+        /// Valid traits for given trait type.
         pub trait $trait: Sized + Widget {
             fn $method<H: Fn(&mut StatesContext, Entity) + 'static>(self, handler: H) -> Self {
                 self.insert_handler($event_handler(Rc::new(handler)))

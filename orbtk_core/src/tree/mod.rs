@@ -1,6 +1,6 @@
 /*!
 
-This module provides a index (entity) based tree structure compatible to the [DCES](https://gitlab.redox-os.org/redox-os/dces-rust)
+This module provides an index (entity) based tree structure compatible to the [DCES](https://gitlab.redox-os.org/redox-os/dces-rust)
 Entity Component System. The tree could be used as entity storage.
 
 # Example

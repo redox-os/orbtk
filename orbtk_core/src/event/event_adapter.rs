@@ -4,7 +4,8 @@ use dces::entity::Entity;
 
 use crate::{event::*, shell::WindowRequest};
 
-/// The `EventAdapter` provides a thread safe way to push events to the widget tree of a window.
+/// The `EventAdapter` provides a thread safe way to push events to
+/// the widget tree of a window.
 ///
 /// # Example
 ///
@@ -13,7 +14,7 @@ use crate::{event::*, shell::WindowRequest};
 ///     fn update(&mut self, _: &mut Registry, ctx: &mut Context) {
 ///         let event_adapter = ctx.event_adapter();
 ///         let entity = ctx.entity();
-///         
+///
 ///         let _ = std::thread::spawn(move|| {
 ///             loop {
 ///                 // pushes all 10 milliseconds an activate event on the entity of the state
@@ -21,7 +22,7 @@ use crate::{event::*, shell::WindowRequest};
 ///                 std::thread::sleep(std::time::Duration::from_millis(10));
 ///             }
 ///         });
-///     }    
+///     }
 /// }
 /// ```
 #[derive(Clone, Default, Debug)]
@@ -39,7 +40,8 @@ impl EventAdapter {
         }
     }
 
-    /// Push an event to the tree starting by the given entity. The event bubbles through the tree until it is handled.
+    /// Push an event to the tree starting by the given entity. The
+    /// event bubbles through the tree until it is handled.
     pub fn push_event<E: Event + Send>(&self, entity: Entity, event: E) {
         self.event_queue
             .lock()
@@ -49,7 +51,9 @@ impl EventAdapter {
         self.redraw();
     }
 
-    /// Pushes an event that is directly sent to the given entity (widget). It occurs only by the given entity and will not bubble through the tree.
+    /// Pushes an event that is directly sent to the given entity
+    /// (widget). It occurs only by the given entity and will not
+    /// bubble through the tree.
     pub fn push_event_direct<E: Event + Send>(&self, entity: Entity, event: E) {
         self.event_queue
             .lock()
@@ -89,7 +93,8 @@ impl EventAdapter {
     }
 }
 
-/// Reader is a thread safe iterator that dequeue events from the event adapter.
+/// Reader is a thread safe iterator that dequeue events from the
+/// event adapter.
 pub struct EventReader {
     event_adapter: EventAdapter,
 }
