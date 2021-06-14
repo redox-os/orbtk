@@ -22,6 +22,7 @@ pub enum PagerAction {
     Push(Entity),
 }
 
+/// Structure of elements used to handle the pager status.
 #[derive(Default, Clone, Debug, AsAny)]
 pub struct PagerState {
     current_index: usize,
