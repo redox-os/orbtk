@@ -42,8 +42,8 @@ impl<'a> BuildContext<'a> {
             .unwrap();
     }
 
-    /// Appends a child to overlay (on the top of the main tree). If the overlay does not exists an
-    /// error will be returned.
+    /// Appends a child to overlay (on the top of the main tree). If
+    /// the overlay does not exists an error will be returned.
     pub fn append_child_to_overlay(&mut self, child: Entity) -> Result<(), String> {
         if let Some(overlay) = self.ecm.entity_store().overlay {
             self.append_child(overlay, child);
