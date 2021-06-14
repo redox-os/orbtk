@@ -14,7 +14,7 @@ mod states;
 mod window;
 mod window_builder;
 
-/// Does nothing. This function is only use by the web backend.
+/// Does nothing. This function is only used by the web backend.
 pub fn initialize() {}
 
 /// Represents an application shell that could handle multiple windows.
