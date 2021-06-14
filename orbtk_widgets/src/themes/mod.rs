@@ -1,3 +1,6 @@
+//! Theme widgets provide fonts, icons and colors handling
+//! that can refine the look and feel of an application at runtime.
+
 pub mod theme_fluent;
 pub mod theme_orbtk;
 pub mod theme_redox;
