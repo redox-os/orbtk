@@ -39,7 +39,8 @@ pub fn toggle_flag(flag: &str, widget: &mut WidgetContainer) {
     }
 }
 
-/// Sets the given property flag to  `true` and set the flags name as state of the widgets selector.
+/// Sets the given property flag to `true` and set the flags name as
+/// state of the widgets selector.
 pub fn set_flag(flag: &str, widget: &mut WidgetContainer) {
     if !widget.has::<bool>(flag) {
         return;
@@ -54,7 +55,8 @@ pub fn set_flag(flag: &str, widget: &mut WidgetContainer) {
     widget.update(false);
 }
 
-/// Sets the given property flag to  `false` and clears the state of the widgets selector.
+/// Sets the given property flag to `false` and clears the state of
+/// the widgets selector.
 pub fn remove_flag(flag: &str, widget: &mut WidgetContainer) {
     if !widget.has::<bool>(flag) {
         return;

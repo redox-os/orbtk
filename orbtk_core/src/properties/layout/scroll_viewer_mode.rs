@@ -4,7 +4,8 @@ pub enum ScrollMode {
     /// Scrolling will process by `ScrollViewer` logic
     Auto,
 
-    /// Scrolling could be handled from outside. It will not be process by `ScrollViewer` logic.
+    /// Scrolling could be handled from outside. It will not be
+    /// process by `ScrollViewer` logic.
     Custom,
 
     /// Scrolling will be disabled.
@@ -27,7 +28,8 @@ impl From<&str> for ScrollMode {
     }
 }
 
-/// `ScrollViewerMode` describes the vertical and horizontal scroll behavior of the `ScrollViewer`.
+/// `ScrollViewerMode` describes the vertical and horizontal scroll
+/// behavior of the `ScrollViewer`.
 #[derive(Debug, Copy, Clone, PartialEq)]
 pub struct ScrollViewerMode {
     /// Vertical scroll mode.

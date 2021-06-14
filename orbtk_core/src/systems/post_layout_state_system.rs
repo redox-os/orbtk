@@ -4,7 +4,8 @@ use dces::prelude::*;
 
 use crate::{prelude::*, render::RenderContext2D, theming::Theme, tree::Tree};
 
-/// The `PostLayoutStateSystem` calls the update_post_layout methods of widget states.
+/// The `PostLayoutStateSystem` calls the update_post_layout methods
+/// of widget states.
 #[derive(Constructor)]
 pub struct PostLayoutStateSystem {
     context_provider: ContextProvider,

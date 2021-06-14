@@ -1,5 +1,6 @@
 use crate::{proc_macros::IntoRenderObject, render_object::*};
 
+/// Structure that defines a pipeline for a render object.
 #[derive(Debug, IntoRenderObject)]
 pub struct PipelineRenderObject;
 

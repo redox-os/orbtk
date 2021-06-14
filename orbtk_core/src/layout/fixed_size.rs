@@ -20,7 +20,8 @@ use crate::{
 
 use super::{component, component_try_mut, Layout};
 
-/// Fixed size layout is defined by fixed bounds like the size of an image or the size of a text.
+/// A fixed sized layout is defined by the fixed bounds.
+/// Examples are the size of an image or the size of a text.
 #[derive(Default, IntoLayout)]
 pub struct FixedSizeLayout {
     desired_size: RefCell<DirtySize>,
@@ -28,6 +29,7 @@ pub struct FixedSizeLayout {
 }
 
 impl FixedSizeLayout {
+    /// Preset the defaults.
     pub fn new() -> Self {
         FixedSizeLayout::default()
     }

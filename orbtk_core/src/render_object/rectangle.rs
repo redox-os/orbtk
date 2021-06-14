@@ -8,6 +8,7 @@ use crate::{
     utils::{Brush, Point, Rectangle, Thickness},
 };
 
+/// Structure that defines a rectangle for a render object.
 #[derive(Debug, IntoRenderObject)]
 pub struct RectangleRenderObject;
 

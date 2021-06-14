@@ -7,7 +7,8 @@ use crate::theming::{
     Selector, Style, ThemeState,
 };
 
-/// Theme is used to read properties for a given selector with a internal state.
+/// Theme is used to read properties for a given selector with a
+/// internal state.
 #[derive(Debug, Clone, Default, PartialEq)]
 pub struct Theme {
     styles: HashMap<String, Style>,

@@ -56,8 +56,9 @@ impl MessageBox {
     }
 }
 
-/// The `MessageAdapter` is the thread save entry point to sent and read widget messages that are handled by the `message`
-/// method of a widget `State`,
+/// The `MessageAdapter` is the thread save entry point to sent and
+/// read widget messages that are handled by the `message` method of a
+/// widget `State`,
 ///
 /// # Example
 ///
@@ -143,8 +144,9 @@ impl MessageAdapter {
             .collect()
     }
 
-    /// Removes all messages for the given target entity. This is used to remove messages for
-    /// entities that does not have a `State` to read the messages.
+    /// Removes all messages for the given target entity. This is used
+    /// to remove messages for entities that does not have a `State`
+    /// to read the messages.
     pub(crate) fn remove_message_for_entity(&self, target: Entity) {
         self.messages
             .lock()
@@ -168,7 +170,8 @@ impl MessageAdapter {
             .is_empty()
     }
 
-    /// Returns a message reader for the given entity. Moves all messages for the entity from the adapter to the reader.
+    /// Returns a message reader for the given entity. Moves all
+    /// messages for the entity from the adapter to the reader.
     pub(crate) fn message_reader(&self, entity: Entity) -> MessageReader {
         let messages = if let Some(messages) = self
             .messages
@@ -257,7 +260,8 @@ where
             return None;
         }
 
-        // unwrap is ok because only messages of the same type should be stored in the vec
+        // unwrap is ok because only messages of the same type should
+        // be stored in the vec
         Some(self.messages.remove(0).downcast::<M>().unwrap())
     }
 }

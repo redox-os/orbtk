@@ -32,9 +32,11 @@ pub enum SettingsError {
 
 pub type SettingsResult<T> = Result<T, SettingsError>;
 
-/// `Settings` represents a global settings service that could be use to serialize and deserialize
-/// data in the `ron` file format. Settings are stored in the user settings directory (depending on the operating system)
-/// under the a folder with the given application name.
+/// `Settings` represents a global settings service that could be use
+/// to serialize and deserialize data in the `ron` file
+/// format. Settings are stored in the user settings directory
+/// (depending on the operating system) under the a folder with the
+/// given application name.
 #[derive(Debug, Clone)]
 pub struct Settings {
     app_name: String,
@@ -71,7 +73,9 @@ impl Settings {
         &*self.app_name
     }
 
-    /// Serialize the given data object from user's config dir. Sends the result `Result<(), String>` as message to the given entity.
+    /// Serialize the given data object from user's config dir. Sends
+    /// the result `Result<(), String>` as message to the given
+    /// entity.
     #[cfg(not(target_arch = "wasm32"))]
     pub fn save_async<S: Serialize + Send + Sync + 'static>(
         &self,
@@ -87,7 +91,8 @@ impl Settings {
         })
     }
 
-    /// Loads and deserialize data from user's config dir. Send the result `Result<D, String>` as message to the given entity.
+    /// Loads and deserialize data from user's config dir. Send the
+    /// result `Result<D, String>` as message to the given entity.
     #[cfg(not(target_arch = "wasm32"))]
     pub fn load_async<D: DeserializeOwned + Send + Sync + 'static>(
         &self,
@@ -113,7 +118,8 @@ impl Settings {
             .send_message(save(self.app_name.as_str(), key.as_str(), &data), entity);
     }
 
-    /// Loads and deserialize data from user's config dir. Send the result `Result<D, String>` as message to the given entity.
+    /// Loads and deserialize data from user's config dir. Send the
+    /// result `Result<D, String>` as message to the given entity.
     #[cfg(target_arch = "wasm32")]
     pub fn load_async<D: DeserializeOwned + Send + Sync + 'static>(
         &self,
