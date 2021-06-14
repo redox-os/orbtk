@@ -22,12 +22,11 @@ mod stack;
 /// The layout process will order the children of a given widget in a dynamic iteration.
 /// It will respect constraint values between its elements. The following image illustrates
 /// the relationship between known layout elements:
-/// ![layout_constraints.svg](../../layout_constraints.svg)
 ///
-// ![layout_constraints.png](../../layout_constraints.png)
-// Until given version of rustdoc (v1.50), it can't copy a given
-// image programmatically inside this doc file. We need to do take care
-// in a manual fashion. Copy image to target/doc/orbtk!
+/// ![cheat-sheet: layout constraints][layout_constraints]
+///
+/// [layout_constraints]: https://raw.githubusercontent.com/rzerres/orbtk/wip_documentation/orbtk/images/layout_constraints.svg
+// /// [layout_constraints.svg]: https://raw.githubusercontent.com/redox-os/orbtk/develop/orbtk/images/layout_constraints.svg
 
 pub trait Layout: Any {
     // Measure all children before the arrangement.
