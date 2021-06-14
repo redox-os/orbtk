@@ -45,7 +45,7 @@ pub struct TextMetrics {
     pub height: f64,
 }
 
-// Internal font helper.
+/// Internal font helper.
 #[derive(Default, Clone, PartialEq, Debug)]
 pub struct FontConfig {
     pub family: String,
