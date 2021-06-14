@@ -1,6 +1,6 @@
 /*!
 
-This crate provides the default theme resources of OrbTks default theme dark and light.
+This submodule provides the default theme resources of OrbTks default theme dark and light.
 It provides fonts, icons and colors.
 
  */
@@ -15,7 +15,7 @@ pub mod orbtk_fonts;
 /// provides information processed by the `graphic render` (e.g. glyphs, icons).
 pub mod material_icons_font;
 
-/// Resource file of default theme
+/// Resource file of default theme.
 pub const THEME_DEFAULT: &str = include_str!("../../../assets/themes/orbtk/theme_default.ron");
 
 /// The default dark theme colors resource file.
