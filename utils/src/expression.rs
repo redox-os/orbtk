@@ -5,8 +5,8 @@ use std::ops::Neg;
 use std::{convert::TryFrom, str::Chars};
 
 // Describes a String declared expression either be a method, a color, a number or anything.
-/// This object represents a `expression` used to define something(currently is only use to define
-/// brushes in themes but that can change in the future.
+/// This object represents an `expression` used to define
+/// something. E.g. brushes are defined using an expression in there themes definition.
 #[derive(Clone, PartialEq, PartialOrd, Debug)]
 pub enum Expression {
     Method(String, Vec<Expression>),
