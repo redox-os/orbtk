@@ -44,7 +44,7 @@ where
     _sdl2_sync_thread: Option<thread::JoinHandle<()>>,
 }
 
-// internal method to sync if OrbClient backend is sdl2
+// Internal sync method for OrbClient sdl2 backend
 #[cfg(not(target_os = "redox"))]
 fn init_sync(
     window: &orbclient::Window,
