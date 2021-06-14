@@ -62,7 +62,7 @@ impl MessageBox {
 ///
 /// # Example
 ///
-#[doc="The following code example ..."]
+#[doc = "The following code example ..."]
 /// ```rust
 /// // State
 /// fn say_hello(entity: Entity, message_adapter: MessageAdapter) {
@@ -80,10 +80,10 @@ impl MessageBox {
 ///     }
 /// }
 /// ```
-#[doc="will print two lines to stdout:"]
-#[doc="```text"]
-#[doc="$ Hello rustician,"]
-#[doc="$ Did you got my message?"]
+#[doc = "will print two lines to stdout:"]
+#[doc = "```text"]
+#[doc = "$ Hello rustician,"]
+#[doc = "$ Did you got my message?"]
 #[derive(Clone, Debug)]
 pub struct MessageAdapter {
     messages: Arc<Mutex<BTreeMap<Entity, HashMap<TypeId, Vec<MessageBox>>>>>,
