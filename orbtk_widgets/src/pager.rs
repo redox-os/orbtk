@@ -78,8 +78,10 @@ impl State for PagerState {
 widget!(
     /// `Pager` is a navigation widget that provides a stack based navigation.
     ///
-    /// There are two way to interact with the `Pager`. By using the `PagerState` and by using the associated functions of `Pager`.
-    /// It is suggested to use the state methods on callbacks and the associated functions inside of states of other widgets.
+    /// There are two way to interact with the `Pager`. By using the
+    /// `PagerState` and by using the associated functions of `Pager`.
+    /// It is suggested to use the state methods on callbacks and the
+    /// associated functions inside of states of other widgets.
     ///
     /// # Example
     ///
@@ -119,6 +121,7 @@ widget!(
     }
 );
 
+// associated functions
 impl Pager {
     // checks and updates if next and previous can be executed.
     fn update_next_previous_enabled(ctx: &mut Context, current_index: usize) {
@@ -151,13 +154,15 @@ impl Pager {
         current_index
     }
 
-    /// Navigates to the next child. If the current child is the last in the list nothing will happen.
+    /// Navigates to the next child. If the current child is the last
+    /// in the list nothing will happen.
     pub fn next(ctx: &mut Context, entity: Entity) {
         let current_index = *Pager::current_index_ref(&ctx.get_widget(entity));
         Pager::navigate(ctx, entity, current_index + 1);
     }
 
-    /// Navigates to the previous child. If the current child is the first in the list nothing will happen.
+    /// Navigates to the previous child. If the current child is the
+    /// first in the list nothing will happen.
     pub fn previous(ctx: &mut Context, entity: Entity) {
         let current_index = *Pager::current_index_ref(&ctx.get_widget(entity));
         if current_index == 0 {
@@ -171,7 +176,7 @@ impl Pager {
         // update enabled next / previous
         Pager::panics_on_wrong_type(&ctx.get_widget(entity));
 
-        // if the index is the index of the current visible items it returns
+        // if the given index equals to the current index, the visible item it returned
         if let Some(child) = ctx.try_child_from_index(index) {
             if *child.get::<Visibility>("visibility") == Visibility::Visible {
                 return;
@@ -196,6 +201,7 @@ impl Pager {
                 }
             }
 
+            // mark corresponding child for given index as visible
             if let Some(child) = &mut ctx.try_child_from_index(index) {
                 child.set("visibility", Visibility::Visible);
             }
@@ -206,7 +212,8 @@ impl Pager {
         }
     }
 
-    /// Removes the child on the given index. If the index is out of bounds nothing will happen.
+    /// Removes the child on the given index. If the index is out of
+    /// bounds nothing will happen.
     pub fn remove(ctx: &mut Context, entity: Entity, index: usize) {
         Pager::panics_on_wrong_type(&ctx.get_widget(entity));
 
