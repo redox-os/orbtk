@@ -120,13 +120,16 @@ impl Template for ButtonView {
                         .child(
                             TextBox::new()
                                 .line_wrap(false)
-                                .min_width(180.0)
+                                .min_width(220.0)
                                 .water_mark("Single line text...")
                                 .build(ctx),
                         )
                         .child(
                             TextBox::new()
-                                .min_width(180.0)
+                                .style("text_box_multiline")
+                                .min_width(220.0)
+                                .min_height(60.0)
+                                .height(120.0)
                                 .water_mark("Multi line text (use Ctrl-Enter) ...")
                                 .build(ctx),
                         )
