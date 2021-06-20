@@ -282,12 +282,12 @@ Theme (
 	"text_box": (
 	    base: "base",
 	    properties: {
-		"height": 32,
 		"foreground": "$CONTENT_FOREGROUND_SECONDARY",
 		"background": "$CONTAINER_BACKGROUND",
 		"border_brush": "$CONTAINER_BORDER",
 		"border_width": 1,
 		"border_radius": 2,
+		"min_height": 32,
 		"padding": 6,
 		"padding_left": 6,
 		"padding_right": 6,
