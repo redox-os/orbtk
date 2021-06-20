@@ -104,7 +104,7 @@ impl Template for TextBox {
             .border_brush("transparent")
             .border_width(0.0)
             .border_radius(2.0)
-            .font_size(fonts::FONT_SIZE_12)
+            .font_size(orbtk_fonts::FONT_SIZE_12)
             .font("Roboto-Regular")
             .focused(false)
             .foreground(colors::LINK_WATER_COLOR)
