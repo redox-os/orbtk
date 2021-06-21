@@ -396,6 +396,7 @@ impl TextBehaviorState {
                 if self.is_ctrl_enter_down(ctx) {
                     // just intercept, if `line_warp` is selected (true)
                     if self.line_wrap(ctx) {
+                        // TODO: update cursor position
                         self.insert_conditional_line_brake(ctx);
                     }
                 } else {
