@@ -1,7 +1,4 @@
-use orbtk::{
-    prelude::behaviors::TextBehavior,
-    prelude::*,
-};
+use orbtk::{prelude::behaviors::TextBehavior, prelude::*};
 
 // --- CONSTATNS ---
 pub static ID_HEADER: &str = "Text behavior example";
