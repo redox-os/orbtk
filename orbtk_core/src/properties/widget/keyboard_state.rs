@@ -4,13 +4,119 @@ use crate::shell::Key;
 
 /// Contains the state information for the keyboard.
 ///
-/// This currently tracks which keys are currently pressed.
+/// The keyboard state tracks which keys are currently pressed. The
+/// active state is stored in a lazy-loaded HashMap.
 ///
-/// The key state is stored in a lazy-loaded HashMap.
+/// Beside common key activities, you may need to react on generic
+/// modifier keys (`Alt`, `Ctrl`, `Hyper`, `Shift`). Helper functions
+/// offer several convenience methods to handle such keyboard events.
+/// A generic method comes in handy, if you don't care which
+/// modifier key is down (`Shift-left` or `Shift-right` => `Shift`).
+/// The example section will also tackle the case, where a combined
+/// event (`Ctrl+S`) keyboard state is handled.
 ///
-/// There are several convenience methods to check common modifiers
-/// (ctrl, shift, alt, etc).  This is useful if you don't care which
-/// shift key is down.
+/// # Example
+/// Handle a key press inside a given view.
+///
+/// ```
+/// use orbtk {
+///     widgets::behaviors::MouseBehavior,
+///     prelude::*;
+///     shell::event::{Key, KeyEvent};
+/// };
+///
+/// // [KeyboardState]
+///
+/// #[derive(Clone)]
+/// enum KeyboardAction {
+///     Key(KeyEvent),
+///     RequestFocus,
+/// }
+///
+/// #[derive(AsAny, Default)]
+/// struct KeyboardState {
+///     action: Option<KeyboardAction>,
+///     event_adapter: EventAdapter,
+/// }
+///
+/// // Implementation of KeyboardActions for trait `State`
+/// impl State for KeyboardState {
+///     fn update(&mut self, _: &mut Registry, ctx: &mut Context<'_>) {
+///         if let Some(action) = self.action.clone() {
+///             match action {
+///                 KeyboardAction::Key(key_event) => {
+///                     match key_event.key {
+///                         Key::Control => {
+///                             // Ctrl+'a'
+///                             if key_event.Key::A(false) {
+///                                 self.handle_control_a(ctx);
+///                             }
+///                         }
+///                         Key::Down => {
+///                             self.handle_down_key(ctx);
+///                         }
+///                         Key::Enter => {
+///                             self.handle_enter_key(ctx);
+///                         }
+///                         Key::Left => {
+///                             self.handle_left_key(ctx);
+///                         }
+///                         Key::Right => {
+///                             self.handle_right_key(ctx);
+///                         }
+///                         Key::Up => {
+///                             self.handle_up_key(ctx);
+///                         }
+///                         _ => {}
+///                     }
+///                 }
+///                 KeyboardAction::RequestFocus => {
+///                     self.request_focus(ctx);
+///                 }
+///             }
+///             self.action = None;
+///         }
+///
+/// // associated functions
+/// impl KeyboardState {
+///     fn action(&mut self, action: DirectoryListAction) {
+///         self.action = Some(action);
+/// }
+///
+/// fn handle_down_key(&mut self, ctx: &mut Context<'_>) {
+///     /// here goes your rust code to act on `Key::Down`
+///     println!("Handle: `Key::Down`")
+///     }
+/// }
+///
+/// fn handle_enter_key(&mut self, ctx: &mut Context<'_>) {
+///     /// here goes your rust code to act on `Key::Enter`
+///     println!("Handle: `Key::Enter`")
+///     }
+/// }
+///
+/// fn handle_left_key(&mut self, ctx: &mut Context<'_>) {
+///     /// here goes your rust code to act on `Key::Left`
+///     println!("Handle: `Key::Left`")
+///     }
+/// }
+///
+/// fn handle_right_key(&mut self, ctx: &mut Context<'_>) {
+///     /// here goes your rust code to act on `Key::Right`
+///     println!("Handle: `Key::Right`")
+///     }
+/// }
+///
+/// fn handle_up_key(&mut self, ctx: &mut Context<'_>) {
+///     /// here goes your rust code to act on `Key::Up`
+///     println!("Handle: `Key::Up`")
+///     }
+/// }
+///
+/// // [KeyboardView]
+/// // ... your view code
+///
+/// ```
 #[derive(Default, Clone, Debug, PartialEq)]
 pub struct KeyboardState {
     key_list: HashMap<Key, bool>,
