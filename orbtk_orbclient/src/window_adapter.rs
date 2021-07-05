@@ -6,6 +6,12 @@ use crate::{event::*, utils::Point};
 /// The `WindowAdapter` represents the bridge to the `Shell` backend.
 /// It receives events from the `Window` and runs it's own logic.  
 pub trait WindowAdapter {
+    /// Sets the frame data.
+    fn set_frame_data(&mut self, frame_data: Vec<u8>);
+
+    /// Returns the current frame data.
+    fn frame_data(&self) -> &Vec<u8>;
+
     /// Sets raw window handle.
     fn set_raw_window_handle(&mut self, raw_window_handle: raw_window_handle::RawWindowHandle);
 

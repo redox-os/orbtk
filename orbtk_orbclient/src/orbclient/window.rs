@@ -355,6 +355,8 @@ where
         if !self.update {
             return;
         }
+        self.adapter
+            .set_frame_data(self.render_context.data().to_vec());
         self.adapter.run(&mut self.render_context);
         self.update = false;
         self.redraw.store(true, Ordering::Relaxed)
