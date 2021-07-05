@@ -23,7 +23,6 @@ pub struct WindowAdapter {
     ctx: ContextProvider,
     registry: Rc<RefCell<Registry>>,
     old_clipboard_value: Option<String>,
-    frame_data: Vec<u8>,
 }
 
 impl WindowAdapter {
@@ -38,7 +37,6 @@ impl WindowAdapter {
             ctx,
             registry,
             old_clipboard_value: None,
-            frame_data: vec![],
         }
     }
 }
@@ -54,14 +52,6 @@ impl WindowAdapter {
 }
 
 impl shell::WindowAdapter for WindowAdapter {
-    fn set_frame_data(&mut self, frame_data: Vec<u8>) {
-        self.frame_data = frame_data;
-    }
-
-    fn frame_data(&self) -> &Vec<u8> {
-        &self.frame_data
-    }
-
     fn clipboard_update(&mut self, value: &mut Option<String>) {
         // internal clipboard value is new => update system clipboard value.
         if self.registry.borrow().get::<Clipboard>("clipboard").get() != self.old_clipboard_value {

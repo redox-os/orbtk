@@ -57,6 +57,11 @@ impl<'a> Context<'a> {
         }
     }
 
+    /// Returns the data of the current frame.
+    pub fn frame_data(&self) -> &[u8] {
+        self.render_context.data()
+    }
+
     /// Gets the current entity.
     pub fn entity(&self) -> Entity {
         self.entity
