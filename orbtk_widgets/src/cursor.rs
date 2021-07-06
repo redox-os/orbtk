@@ -37,7 +37,7 @@ widget!(
         /// Defines the x position of the cursor.
         cursor_x: f64,
 
-        /// Defines the of the cursor.
+        /// Defines the offest of the cursor.
         offset: f64
     }
 );

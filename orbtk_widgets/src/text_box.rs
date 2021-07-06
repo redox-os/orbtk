@@ -50,6 +50,9 @@ widget!(
         /// Sets or shares the focused property.
         focused: bool,
 
+        /// Support line wrapping using Ctrl-Enter key.
+        line_wrap: bool,
+
         /// Sets or shares ta value that describes if the TextBox should lose focus on activation (enter).
         lose_focus_on_activation: bool,
 
@@ -67,14 +70,15 @@ widget!(
 impl Template for TextBox {
     fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {
         let text_block = TextBlock::new()
-            .v_align("center")
-            .h_align("start")
-            .foreground(id)
-            .text(id)
-            .water_mark(id)
             .font(id)
             .font_size(id)
+            .foreground(id)
+            .h_align("start")
+            //.line_wrap(id)
             .localizable(false)
+            .text(id)
+            .v_align("center")
+            .water_mark(id)
             .build(ctx);
 
         let cursor = Cursor::new().id(ID_CURSOR).selection(id).build(ctx);
@@ -86,6 +90,7 @@ impl Template for TextBox {
             .focused(id)
             .font(id)
             .font_size(id)
+            .line_wrap(id)
             .lose_focus_on_activation(id)
             .select_all_on_focus(id)
             .request_focus(id)
@@ -95,21 +100,22 @@ impl Template for TextBox {
 
         self.name("TextBox")
             .style(STYLE_TEXT_BOX)
-            .text("")
-            .foreground(colors::LINK_WATER_COLOR)
-            .font_size(orbtk_fonts::FONT_SIZE_12)
-            .font("Roboto-Regular")
-            .selection(TextSelection::default())
-            .padding(4.0)
-            .background(colors::LYNCH_COLOR)
+            .background(colors::DARK_GRAY_COLOR)
             .border_brush("transparent")
             .border_width(0.0)
             .border_radius(2.0)
-            .min_width(128.0)
-            .height(32.0)
+            .font_size(orbtk_fonts::FONT_SIZE_12)
+            .font("Roboto-Regular")
             .focused(false)
+            .foreground(colors::LINK_WATER_COLOR)
+            .line_wrap(true)
             .lose_focus_on_activation(true)
+            .min_height(32.0)
+            .min_width(128.0)
+            .padding(4.0)
             .select_all_on_focus(true)
+            .selection(TextSelection::default())
+            .text("")
             .child(text_behavior)
             .child(
                 Container::new()

@@ -117,7 +117,22 @@ impl Template for ButtonView {
                         .spacing(8)
                         .child(TextBlock::new().text("Header").style("header").build(ctx))
                         .child(TextBlock::new().text("Text").style("body").build(ctx))
-                        .child(TextBox::new().water_mark("Insert text...").build(ctx))
+                        .child(
+                            TextBox::new()
+                                .line_wrap(false)
+                                .min_width(220.0)
+                                .water_mark("Single line text...")
+                                .build(ctx),
+                        )
+                        .child(
+                            TextBox::new()
+                                .style("text_box_multiline")
+                                .min_width(220.0)
+                                .min_height(60.0)
+                                .height(120.0)
+                                .water_mark("Multi line text (use Ctrl-Enter) ...")
+                                .build(ctx),
+                        )
                         .child(
                             PasswordBox::new()
                                 .water_mark("Insert password...")
