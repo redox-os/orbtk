@@ -19,7 +19,7 @@ use crate::shell::Key;
 /// Handle a key press inside a given view.
 ///
 /// ```
-/// use orbtk {
+/// use orbtk:: {
 ///     widgets::behaviors::MouseBehavior,
 ///     prelude::*;
 ///     shell::event::{Key, KeyEvent};
@@ -76,40 +76,38 @@ use crate::shell::Key;
 ///             }
 ///             self.action = None;
 ///         }
+///     }
+/// }
 ///
 /// // associated functions
 /// impl KeyboardState {
 ///     fn action(&mut self, action: DirectoryListAction) {
 ///         self.action = Some(action);
-/// }
-///
-/// fn handle_down_key(&mut self, ctx: &mut Context<'_>) {
-///     /// here goes your rust code to act on `Key::Down`
-///     println!("Handle: `Key::Down`")
 ///     }
-/// }
 ///
-/// fn handle_enter_key(&mut self, ctx: &mut Context<'_>) {
-///     /// here goes your rust code to act on `Key::Enter`
-///     println!("Handle: `Key::Enter`")
+///     fn handle_down_key(&mut self, ctx: &mut Context<'_>) {
+///         /// here goes your rust code to act on `Key::Down`
+///         println!("Handle: `Key::Down`")
 ///     }
-/// }
 ///
-/// fn handle_left_key(&mut self, ctx: &mut Context<'_>) {
-///     /// here goes your rust code to act on `Key::Left`
-///     println!("Handle: `Key::Left`")
+///     fn handle_enter_key(&mut self, ctx: &mut Context<'_>) {
+///         /// here goes your rust code to act on `Key::Enter`
+///         println!("Handle: `Key::Enter`")
 ///     }
-/// }
 ///
-/// fn handle_right_key(&mut self, ctx: &mut Context<'_>) {
-///     /// here goes your rust code to act on `Key::Right`
-///     println!("Handle: `Key::Right`")
+///     fn handle_left_key(&mut self, ctx: &mut Context<'_>) {
+///         /// here goes your rust code to act on `Key::Left`
+///         println!("Handle: `Key::Left`")
 ///     }
-/// }
 ///
-/// fn handle_up_key(&mut self, ctx: &mut Context<'_>) {
-///     /// here goes your rust code to act on `Key::Up`
-///     println!("Handle: `Key::Up`")
+///     fn handle_right_key(&mut self, ctx: &mut Context<'_>) {
+///         /// here goes your rust code to act on `Key::Right`
+///         println!("Handle: `Key::Right`")
+///     }
+///
+///     fn handle_up_key(&mut self, ctx: &mut Context<'_>) {
+///         /// here goes your rust code to act on `Key::Up`
+///         println!("Handle: `Key::Up`")
 ///     }
 /// }
 ///
