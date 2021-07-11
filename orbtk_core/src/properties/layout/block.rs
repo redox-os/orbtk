@@ -182,7 +182,7 @@ impl From<BlocksBuilder> for Blocks {
     }
 }
 
-/// Helper struct used inside of the blocks Property.
+/// Helper struct used inside of the blocks property.
 #[derive(Debug, Clone, PartialEq, Default)]
 pub struct Blocks(pub Vec<Block>);
 
@@ -204,17 +204,17 @@ impl Blocks {
         self.0.len()
     }
 
-    /// Is the block empty?
+    /// Returns a boolean if the block is empty.
     pub fn is_empty(&self) -> bool {
         self.0.is_empty()
     }
 
-    /// Returns a reference to an block.
+    /// Returns a reference to a block.
     pub fn get(&self, block: usize) -> Option<&Block> {
         self.0.get(block)
     }
 
-    /// Returns a mutable reference to an block.
+    /// Returns a mutable reference to a block.
     pub fn get_mut(&mut self, block: usize) -> Option<&mut Block> {
         self.0.get_mut(block)
     }
