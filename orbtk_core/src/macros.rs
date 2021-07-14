@@ -70,7 +70,7 @@ macro_rules! into_property_source {
 /// });
 /// ```
 ///
-/// [`Widget`]: ./widget/trait.Widget.html
+/// [`Widget`]: ./trait.Widget.html
 /// [`builder`]: https://doc.rust-lang.org/1.0.0/style/ownership/builders.html
 /// [`builder pattern`]: https://en.wikipedia.org/wiki/Builder_pattern
 #[macro_export]
@@ -450,8 +450,8 @@ macro_rules! widget {
                     ctx.register_state(entity, this.state);
                 )*
 
-                // register default set of properties
-                register_property(ctx, "bounds", entity, this.bounds);
+                // register a set of properties as components
+                ctx.register_property("bounds", entity, this.bounds);
                 ctx.register_property("position", entity, this.position);
                 ctx.register_property("v_align", entity, this.v_align);
                 ctx.register_property("h_align", entity, this.h_align);
