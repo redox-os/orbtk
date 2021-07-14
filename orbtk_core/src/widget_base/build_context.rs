@@ -7,7 +7,9 @@ use crate::{prelude::*, render_object::RenderObject, tree::Tree};
 /// A heap allocated function consuming a `BuildContext` to return an entity.
 pub type WidgetBuildContext = Option<Box<dyn Fn(&mut BuildContext, usize) -> Entity + 'static>>;
 
-/// Used to create an entity for a widget. Preallocates and set the widget properties as the entity components.
+/// Structure used to create a widget entity inside an Entity Component Manager (ECM).
+///
+/// The entity will have assosiated components that are registered as its properties.
 #[derive(Constructor)]
 pub struct BuildContext<'a> {
     ecm: &'a mut EntityComponentManager<Tree>,
@@ -26,6 +28,7 @@ impl<'a> BuildContext<'a> {
     }
 
     /// Creates a new entity.
+    // Shouldn't that be new() ?
     pub fn create_entity(&mut self) -> Entity {
         self.ecm.create_entity().build()
     }
