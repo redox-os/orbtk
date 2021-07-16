@@ -49,6 +49,16 @@ impl WindowAdapter {
             .root
             .unwrap()
     }
+
+    fn dirty_region(&mut self) -> Option<Rectangle> {
+        let root = self.root();
+        self.world
+            .entity_component_manager()
+            .component_store()
+            .get::<Option<Rectangle>>("dirty_region", root)
+            .unwrap()
+            .clone()
+    }
 }
 
 impl shell::WindowAdapter for WindowAdapter {
@@ -171,8 +181,9 @@ impl shell::WindowAdapter for WindowAdapter {
             .push_event_direct(root, WindowEvent::ActiveChanged(active));
     }
 
-    fn run(&mut self, render_context: &mut render::RenderContext2D) {
+    fn run(&mut self, render_context: &mut render::RenderContext2D) -> Option<Rectangle> {
         self.world.run_with_context(render_context);
+        self.dirty_region()
     }
 
     fn file_drop_event(&mut self, file_name: String) {

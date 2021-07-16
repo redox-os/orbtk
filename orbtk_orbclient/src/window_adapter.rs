@@ -1,7 +1,10 @@
 //! This module contains traits to inject custom logic into the window shell.
 
 use crate::render::RenderContext2D;
-use crate::{event::*, utils::Point};
+use crate::{
+    event::*,
+    utils::{Point, Rectangle},
+};
 
 /// The `WindowAdapter` represents the bridge to the `Shell` backend.
 /// It receives events from the `Window` and runs it's own logic.  
@@ -46,5 +49,7 @@ pub trait WindowAdapter {
     fn text_drop_event(&mut self, text: String);
 
     /// Runs the inner logic of the shell adapter.
-    fn run(&mut self, render_context: &mut RenderContext2D);
+    ///
+    /// It returns the dirty region that needs to be redrawn.
+    fn run(&mut self, render_context: &mut RenderContext2D) -> Option<Rectangle>;
 }

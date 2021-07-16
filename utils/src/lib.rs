@@ -51,3 +51,13 @@ mod text_baseline;
 mod thickness;
 mod value;
 mod visibility;
+
+#[derive(Clone, Debug, Default, PartialEq)]
+pub struct VisualRenderProperties {
+    pub bounds: Rectangle,
+    pub background: Brush,
+    pub border_radius: f64,
+    pub border_thickness: Thickness,
+    pub border_brush: Brush,
+    pub visibility: Visibility,
+}
