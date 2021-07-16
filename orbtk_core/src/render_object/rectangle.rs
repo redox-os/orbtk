@@ -3,9 +3,8 @@ use std::f64::consts::PI;
 use crate::{
     proc_macros::IntoRenderObject,
     render::RenderContext2D,
-    render_object::*,
-    utils,
-    utils::{Brush, Point, Rectangle, Thickness},
+    render_object::{Context, RenderObject},
+    utils::{self, Brush, Point, Rectangle, Thickness, Visibility, VisualRenderProperties},
 };
 
 #[derive(Debug, IntoRenderObject)]
@@ -132,8 +131,9 @@ impl RectangleRenderObject {
 
 impl RenderObject for RectangleRenderObject {
     fn render_self(&self, ctx: &mut Context, global_position: &Point) {
+        let widget = ctx.widget();
+
         let (bounds, background, border_radius, border_thickness, border_brush) = {
-            let widget = ctx.widget();
             (
                 widget.clone::<Rectangle>("bounds"),
                 widget.get::<Brush>("background").clone(),
@@ -142,6 +142,29 @@ impl RenderObject for RectangleRenderObject {
                 widget.clone_or_default::<Brush>("border_brush"),
             )
         };
+
+        // The bounds don't contain the actual position, hence set that position
+        let mut bounds_with_position = bounds.clone();
+        bounds_with_position.set_position(*global_position);
+        let visibility = widget.clone::<Visibility>("visibility");
+        let render_properties = VisualRenderProperties {
+            bounds: bounds_with_position,
+            background: background.clone(),
+            border_radius,
+            border_thickness,
+            border_brush: border_brush.clone(),
+            visibility,
+        };
+        let previous_render = widget.get::<VisualRenderProperties>("previous_render");
+        let dirty_region = if &render_properties != previous_render {
+            ctx.widget()
+                .set_non_dirty::<VisualRenderProperties>("previous_render", render_properties);
+            Some(bounds_with_position)
+        } else {
+            None
+        };
+        ctx.widget()
+            .set_non_dirty::<Option<Rectangle>>("dirty_region", dirty_region);
 
         if (bounds.width() == 0.0
             || bounds.height() == 0.0

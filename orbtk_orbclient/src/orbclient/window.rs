@@ -22,7 +22,7 @@ use orbclient::Renderer;
 #[cfg(not(target_os = "redox"))]
 use raw_window_handle::HasRawWindowHandle;
 
-use orbtk_utils::Point;
+use orbtk_utils::{Point, Rectangle};
 
 /// Represents a wrapper for a orbclient window. It handles events, propagate them to
 /// the window adapter and handles the update and render pipeline.
@@ -40,6 +40,7 @@ where
     redraw: Arc<AtomicBool>,
     close: bool,
     has_clipboard_update: bool,
+    dirty_region: Option<Rectangle>,
     #[cfg(not(target_os = "redox"))]
     _sdl2_sync_thread: Option<thread::JoinHandle<()>>,
 }
@@ -129,6 +130,7 @@ where
             redraw,
             close: false,
             has_clipboard_update: true,
+            dirty_region: None,
         }
     }
 
@@ -356,7 +358,7 @@ where
             return;
         }
 
-        self.adapter.run(&mut self.render_context);
+        self.dirty_region = self.adapter.run(&mut self.render_context);
         self.update = false;
         self.redraw.store(true, Ordering::Relaxed)
     }
@@ -371,6 +373,13 @@ where
             };
 
             if color_data.len() == self.window.data().len() {
+                if let Some(dirty_region) = self.dirty_region {
+                    println!(
+                        "vmx: orbclient: window: render: dirty region: {:?}",
+                        dirty_region
+                    );
+                }
+
                 self.window.data_mut().clone_from_slice(color_data);
 
                 // CONSOLE.time_end("render");

@@ -1,4 +1,4 @@
-pub use crate::{theming::*, utils::prelude::*};
+pub use crate::utils::prelude::*;
 pub use dces::prelude::*;
 
 #[macro_export]
@@ -117,6 +117,10 @@ macro_rules! widget {
             #[property(Filter)]
             on_changed_filter: Filter,
             changed_handler: ChangedEventHandler,
+            #[property(VisualRenderProperties)]
+            previous_render: VisualRenderProperties,
+            #[property(Option<Rectangle>)]
+            dirty_region: Option<Rectangle>,
             _empty: Option<RefCell<i32>>,
              $(
                 $(
@@ -461,6 +465,8 @@ macro_rules! widget {
                 ctx.register_property("type_id", entity, TypeId::of::<$widget>());
                 ctx.register_property("type_name", entity, std::any::type_name::<$widget>().to_string());
                 ctx.register_property("dirty", entity, false);
+                ctx.register_property("previous_render", entity, this.previous_render);
+                ctx.register_property("dirty_region", entity, this.dirty_region);
 
                 let mut constraint = this.constraint;
 
