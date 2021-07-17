@@ -63,35 +63,39 @@ pub trait AsAny: Any {
 /// [`AsAny`]: ./trait.AsAny.html
 
 pub trait State: AsAny {
-    /// Init is used to set up the initial state of a widget. The
-    /// `state` fields values (level entities) are preset and
-    ///  service(s) are registered. This method is called after the
-    ///  widget is created.
+    /// Init is used for setting up the initial state of a widget.
+    ///
+    /// Within the init process, you preset properties with intended
+    /// initial values. You may register service(s).
+    /// It is called **after creation** of a widget.
     ///
     /// # Arguments
     /// * `_registry`: Provides access to the global Service Registry.
-    /// * `_ctx`: Represents the context of the current widget.
-    /// This structure allows the manipulation of the widget tree.
+    /// * `_ctx`: Represents the context of the current widget. Allows manipulation of the widget tree.
     fn init(&mut self, _registry: &mut Registry, _ctx: &mut Context) {}
 
-    /// Used to cleanup the state and is called after window close is requested.
+    /// Cleanup is used to sanitize the sthe state of a widget.
+    ///
+    /// It is called **after window close** is requested.
+    ///
     /// # Arguments
     /// * `_registry`: Provides access to the global Service Registry.
-    /// * `_ctx`: Represents the context of the current widget.
-    /// This structure allows the manipulation of the widget tree.
+    /// * `_ctx`: Represents the context of the current widget. Allows manipulation of the widget tree.
     fn cleanup(&mut self, _registry: &mut Registry, _ctx: &mut Context) {}
 
-    /// Updates the state of a widget **before layout is calculated**.
-    /// When the widget gets `dirty`, that means a property of a
-    /// widget is changed or an [`event`] is fired up, the update
-    /// cycle is initiated.
+    /// Update is used to update the state of a widget.
     ///
-    /// # Arguments * `_registry`: Provides access to the global
-    /// Service Registry.
-    /// * `_ctx`: Represents the context of the current widget.
-    /// This struct allows the manipulation of the widget tree.
+    /// Within the update process, you react on triggered
+    /// `events`. You need to adapt, if entities of the given context
+    /// are marked **dirty**. Property changes and handler messages
+    /// will fire an [`event`].
+    /// It is called **before layout calculation** is triggered.
     ///
-    /// [`event`]: ../trait.Event.html
+    /// # Arguments
+    /// * `_registry`: Provides access to the global Service Registry.
+    /// * `_ctx`: Represents the context of the current widget. Allows manipulation of the widget tree.
+    ///
+    /// [`event`]: ./trait.Event.html
     fn update(&mut self, _registry: &mut Registry, _ctx: &mut Context) {}
 
     /// This method is called, when a widget sends a message via the `MessageHandler`.
@@ -113,6 +117,6 @@ pub trait State: AsAny {
     /// * `_registry`: Provides access to the global Service Registry.
     /// * `_ctx`: Represents the context of the current widget.Allows manipulation of the widget tree.
     ///
-    /// [`event`]: ../trait.Event.html
+    /// [`event`]: ./trait.Event.html
     fn update_post_layout(&mut self, _registry: &mut Registry, _ctx: &mut Context) {}
 }
