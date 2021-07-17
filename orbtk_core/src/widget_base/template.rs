@@ -64,9 +64,6 @@ pub trait Template: Sized {
     /// Returns a pointer to a heap allocated object.
     ///
     /// The `layout` process will arrange all `box` entities of a widget
-=======
-    /// The layout process will arrange all `box` entities of a widget
->>>>>>> fa56d7f1 (orbtk_core: update template documentation)
     /// in a tree, were size properties will meet the individual constraints.
     /// For the list of available layout objects, see
     /// the [`layout`] module.
