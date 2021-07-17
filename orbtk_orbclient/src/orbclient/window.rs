@@ -24,8 +24,11 @@ use raw_window_handle::HasRawWindowHandle;
 
 use orbtk_utils::Point;
 
-/// Represents a wrapper for a orbclient window. It handles events, propagate them to
-/// the window adapter and handles the update and render pipeline.
+/// Represents a wrapper for an orbclient window.
+
+/// Events are handled and propagated to the window adapter. The
+/// window adapter updates involved entities and activates the render
+/// pipeline.
 pub struct Window<A>
 where
     A: WindowAdapter,
