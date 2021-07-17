@@ -59,6 +59,7 @@ pub trait AsAny: Any {
 /// ```
 ///
 /// [`widget`]: ./trait.Widget.html
+/// [`Default`]: (https://doc.rust-lang.org/std/default/trait.Default.html)
 /// [`AsAny`]: ./trait.AsAny.html
 
 pub trait State: AsAny {
