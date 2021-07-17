@@ -4,10 +4,10 @@ use crate::{layout::*, render_object::*};
 
 use super::BuildContext;
 
-/// The `Template` trait defines the template for a particular type of a widget.
+/// The `Template` trait is used to implement a particular widget type.
 ///
-/// A widget's `Template` handles three type of objects:
-/// * default property values, children, handlers
+/// When a widget's `Template` is implemented, it provides three object types:
+/// * a template objet (with default values for its properties, children, handlers)
 /// * a render object
 /// * a layout object
 pub trait Template: Sized {
@@ -52,18 +52,23 @@ pub trait Template: Sized {
 
     /// Returns a pointer to a heap allocated object.
     ///
-    /// `layout` takes care, how widget objects are arranged inside
-    /// the canvas. This process will respect the given properties
-    /// of the widget objects, that defines the contraints. For the list
-    /// of available layout objects, see the [`render_object`] module.
+    /// Widgets will be rendered as pixmaps inside the render buffer.
+    /// For the list of available render objects, see the
+    /// [`render_object`] module.
+    ///
+    /// [`render_object`]: ../../orbtk_core/render_object/index.html
     fn render_object(&self) -> Box<dyn RenderObject> {
         DefaultRenderObject.into()
     }
 
-    /// Returns a pointer to a heap allocated object which specifies
-    /// the way in which the widget are arranged or laid out on the
-    /// canvas.  For the list of available layout objects, see the
-    /// [`layout`] module.
+    /// Returns a pointer to a heap allocated object.
+    ///
+    /// The `layout` process will arrange all `box` entities of a widget
+    /// in a tree, were size properties will meet the individual constraints.
+    /// For the list of available layout objects, see
+    /// the [`layout`] module.
+    ///
+    /// [`layout`]: ../../orbtk_core/layout/index.html
     fn layout(&self) -> Box<dyn Layout> {
         GridLayout::new().into()
     }
