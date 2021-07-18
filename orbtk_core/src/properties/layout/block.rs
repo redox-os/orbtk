@@ -2,7 +2,7 @@ use std::slice::{Iter, IterMut};
 
 static BLOCK_SEPARATOR: &str = ",";
 
-/// Used to build a block (block | row), specifying additional details.
+/// Used to build a block (column | row), specifying additional details.
 #[derive(Default)]
 pub struct BlockBuilder {
     size: BlockSize,
@@ -34,7 +34,7 @@ impl BlockBuilder {
         self
     }
 
-    /// Builds the block.
+    /// Builds a block property.
     pub fn build(self) -> Block {
         Block {
             size: self.size,
@@ -45,7 +45,7 @@ impl BlockBuilder {
     }
 }
 
-/// Used to define the block of the `Grid`.
+/// Used to define a block inside a `Grid`.
 #[derive(Copy, Clone, Debug, Default, PartialEq)]
 pub struct Block {
     pub size: BlockSize,
@@ -128,7 +128,7 @@ impl Default for BlockSize {
     }
 }
 
-/// Used to build a blocks, specifying additional details.
+/// Used to build `blocks`, that will group `block` structs.
 #[derive(Default)]
 pub struct BlocksBuilder {
     blocks: Vec<Block>,
@@ -182,14 +182,16 @@ impl From<BlocksBuilder> for Blocks {
     }
 }
 
-/// Helper struct used inside of the blocks property.
+/// Helper struct used to group block properties.
 #[derive(Debug, Clone, PartialEq, Default)]
 pub struct Blocks(pub Vec<Block>);
 
-/// Alias type for `Blocks` to don't break old api.
+/// Alias type for `Blocks`. Provided to keep old api calls working.
+#[deprecated = "Will be removed on 0.3.1-alpha5. Use `Blocks` instead"]
 pub type Columns = Blocks;
 
-/// Alias type for `Blocks` to don't break old api.
+/// Alias type for `Blocks`. Provided to keep old api calls working.
+#[deprecated = "Will be removed on 0.3.1-alpha5. Use `Blocks` instead"]
 pub type Rows = Blocks;
 
 impl Blocks {
