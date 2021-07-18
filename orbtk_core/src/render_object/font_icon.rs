@@ -4,8 +4,8 @@ use crate::{
     utils::{Brush, Point, Rectangle},
 };
 
-/// The `FontIconRenderObject` holds the font icons inside the render
-/// object
+/// The `FontIconRenderObject` holds the font icons inside
+/// a render object.
 #[derive(Debug, IntoRenderObject)]
 pub struct FontIconRenderObject;
 
