@@ -1,7 +1,10 @@
 /*!
 
-This module provides an index (entity) based tree structure compatible to the [DCES](https://gitlab.redox-os.org/redox-os/dces-rust)
-Entity Component System. The tree could be used as entity storage.
+This module provides an index (entity) based tree structure compatible
+to the Entity Component System ([DCES]). OrbTK methods will use
+**DCES** for entity and property storage.
+
+[DCES]: (https://gitlab.redox-os.org/redox-os/dces-rust)
 
 # Example
 
