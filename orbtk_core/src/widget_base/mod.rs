@@ -85,7 +85,15 @@ pub enum ParentType {
     Multi,
 }
 
-/// The `Widget` trait is used to define a new widget.
+/// The `Widget` trait is used to define and handle widgets.
+///
+/// Widgets are structured UI elements inside OrbTK, that are 
+/// dedicated to a given task. The given model is dynamicaly 
+/// structured. You are free to implement your own widget type
+/// or consume the predefinded implementations.
+///
+/// This version is using procedural macros, to preset addressed
+/// types, enums and properties.
 pub trait Widget: Template {
     /// Creates a new widget.
     fn new() -> Self;
@@ -105,7 +113,7 @@ pub trait Widget: Template {
     /// Builds the widget and returns the template of the widget.
     fn build(self, ctx: &mut BuildContext) -> Entity;
 
-    /// Inerts a new event handler.
+    /// Inserts a new event handler.
     fn insert_handler(self, handler: impl Into<Rc<dyn EventHandler>>) -> Self;
 
     // Inserts a new changed handler.
