@@ -24,12 +24,14 @@ use dces::entity::Entity;
 
 use crate::widget_base::MessageAdapter;
 
+/// Used to report meaningful error messages when handling `Settings`.
 #[derive(Debug)]
 pub enum SettingsError {
     Saved(String),
     Loaded(String),
 }
 
+/// Returns a value or the error message.
 pub type SettingsResult<T> = Result<T, SettingsError>;
 
 /// `Settings` represents a global settings service that could be use
