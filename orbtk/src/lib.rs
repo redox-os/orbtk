@@ -27,8 +27,11 @@
 //#![feature(extern_doc)]
 //#[doc(include="../README.md")]
 
+/// Tries to make your OrbTK experience more convenient.
+/// It will automatically import traits and types into scope, that you likely need in your app.
 pub use orbtk_orbclient::prelude::initialize;
 
+/// Handles core implenentations (OrbTK building blocks).
 pub mod core {
     pub use orbtk_core::application;
     pub use orbtk_core::localization;
@@ -38,26 +41,32 @@ pub mod core {
     pub use orbtk_core::tree;
 }
 
+/// Handles procedural macros.
 pub mod proc_macros {
     pub use orbtk_proc_macros::*;
 }
 
+/// Handles renderer implementations.
 pub mod render {
     pub use orbtk_tinyskia::*;
 }
 
+/// Handles shell interaction implementations.
 pub mod shell {
     pub use orbtk_orbclient::prelude::*;
 }
 
+/// Handles helper utilities and global methods.
 pub mod utils {
     pub use orbtk_utils::*;
 }
 
+/// Handle widget implementations.
 pub mod widgets {
     pub use orbtk_widgets::*;
 }
 
+/// Pre-selects commonly used OrbTk crates and put them into scope.
 pub mod prelude;
 
 mod application;
