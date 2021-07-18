@@ -67,7 +67,8 @@ impl State for MouseBehaviorState {
 }
 
 widget!(
-    /// The `MouseBehavior` widget is used to handle internal the pressed behavior of a widget.
+    /// The `MouseBehavior` widget will take care to handle the actions,
+    /// that should be triggered if the mouse pressed event is triggered.
     ///
     /// **style:** `check-box`
     MouseBehavior<MouseBehaviorState>: MouseHandler {
