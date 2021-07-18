@@ -2,7 +2,7 @@ use std::{fmt, path::Path};
 
 use crate::RenderTarget;
 
-/// Structure that defines elements of an image objeckt.
+/// Structure that defines elements of an image object.
 #[derive(Clone, Default)]
 pub struct Image {
     render_target: RenderTarget,
