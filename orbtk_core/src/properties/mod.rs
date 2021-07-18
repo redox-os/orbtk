@@ -31,7 +31,7 @@ where
     value
 }
 
-/// Use to build a property or to share it.
+/// Used to build or share a property.
 #[derive(PartialEq, Debug)]
 pub enum PropertySource<P: Component + Debug> {
     Source(Entity),
