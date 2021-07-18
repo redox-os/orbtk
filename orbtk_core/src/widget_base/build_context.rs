@@ -4,9 +4,10 @@ use dces::prelude::*;
 
 use crate::{prelude::*, render_object::RenderObject, tree::Tree};
 
+/// A heap allocated function consuming a `BuildContext` to return an entity.
 pub type WidgetBuildContext = Option<Box<dyn Fn(&mut BuildContext, usize) -> Entity + 'static>>;
 
-/// Used to create an entity for a widget with its properties as components.
+/// Used to create an entity for a widget. Preallocates and set the widget properties as the entity components.
 #[derive(Constructor)]
 pub struct BuildContext<'a> {
     ecm: &'a mut EntityComponentManager<Tree>,
@@ -149,6 +150,9 @@ impl<'a> BuildContext<'a> {
     }
 }
 
+/// Register a property as a component.
+// if macro is adapted:
+// #[deprecated = "Use orbtk_core::widget_base::BuildContext::register_property instead"]
 pub fn register_property<P: Component>(
     ctx: &mut BuildContext,
     key: &str,

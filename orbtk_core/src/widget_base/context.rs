@@ -15,10 +15,12 @@ use crate::{
 use super::WidgetContainer;
 
 /// The `Context` structure provides access to widget entities handled
-/// via the underlying EntityComponentSystem. Functions are offered to
+/// via the underlying Entity Component System ([DCES]). Functions are offered to
 /// handle the position of an entity in the tree, its associated
 /// render context and theme. You can emit adaptions to the state of
 /// an entity.
+///
+/// [DCES]: (https://gitlab.redox-os.org/redox-os/dces-rust)
 pub struct Context<'a> {
     pub(crate) ecm: &'a mut EntityComponentManager<Tree>,
     entity: Entity,
