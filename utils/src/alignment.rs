@@ -16,8 +16,13 @@ impl Default for Alignment {
 }
 
 impl Alignment {
-    /// Calculates the position (x or y) of the widget depending on the available measure,
-    /// the goal measure margin and alignment.
+    /// Calculates and returns an aligned position.
+    ///
+    /// The returned measure value represents a placement value
+    /// (either a `x` or `y` coordinate). You may use this alignment
+    /// value, so the given widget can consume the maximum available
+    /// size inside the render, while respecting its `alignment
+    /// specification` as well as its `margins` bounds.
     pub fn align_position(
         self,
         available_measure: f64,
@@ -32,8 +37,13 @@ impl Alignment {
         }
     }
 
-    /// Calculates the measure (measure or height) of the widget depending on the available measure,
-    /// the goal measure margin and horizontal alignment.
+    /// Calculates and returns a measure.
+    ///
+    /// The returned measure value represents a placement value
+    /// (either a `x` or `y` coordinate). You may use this alignment
+    /// value, so the given widget can consume the maximum
+    /// available size inside the render, while respecting its `margin`
+    /// bounds.
     pub fn align_measure(
         self,
         available_measure: f64,
