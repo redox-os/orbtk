@@ -243,6 +243,29 @@ impl ComboBoxState {
             ctx.widget().update(false);
         }
     }
+
+    // opens a popup item box.
+    fn open_selection(&mut self, ctx: &mut Context, p: Point) {
+        // upper left point of our ComboBox selector
+        let combo_box_position = ctx.widget().clone::<Point>("position");
+        let combo_box_bounds = ctx.widget().clone::<Rectangle>("bounds");
+        let combo_box_global_bounds =
+             Rectangle::new(combo_box_position, combo_box_bounds.size());
+
+        //let combo_box_placement = ctx.widget().clone::<Placement>("placement");
+
+        // open the popup if `mouse down` point is inside of the ComboBox bounds.
+        if combo_box_global_bounds.contains(p) {
+            ctx.widget().set("selected", true);
+            ctx.widget()
+                .get_mut::<Selector>("selector")
+                .push_state("selected");
+            ctx.get_widget(self.popup)
+                .set("visibility", Visibility::Visible);
+            ctx.get_widget(self.popup).update(true);
+            ctx.widget().update(true);
+        }
+    }
 }
 
 impl State for ComboBoxState {
@@ -480,12 +503,14 @@ impl Template for ComboBox {
                     )
                     .build(ctx),
             )
-            .on_global_mouse_up(move |states, e| {
-                states
-                    .get_mut::<ComboBoxState>(id)
-                    .action(Action::CheckMouseUpOutside {
-                        position: e.position,
-                    })
+            .on_global_mouse_up(move |states, event| {
+                let position: Point = event.position;
+                states.send_message(ComboBoxAction::CloseSelection {position}, id);
+            })
+            .on_mouse_down(move |states, event| {
+                let position: Point = event.position;
+                states.send_message(ComboBoxAction::OpenSelection {position}, id);
+                true
             })
     }
 }
