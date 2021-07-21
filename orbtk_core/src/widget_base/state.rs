@@ -8,18 +8,18 @@ pub trait AsAny: Any {
 }
 
 /// A state trait of a widget (the `state`) comes in handy to provide
-/// interactivity.  You are not requested to define a `state` for your
-/// widget. If you don't you can't change the properties. The `view`
-/// of widget will stay static.
+/// interactivity.  It is not required to define a `state` for the
+/// widget. But if you don't, you cut of the possibility to adapt
+/// properties during runtime. The `view` of the widget will stay
+/// static.
 ///
-/// Each defined `state` of a widget inherits the values of its
-/// associated properties (`current values`).  To gain the access each
-/// state has to derive or implement the
-/// [`Default`](https://doc.rust-lang.org/std/default/trait.Default.html)
-/// and the [`AsAny`] traits.  The defined methods of the `state` will
-/// operate on the properties of the widget (the DECS components),
-/// which are organized in the tree (parent, children or level
-/// entities).
+/// When defining a `state` of a widget, it inherits the values of its
+/// associated properties (`current values`), as well as the implemented system  To gain access, each
+/// state has to derive or implement the [`Default`] and the [`AsAny`]
+/// traits. You are free to implement associated functions to the
+/// `state`, that react on triggered events or adapt current
+/// values. The `properties` are stored via ECM. They are organized in
+/// a tree (parent, children or level entities).
 ///
 /// # Example
 ///
