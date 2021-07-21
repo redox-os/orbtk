@@ -266,7 +266,6 @@ impl Constraint {
         (
             // check `width` value to meet the constraint requirement
             constrain(size.0, self.min_width, self.max_width, self.width),
-
             // check `height` value to meet the constraint requirement
             constrain(size.1, self.min_height, self.max_height, self.height),
         )
