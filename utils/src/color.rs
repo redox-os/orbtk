@@ -212,8 +212,27 @@ mod tests {
     use super::*;
     #[test]
     fn partial_eq() {
-        assert_eq!(true, Color::rgb(1, 2, 3) == Color::rgba(1, 2, 3, 200));
-        assert_eq!(false, Color::rgb(1, 2, 3) == Color::rgba(11, 2, 3, 200));
-        assert_eq!(true, Color::rgba(1, 2, 3, 200) == Color::rgba(1, 2, 3, 200));
+        let color_1 = Color::rgb(1, 2, 3);
+        let color_2 = Color::rgba(1, 2, 3, 200);
+        let color_3 = Color::rgba(11, 2, 3, 200);
+
+        assert!(
+            color_1.eq(&color_2),
+            "color_1={:?}(, color_2={:?}",
+            &color_1,
+            &color_2
+        );
+        assert!(
+            color_1.eq(&color_2),
+            "color_1={:?}(, color_2={:?}",
+            &color_1,
+            &color_2
+        );
+        assert!(
+            color_2.ne(&color_3),
+            "color_1={:?}(, color_2={:?}",
+            &color_2,
+            &color_3
+        );
     }
 }
