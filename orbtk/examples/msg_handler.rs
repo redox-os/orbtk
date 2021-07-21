@@ -195,7 +195,7 @@ impl State for ReceiverState {
                     );
                     println!(
                         "Receiver message: Updating progress bar ({} percent)",
-                        &current_progress + &amount
+                        current_progress + amount
                     );
 
                     self.message_counter += 1;
