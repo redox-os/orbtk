@@ -1,5 +1,7 @@
-//! This module contains all render objects used in OrbTk. Render
-//! objects are used to define how to draw parts of a widget.
+//! This module contains all render objects used in OrbTk.
+//!
+//! Render objects define how to draw associatied entities of a widget
+//! to the render buffer.
 
 use std::{any::Any, collections::BTreeMap};
 
