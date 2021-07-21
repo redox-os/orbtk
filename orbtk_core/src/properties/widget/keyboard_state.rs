@@ -60,12 +60,12 @@ mod tests {
     fn basic_test() {
         let mut state = KeyboardState::default();
         // Do a quick check beforehand
-        assert_eq!(state.is_key_down(Key::ShiftL), false);
+        assert!(!state.is_key_down(Key::ShiftL));
         // Set the state down and immediately check
         state.set_key_state(Key::ShiftL, true);
-        assert_eq!(state.is_key_down(Key::ShiftL), true);
+        assert!(state.is_key_down(Key::ShiftL));
         state.set_key_state(Key::ShiftL, false);
-        assert_eq!(state.is_key_down(Key::ShiftL), false);
+        assert!(!state.is_key_down(Key::ShiftL));
         // Set quit a few in a row
         state.set_key_state(Key::ShiftL, true);
         state.set_key_state(Key::ShiftR, true);
@@ -73,11 +73,11 @@ mod tests {
         state.set_key_state(Key::Control, true);
         state.set_key_state(Key::Alt, true);
         // Ensure each of these are still down
-        assert_eq!(state.is_key_down(Key::ShiftL), true);
-        assert_eq!(state.is_key_down(Key::ShiftR), true);
-        assert_eq!(state.is_key_down(Key::Space), true);
-        assert_eq!(state.is_key_down(Key::Control), true);
-        assert_eq!(state.is_key_down(Key::Alt), true);
+        assert!(state.is_key_down(Key::ShiftL));
+        assert!(state.is_key_down(Key::ShiftR));
+        assert!(state.is_key_down(Key::Space));
+        assert!(state.is_key_down(Key::Control));
+        assert!(state.is_key_down(Key::Alt));
     }
 
     #[test]
@@ -85,34 +85,34 @@ mod tests {
     fn test_convenience() {
         let mut state = KeyboardState::default();
         // Check to ensure they are all false
-        assert_eq!(state.is_alt_down(), false);
-        assert_eq!(state.is_ctrl_down(), false);
-        assert_eq!(state.is_shift_down(), false);
+        assert!(!state.is_alt_down());
+        assert!(!state.is_ctrl_down());
+        assert!(!state.is_shift_down());
         // Set ctrl and alt to true and check
         state.set_key_state(Key::Control, true);
-        assert_eq!(state.is_ctrl_down(), true);
+        assert!(state.is_ctrl_down());
 
         state.set_key_state(Key::Alt, true);
-        assert_eq!(state.is_alt_down(), true);
+        assert!(state.is_alt_down());
 
-        assert_eq!(state.is_shift_down(), false);
+        assert!(!state.is_shift_down());
         // Set shift (via L)
         state.set_key_state(Key::ShiftL, true);
-        assert_eq!(state.is_shift_down(), true);
+        assert!(state.is_shift_down());
         // Set shift (via R and L both set)
         state.set_key_state(Key::ShiftR, true);
-        assert_eq!(state.is_shift_down(), true);
+        assert!(state.is_shift_down(), "{}", true);
         // Disable L Shift to ensure correct result with just R held
         state.set_key_state(Key::ShiftL, false);
-        assert_eq!(state.is_shift_down(), true);
+        assert!(state.is_shift_down());
         // Disable both shift keys
         state.set_key_state(Key::ShiftR, false);
-        assert_eq!(state.is_shift_down(), false);
+        assert!(!state.is_shift_down());
         // Disable alt and ctrl and check again
         state.set_key_state(Key::Control, false);
-        assert_eq!(state.is_ctrl_down(), false);
+        assert!(!state.is_ctrl_down());
 
         state.set_key_state(Key::Alt, false);
-        assert_eq!(state.is_alt_down(), false);
+        assert!(!state.is_alt_down());
     }
 }
