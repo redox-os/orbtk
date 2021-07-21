@@ -8,13 +8,17 @@ use crate::{
 
 use super::{EventBox, EventHandler};
 
+/// A structure to handle a keyboard `key-down` events
 #[derive(Event)]
 pub struct KeyDownEvent {
+    /// the keyboard event
     pub event: KeyEvent,
 }
 
+/// A structure to handle a keyboard `key-up` events
 #[derive(Event)]
 pub struct KeyUpEvent {
+    /// the keyboard event
     pub event: KeyEvent,
 }
 

@@ -1,4 +1,4 @@
-/// Internal helper state to handle current minifb mouse state.
+/// Internal helper state to handle current mouse state.
 #[derive(Copy, Clone, Default, Debug)]
 pub struct MouseState {
     pub mouse_pos: (f32, f32),
@@ -7,7 +7,7 @@ pub struct MouseState {
     pub button_right: bool,
 }
 
-/// Internal helper state to handle current minifb window state.
+/// Internal helper state to handle current window state.
 #[derive(Copy, Clone, Default, Debug)]
 pub struct WindowState {
     pub size: (usize, usize),

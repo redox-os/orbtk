@@ -1,6 +1,6 @@
 /*!
 
-This crate provides the default theme resources of OrbTks fluent theme dark and light.
+This submodule provides the default theme resources of OrbTks fluent theme dark and light.
 It provides fonts, icons and colors.
 
  */
@@ -23,7 +23,7 @@ pub const THEME_FLUENT_COLORS_DARK: &str =
 pub const THEME_FLUENT_COLORS_LIGHT: &str =
     include_str!("../../../assets/themes/fluent/theme_fluent_colors_light.ron");
 
-// /// The font resources of the default theme
+/// The font resources of the Fluent theme.
 pub const THEME_FLUENT_FONTS: &str =
     include_str!("../../../assets/themes/fluent/theme_fluent_fonts.ron");
 

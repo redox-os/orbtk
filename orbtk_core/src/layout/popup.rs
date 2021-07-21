@@ -20,6 +20,7 @@ pub struct PopupLayout {
 }
 
 impl PopupLayout {
+    /// Preset the defaults.
     pub fn new() -> Self {
         PopupLayout::default()
     }

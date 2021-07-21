@@ -1,9 +1,19 @@
 #![recursion_limit = "256"]
 
+//! This module provides the render environment.
+//!
+//! OrbTk has choosen the [tinyskia] crate to handle all 2D rendering
+//! tasks. Implemented as wrapper functions, it consumes the native
+//! rendering functions provided from tinyskia.
+//!
+//! [tinyskia]: https://docs.rs/tiny-skia
+
 use std::{any::Any, fmt};
 
+/// Pre-selects commonly used OrbTk crates and put them into scope.
 pub mod prelude;
 
+/// Handles helper utilities and global methods.
 pub use orbtk_utils::prelude as utils;
 
 mod common;
@@ -45,7 +55,7 @@ pub struct TextMetrics {
     pub height: f64,
 }
 
-// Internal font helper.
+/// Internal font helper.
 #[derive(Default, Clone, PartialEq, Debug)]
 pub struct FontConfig {
     pub family: String,
@@ -58,6 +68,7 @@ impl ToString for FontConfig {
     }
 }
 
+// Handle render pipeline tasks.
 pub trait RenderPipeline {
     /// Draws the ctx of the pipeline.
     fn draw(&self, image: &mut RenderTarget);

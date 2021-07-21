@@ -1,3 +1,5 @@
+//! This module contains the theming methods, that handle runtime based rendering of OrbTk entities.
+
 pub use self::config::*;
 pub use self::selector::*;
 pub use self::style::*;

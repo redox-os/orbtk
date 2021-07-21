@@ -19,7 +19,8 @@ where
     store.get::<T>(key, entity).map(|r| r.clone()).unwrap()
 }
 
-/// Returns the value of a property of a widget if it exists otherwise the given value.
+/// Handles the key of a given entity.
+/// It returns its property, if it does exits. If not, it returns the value of the key.
 pub fn get_property_or_value<T>(key: &str, entity: Entity, store: &ComponentStore, value: T) -> T
 where
     T: Clone + Component,
@@ -30,7 +31,7 @@ where
     value
 }
 
-/// Use to build a property or to share it.
+/// Used to build or share a property.
 #[derive(PartialEq, Debug)]
 pub enum PropertySource<P: Component + Debug> {
     Source(Entity),

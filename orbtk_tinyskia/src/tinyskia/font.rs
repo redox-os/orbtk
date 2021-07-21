@@ -43,18 +43,21 @@ impl OutlineBuilder for GlyphTracer {
     }
 }
 
+/// Structure used to hold font objects.
 #[derive(Debug, Clone)]
 pub struct Font {
     inner: rusttype::Font<'static>,
 }
 
 impl Font {
+    /// Read the font from byte stream.
     pub fn from_bytes(bytes: &'static [u8]) -> Result<Self, &'static str> {
         rusttype::Font::try_from_bytes(bytes)
             .map(|font| Font { inner: font })
             .ok_or("Could not load font from bytes")
     }
 
+    /// Measures the text width and height (given in pixels).
     pub fn measure_text(&self, text: &str, size: f64) -> (f64, f64) {
         let scale = rusttype::Scale::uniform(size as f32);
         let v_metrics = self.inner.v_metrics(scale);
@@ -77,6 +80,7 @@ impl Font {
         (width, pixel_height)
     }
 
+    /// Renders the given text object.
     pub fn render_text(
         &self,
         font_size: f64,

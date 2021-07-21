@@ -1,4 +1,6 @@
-/// Size with width, height and dirty flag.
+/// Size with width, height and dirty flag. If the dirty flag is `true`,
+/// layout tasks will handle this objects in its arrange and measure
+/// tasks.
 #[derive(Copy, Clone, PartialEq)]
 pub struct DirtySize {
     width: f64,

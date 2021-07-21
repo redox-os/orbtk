@@ -4,9 +4,12 @@ use dces::prelude::*;
 
 use crate::{prelude::*, render_object::RenderObject, tree::Tree};
 
+/// A heap allocated function consuming a `BuildContext` to return an entity.
 pub type WidgetBuildContext = Option<Box<dyn Fn(&mut BuildContext, usize) -> Entity + 'static>>;
 
-/// Used to create an entity for a widget with its properties as components.
+/// Structure used to create a widget entity inside an Entity Component Manager (ECM).
+///
+/// The entity will have assosiated components that are registered as its properties.
 #[derive(Constructor)]
 pub struct BuildContext<'a> {
     ecm: &'a mut EntityComponentManager<Tree>,
@@ -25,6 +28,7 @@ impl<'a> BuildContext<'a> {
     }
 
     /// Creates a new entity.
+    // Shouldn't that be new() ?
     pub fn create_entity(&mut self) -> Entity {
         self.ecm.create_entity().build()
     }
@@ -42,8 +46,8 @@ impl<'a> BuildContext<'a> {
             .unwrap();
     }
 
-    /// Appends a child to overlay (on the top of the main tree). If the overlay does not exists an
-    /// error will be returned.
+    /// Appends a child to overlay (on the top of the main tree). If
+    /// the overlay does not exists an error will be returned.
     pub fn append_child_to_overlay(&mut self, child: Entity) -> Result<(), String> {
         if let Some(overlay) = self.ecm.entity_store().overlay {
             self.append_child(overlay, child);
@@ -149,6 +153,9 @@ impl<'a> BuildContext<'a> {
     }
 }
 
+/// Register a property as a component.
+// if macro is adapted:
+// #[deprecated = "Use orbtk_core::widget_base::BuildContext::register_property instead"]
 pub fn register_property<P: Component>(
     ctx: &mut BuildContext,
     key: &str,

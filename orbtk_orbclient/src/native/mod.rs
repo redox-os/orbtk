@@ -1,3 +1,5 @@
+//! This module provides native OS implementations.
+
 use std::{collections::HashMap, sync::Mutex, time::Instant};
 
 lazy_static! {

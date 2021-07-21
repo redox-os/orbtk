@@ -21,7 +21,7 @@ enum Action {
     CheckMouseUpOutside { position: Point },
 }
 
-/// The `ComboBoxItemState` handles the interaction an selection of a `ComboBoxItem`.
+/// The `ComboBoxItemState` handles the interaction and selection of a `ComboBoxItem`.
 #[derive(Default, AsAny)]
 pub struct ComboBoxItemState {
     request_selection_toggle: Cell<bool>,

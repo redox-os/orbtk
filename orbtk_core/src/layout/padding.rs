@@ -21,6 +21,7 @@ pub struct PaddingLayout {
 }
 
 impl PaddingLayout {
+    /// Presets the defaults.
     pub fn new() -> Self {
         PaddingLayout::default()
     }

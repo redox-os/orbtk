@@ -2,7 +2,10 @@ use dces::prelude::*;
 
 use crate::{prelude::*, render::RenderContext2D, tree::Tree, utils::*};
 
-/// The `LayoutSystem` builds per iteration the layout of the current ui. The layout parts are calculated by the layout objects of layout widgets.
+/// The `LayoutSystem` takes care to rebuild the layout of the current
+/// `UI` on a per iteration cycle. `layout widgets` are organized in
+/// layout objects, that will in term calculate the resulting
+/// positions of it objects inside the view.
 #[derive(Constructor)]
 pub struct LayoutSystem {
     context_provider: ContextProvider,

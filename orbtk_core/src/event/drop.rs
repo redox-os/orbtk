@@ -19,8 +19,10 @@ pub struct DropTextEvent {
 
 pub type DropFn = dyn Fn(&mut StatesContext, String, Point) -> bool + 'static;
 
+/// Structure to handle drops inside the file handles.
 #[derive(IntoHandler)]
 pub struct DropFileHandler {
+    /// A reference counted handler object.
     pub handler: Rc<DropFn>,
 }
 
@@ -38,8 +40,10 @@ impl EventHandler for DropFileHandler {
     }
 }
 
+/// Structure to handle droppings inside the text handles.
 #[derive(IntoHandler)]
 pub struct DropTextHandler {
+    /// A reference counted handler object.
     pub handler: Rc<DropFn>,
 }
 

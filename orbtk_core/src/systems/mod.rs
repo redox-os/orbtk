@@ -1,5 +1,15 @@
-//! Contains all system used in OrbTk. Systems are meant as systems in OrbTks Entity Component System.
-//! These are used for event handling, building layout and drawing.
+//! Provides dedicated `system` pipelines inside OrbTk.
+//!
+//! System pipelines are modules, that handle specific tasks when
+//! iteratively walking the widget tree. Because each widget
+//! implements the `state` trait, all system modules are accessible.
+//! Pipelines are connected in a logical order. E.g. the `InitSystem`
+//! is triggered **before** the `LayoutSystem`. The `LayoutSystem` is
+//! triggerd **before** the `RenderSystem`. Handling of widget objects
+//! inside the pipelines rely on the Entity Component System
+//! ([`DCES`]).
+//!
+//! [`DCES`]: https://gitlab.redox-os.org/redox-os/dces-rust
 
 pub use self::cleanup_system::*;
 pub use self::event_state_system::*;

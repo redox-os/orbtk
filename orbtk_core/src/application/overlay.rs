@@ -20,7 +20,8 @@ use crate::{
 };
 
 widget!(
-    /// The `Overlay` is used to draw its children on the top of all other widgets in the tree.
+    /// The `Overlay` is used to draw its children on the top of all
+    /// other widgets in the tree.
     Overlay
 );
 

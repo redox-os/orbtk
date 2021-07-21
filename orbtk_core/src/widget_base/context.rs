@@ -15,10 +15,12 @@ use crate::{
 use super::WidgetContainer;
 
 /// The `Context` structure provides access to widget entities handled
-/// via the underlying EntityComponentSystem. Functions are offered to
-/// handle the position of an entity in the tree, its associated
-/// render context and theme. You can emit adaptions to the state of
-/// an entity.
+/// via the underlying Entity Component System ([DCES]). Functions are
+/// offered to handle the position of an entity in the tree, its
+/// associated render context and theme. You can emit adaptions to the
+/// state of an entity.
+///
+/// [DCES]: https://gitlab.redox-os.org/redox-os/dces-rust
 pub struct Context<'a> {
     pub(crate) ecm: &'a mut EntityComponentManager<Tree>,
     entity: Entity,
@@ -68,17 +70,18 @@ impl<'a> Context<'a> {
     }
 
     /// Switch current `Context` to context of given widget `another`.
-    /// Don't forget to change back to the original context once you are done.
+    /// Don't forget to change back to the original context once you
+    /// are done.
     pub fn change_into(&mut self, another: Entity) {
         self.entity = another;
     }
 
-    /// Access the raw window handle. Could be `None` on unsupported raw-window-handle platforms like `Redox`.
+    /// Access the raw window handle. Could be `None` on unsupported
+    /// raw-window-handle platforms like `Redox`.
     pub fn raw_window_handle(&self) -> Option<RawWindowHandle> {
         if let Some(handle) = self.provider.raw_window_handle {
             return Some(handle);
         }
-
         None
     }
 
@@ -121,12 +124,11 @@ impl<'a> Context<'a> {
         if result.is_none() {
             panic!("Context::child: Could not find child with id: {}.", id);
         }
-
         result.unwrap()
     }
 
-    /// Returns a child of the widget of the current state referenced by css `id`.
-    /// If there is no id defined, None will returned.
+    /// Returns a child of the widget of the current state referenced
+    /// by css `id`.  If there is no id defined, `None` will be returned.
     pub fn try_child<'b>(&mut self, id: impl Into<&'b str>) -> Option<WidgetContainer<'_>> {
         self.entity_of_child(id)
             .map(move |child| self.get_widget(child))
@@ -151,8 +153,9 @@ impl<'a> Context<'a> {
         Some(self.get_widget(entity))
     }
 
-    /// Returns a parent of the widget of the current state referenced by css `id`.
-    /// Panics if a parent with the given id could not be found
+    /// Returns a parent of the widget of the current state referenced
+    /// by css `id`. Panics if a parent with the given id could not
+    /// be found.
     pub fn parent_from_id<'b>(&mut self, id: impl Into<&'b str>) -> WidgetContainer<'_> {
         let mut current = self.entity;
         let id = id.into();
@@ -174,7 +177,7 @@ impl<'a> Context<'a> {
     }
 
     /// Returns a parent of the widget of the current state referenced by css `id`.
-    /// If there is no id defined None will be returned.
+    /// If there is no id defined `None` will be returned.
     pub fn try_parent_from_id<'b>(
         &mut self,
         id: impl Into<&'b str>,
@@ -191,7 +194,6 @@ impl<'a> Context<'a> {
 
             current = parent;
         }
-
         None
     }
 
@@ -203,7 +205,8 @@ impl<'a> Context<'a> {
     }
 
     /// Returns the child of the current widget.
-    /// If the index is out of the children index bounds or the widget has no children None will be returned.
+    /// If the index is out of the children index bounds or the widget
+    /// has no children `None` will be returned.
     pub fn try_child_from_index(&mut self, index: usize) -> Option<WidgetContainer<'_>> {
         if index >= self.ecm.entity_store().children[&self.entity].len() {
             return None;
@@ -238,8 +241,9 @@ impl<'a> Context<'a> {
         bctx.append_child(parent, child);
     }
 
-    /// Appends a child widget to overlay (on the top of the main tree). If the overlay does not
-    /// exists an error will be returned.
+    /// Appends a child widget to overlay (on the top of the main
+    /// tree). If the overlay does not exists an error will be
+    /// returned.
     pub fn append_child_to_overlay<W: Widget>(&mut self, child: W) -> Result<(), String> {
         if let Some(overlay) = self.ecm.entity_store().overlay {
             let bctx = &mut self.build_context();
@@ -247,7 +251,6 @@ impl<'a> Context<'a> {
             bctx.append_child(overlay, child);
             return Ok(());
         }
-
         Err("Context.append_child_to_overlay: Could not find overlay.".to_string())
     }
 
@@ -256,14 +259,14 @@ impl<'a> Context<'a> {
         self.build_context().append_child(parent, child)
     }
 
-    /// Appends a child entity to overlay (on the top of the main tree). If the overlay does not
-    /// exists an error will be returned.
+    /// Appends a child entity to overlay (on the top of the main
+    /// tree). If the overlay does not exists an error will be
+    /// returned.
     pub fn append_child_entity_to_overlay(&mut self, child: Entity) -> Result<(), String> {
         if let Some(overlay) = self.ecm.entity_store().overlay {
             self.append_child_entity_to(overlay, child);
             return Ok(());
         }
-
         Err("Context.append_child_entity_to_overlay: Could not find overlay.".to_string())
     }
 
@@ -277,14 +280,14 @@ impl<'a> Context<'a> {
         self.append_child_entity_to(self.entity, child);
     }
 
-    /// Removes a child from the current widget. If the given entity is not a child
-    /// of the given parent nothing will happen.
+    /// Removes a child from the current widget. If the given entity
+    /// is not a child of the given parent nothing will happen.
     pub fn remove_child(&mut self, child: Entity) {
         self.remove_child_from(child, self.entity);
     }
 
-    /// Removes a child from the overlay. If the given entity is not a child
-    /// of the given parent nothing will happen.
+    /// Removes a child from the overlay. If the given entity is not a
+    /// child of the given parent nothing will happen.
     pub fn remove_child_from_overlay(&mut self, child: Entity) -> Result<(), String> {
         if let Some(overlay) = self.ecm.entity_store().overlay {
             self.remove_child_from(child, overlay);
@@ -294,8 +297,9 @@ impl<'a> Context<'a> {
         Err("Context.remove_child_from_overlay: Could not find overlay.".to_string())
     }
 
-    /// Removes (recursive) a child from the given parent. If the given entity is not a child
-    /// of the given parent nothing will happen.
+    /// Removes (recursive) a child from the given parent. If the
+    /// given entity is not a child of the given parent nothing will
+    /// happen.
     pub fn remove_child_from(&mut self, remove_entity: Entity, parent: Entity) {
         let tree = &*self.ecm.entity_store();
         if let Some(parent) = find_parent(tree, remove_entity, parent) {
@@ -311,7 +315,8 @@ impl<'a> Context<'a> {
         }
     }
 
-    /// Returns a mutable reference of the children that should be removed.
+    /// Returns a mutable reference of the children that should be
+    /// removed.
     pub fn remove_widget_list(&mut self) -> &mut Vec<Entity> {
         &mut self.remove_widget_list
     }
@@ -344,14 +349,13 @@ impl<'a> Context<'a> {
                     dirty_widgets.remove(index);
                 }
             }
-
             self.remove_child_from(child, parent);
         }
     }
 
     // -- Manipulation --
 
-    /// Returns the entity of a child, identified by its id.
+    /// Returns the `entity of a child`, identified by its `id`.
     /// If there is no matching id string, `None` will be returned.
     pub fn entity_of_child<'b>(&mut self, id: impl Into<&'b str>) -> Option<Entity> {
         let id = id.into();
@@ -374,11 +378,10 @@ impl<'a> Context<'a> {
                 break;
             }
         }
-
         None
     }
 
-    /// Returns the entity of the parent referenced by css `element`.
+    /// Returns the `entity of the parent` referenced by css `element`.
     /// If there is no id defined None will be returned.
     pub fn parent_entity_by_style<'b>(&mut self, element: impl Into<&'b str>) -> Option<Entity> {
         let mut current = self.entity;
@@ -404,7 +407,6 @@ impl<'a> Context<'a> {
 
             current = parent;
         }
-
         None
     }
 
@@ -420,11 +422,10 @@ impl<'a> Context<'a> {
                 .iter()
                 .position(|e| *e == entity);
         }
-
         None
     }
 
-    /// Creates and show a new window.
+    /// Creates and shows a new window.
     pub fn show_window<F: Fn(&mut BuildContext) -> Entity + 'static>(&mut self, create_fn: F) {
         let (adapter, settings, receiver) = create_window(
             self.provider.application_name.clone(),
@@ -473,12 +474,13 @@ impl<'a> Context<'a> {
         self.get_widget(root).update_dirty(true);
     }
 
-    /// Used to localize a text. If there is no localized text for the given key or no localization service the key will be returned as result.
+    /// Localize the text property of a widget. If the given key has
+    /// no translated text for the choosen language or no localization service
+    /// has been included, the key itself will be returned as the result.
     pub fn localize_text(&self, key: String) -> String {
         if let Some(localization) = &self.provider.localization {
             return localization.borrow().text(key);
         }
-
         key
     }
 
@@ -497,7 +499,8 @@ impl<'a> Context<'a> {
         self.provider.message_adapter.send_message(message, entity);
     }
 
-    /// Gets a new sender that allows to communicate with the window shell.
+    /// Gets a new sender that allows to communicate with the window
+    /// shell.
     pub fn send_window_request(&self, request: WindowRequest) {
         self.provider
             .window_sender
@@ -548,10 +551,10 @@ pub fn find_parent(tree: &Tree, target_child: Entity, parent: Entity) -> Option<
             return parent;
         }
     }
-
     None
 }
 
+/// Finds all the `child entities` of the given parent.
 pub fn get_all_children(children: &mut Vec<Entity>, parent: Entity, tree: &Tree) {
     for child in &tree.children[&parent] {
         children.push(*child);

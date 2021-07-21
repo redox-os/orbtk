@@ -29,22 +29,22 @@ impl Rectangle {
         }
     }
 
-    /// Gets x.
+    /// Gets x coordiante.
     pub fn x(&self) -> f64 {
         self.position.x()
     }
 
-    /// Sets x.
+    /// Sets x coordinate.
     pub fn set_x(&mut self, x: impl Into<f64>) {
         self.position.set_x(x);
     }
 
-    /// Gets y.
+    /// Gets y coordinate.
     pub fn y(&self) -> f64 {
         self.position.y()
     }
 
-    /// Sets y.
+    /// Sets y coordinate.
     pub fn set_y(&mut self, y: impl Into<f64>) {
         self.position.set_y(y);
     }

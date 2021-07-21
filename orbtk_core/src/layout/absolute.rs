@@ -16,6 +16,7 @@ pub struct AbsoluteLayout {
 }
 
 impl AbsoluteLayout {
+    /// Preset the defaults.
     pub fn new() -> Self {
         AbsoluteLayout::default()
     }

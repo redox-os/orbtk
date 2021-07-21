@@ -20,6 +20,7 @@ pub struct StackLayout {
 }
 
 impl StackLayout {
+    /// Presets the defaults.
     pub fn new() -> Self {
         StackLayout::default()
     }

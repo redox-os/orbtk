@@ -1,4 +1,4 @@
-/// Is used to mark the selection of a text.
+/// Mark the selection inside a text object.
 #[derive(Copy, Clone, Default, Debug, PartialEq)]
 pub struct TextSelection {
     start: usize,

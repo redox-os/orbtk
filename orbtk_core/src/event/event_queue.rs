@@ -14,7 +14,9 @@ pub enum EventError {
 pub struct EventBox {
     event: Box<dyn Any + Send>,
     event_type: TypeId,
+    /// The source of the entity
     pub source: Entity,
+    /// The stratagy handlef for an entity
     pub strategy: EventStrategy,
 }
 
@@ -121,11 +123,13 @@ impl<'a> IntoIterator for &'a mut EventQueue {
     }
 }
 
+/// Structure elements of an event queue iterator.
 pub struct EventQueueIterator<'a> {
     event_queue: &'a mut EventQueue,
 }
 
 impl<'a> EventQueueIterator<'a> {
+    /// Create a new mutable event queue iterator.
     pub fn new(event_queue: &'a mut EventQueue) -> Self {
         EventQueueIterator { event_queue }
     }

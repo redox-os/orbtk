@@ -1,6 +1,6 @@
 use std::f64;
 
-/// Used to build a constraint, specifying additional details.
+/// Used to capture constraint properties.
 #[derive(Default)]
 pub struct ConstraintBuilder {
     width: f64,
@@ -11,7 +11,11 @@ pub struct ConstraintBuilder {
     max_height: f64,
 }
 
-/// Used to build a constraint, specifying additional details.
+/// The `ConstraintBuilder` is used to crate the constraint porperties of an entity.
+///
+/// Constraints will provide properties that are used to determine the
+/// size requirements of an entity. It will store `minimum` and
+/// `maximim` values for its height and width, next to the current values.
 impl ConstraintBuilder {
     /// Creates a new `ConstraintBuilder` with default values.
     pub fn new() -> Self {
@@ -88,7 +92,7 @@ impl ConstraintBuilder {
     }
 }
 
-/// `Constraint` describes a box constraint.
+/// `Constraint` describes the constraints properties of a `box` entity.
 #[derive(Copy, Clone, Debug, PartialEq)]
 pub struct Constraint {
     width: f64,
@@ -112,6 +116,11 @@ impl Default for Constraint {
     }
 }
 
+/// The `Constraint` is used to manage the constraint porperties of an entity.
+///
+/// Constraints will provide properties that are used to determine the
+/// size requirements of an entity. It will store `minimum` and
+/// `maximim` values for its height and width, next to the current values.
 impl Constraint {
     /// Returns a constraint builder.
     #[inline]
@@ -238,7 +247,10 @@ impl Constraint {
         self.set_max_height(max_height);
     }
 
-    /// Adjust the given `size` to match the constraint.
+    /// Adjust the given `size`.
+    ///
+    /// Asures that size will respect the defined `box` values for min
+    /// and max constraints. The value will be adapted if outside of a bound.
     pub fn perform(&self, size: (f64, f64)) -> (f64, f64) {
         let size = {
             let width = if self.width > 0.0 { self.width } else { size.0 };
@@ -252,7 +264,10 @@ impl Constraint {
         };
 
         (
+            // check `width` value to meet the constraint requirement
             constrain(size.0, self.min_width, self.max_width, self.width),
+
+            // check `height` value to meet the constraint requirement
             constrain(size.1, self.min_height, self.max_height, self.height),
         )
     }

@@ -730,7 +730,7 @@ impl State for TextBehaviorState {
 
 widget!(
     /// The TextBehavior widget shares the same logic of handling text input between
-    /// tex-related widgets.
+    /// text-related widgets.
     ///
     /// Attaching to a widget makes it able to handle text input like:
     /// * input characters by keyboard
@@ -740,19 +740,20 @@ widget!(
     /// * delete characters by pressing the Backspace or the Delete key
     /// * run on_activate() callback on pressing the Enter key
     ///
-    /// TextBehavior needs the following prerequisites to able to work:
+    /// Following prerequisties must be met and presented to the TextBehavior
+    /// to make it work correctly:
     /// * a `cursor`: the [`Entity`] of a [`Cursor`] widget
     /// * a `target`: the [`Entity`] of the target widget
     /// * a `text_block`: the [`Entity`] of the [`TextBlock`] widget
     ///
-    /// * and must inherit the following properties from its target:
-    ///     * focused
-    ///     * font
-    ///     * font_size
-    ///     * lose_focus_on_activation
-    ///     * request_focus
-    ///     * text
-    ///     * selection
+    /// As well the widget must inherit the following properties from its target:
+    /// * focused
+    /// * font
+    /// * font_size
+    /// * lose_focus_on_activation
+    /// * request_focus
+    /// * text
+    /// * selection
     ///
     /// # Example
     ///

@@ -1,3 +1,5 @@
+//! This module pre-selects commonly used OrbTk crates and put them into scope.
+
 // std
 pub use std::rc::Rc;
 

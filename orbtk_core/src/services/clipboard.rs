@@ -1,6 +1,7 @@
 /// Clipboard leads you read and store a value.
 ///
-/// To access the value of systems clipboard it must be used in combination with a window shell.
+/// To access the value of systems clipboard it must be used in
+/// combination with a window shell.
 ///
 /// # Examples
 /// ```

@@ -15,6 +15,7 @@ pub static STYLE_BTN: &str = "numeric_box_button";
 
 // --- KEYS --
 
+/// Enumeration of valid input actions
 pub enum InputAction {
     Inc,
     Dec,
@@ -23,6 +24,7 @@ pub enum InputAction {
     Focus,
 }
 
+/// Used to handle the numeric box status elements.
 #[derive(Default, AsAny)]
 pub struct NumericBoxState {
     pub action: Option<InputAction>,

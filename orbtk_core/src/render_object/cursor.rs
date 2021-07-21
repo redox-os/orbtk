@@ -4,7 +4,7 @@ use crate::{
     utils::{Brush, Point, Rectangle, Thickness},
 };
 
-/// The CursorRenderObject is used to render the `Cursor` widget.
+/// The `CursorRenderObject` is used to render the `Cursor` widget.
 ///
 /// [`Cursor`]: ../../widgets/struct.Cursor.html
 #[derive(Debug, IntoRenderObject)]

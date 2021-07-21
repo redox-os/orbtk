@@ -13,13 +13,17 @@ crate::trigger_event!(
     on_activate
 );
 
+/// Structure to handle events that occures, if selection is changed.
 #[derive(Clone, Event)]
 pub struct SelectionChangedEvent(pub Entity, pub Vec<usize>);
 
+/// Window handler Function
 pub type WindowHandlerFn = dyn Fn(&mut StatesContext, Entity, Vec<usize>) + 'static;
 
+/// Structure for the handler, that is used if selection is changed.
 #[derive(IntoHandler)]
 pub struct SelectionChangedEventHandler {
+    /// A reference counted handler.
     pub handler: Rc<WindowHandlerFn>,
 }
 
@@ -38,6 +42,7 @@ impl EventHandler for SelectionChangedEventHandler {
     }
 }
 
+/// Methods for the `SelectionChangedHandler` type.
 pub trait SelectionChangedHandler: Sized + Widget {
     /// Inserts a click handler.
     fn on_selection_changed<H: Fn(&mut StatesContext, Entity, Vec<usize>) + 'static>(
@@ -50,15 +55,17 @@ pub trait SelectionChangedHandler: Sized + Widget {
     }
 }
 
+/// Structure to handle event changes, if a property of a widget is updated.
 #[derive(Clone, Event)]
-/// This event occurs when a property of a widget is updated.
 pub struct ChangedEvent(pub Entity, pub String);
 
 /// Used to define a property changed callback.
 pub type ChangedHandlerFn = dyn Fn(&mut StatesContext, Entity) + 'static;
 
+/// Structure that defines elements used to handle changed events via an event handler.
 #[derive(IntoHandler, Default)]
 pub struct ChangedEventHandler {
+    /// A handler acting on a hashmap
     pub handlers: HashMap<String, Rc<ChangedHandlerFn>>,
 }
 
@@ -84,6 +91,7 @@ impl EventHandler for ChangedEventHandler {
     }
 }
 
+/// Methods for the `ChangedHandler` type.
 pub trait ChangedHandler: Sized + Widget + 'static {
     /// Register a on property changed handler.
     fn on_changed<H: Fn(&mut StatesContext, Entity) + 'static>(

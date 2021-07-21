@@ -4,10 +4,12 @@ pub enum Visibility {
     /// The widget is visible.
     Visible,
 
-    /// The widget will not be displayed but it takes its space in the layout.
+    /// The widget will not be displayed, isn't taken into account in the
+    /// layout pipeline, thus doesn't consume memory in the render buffer.
     Hidden,
 
-    /// The widget will not be displayed but it doesn't takes space in the layout.
+    /// The widget isn't displayed but `is` rendered and thus consume
+    /// memory in the layout.
     Collapsed,
 }
 

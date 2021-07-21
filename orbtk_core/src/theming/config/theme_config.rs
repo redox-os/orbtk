@@ -8,7 +8,8 @@ use crate::theming::config::StyleConfig;
 pub static BASE_STYLE: &str = "base";
 pub static RESOURCE_KEY: &str = "$";
 
-// Used to store and read properties that could be requested by a given property name and a selector.
+/// Used to store and read properties that could be requested by a
+/// given property name and a selector.
 #[derive(Default, Clone, Debug, Serialize, Deserialize)]
 #[serde(rename = "Theme")]
 pub struct ThemeConfig {
@@ -19,8 +20,10 @@ pub struct ThemeConfig {
 }
 
 impl<'a> ThemeConfig {
-    /// Extends the given theme with a other theme. Replaces the current name with name of other.
-    /// If a style with the same key is on other, it will replace the style in the current theme.
+    /// Extends the given theme with another theme. Replaces the
+    /// current name with the new choosen name `other`.  If `other`
+    /// contains a style with the same key entry, this key will be
+    /// replaced in the current theme.
     pub fn extend(mut self, other: ThemeConfig) -> Self {
         let mut other = other;
 

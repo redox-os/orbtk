@@ -1,5 +1,6 @@
 use crate::{api::prelude::*, proc_macros::*, themes::theme_orbtk::*, Stack};
 
+/// The `ItemsWidgetState` handles the state for items drawer objects.
 #[derive(Default, AsAny)]
 pub struct ItemsWidgetState {
     builder: WidgetBuildContext,

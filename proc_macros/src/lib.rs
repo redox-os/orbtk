@@ -5,6 +5,7 @@ use proc_macro2::Span;
 use quote::quote;
 use syn::{parse_macro_input, DataStruct, DeriveInput, Ident, Meta, NestedMeta};
 
+/// Derive an orbtk pipline. It returns a token stream object.
 #[proc_macro_derive(Pipeline)]
 pub fn derive_pipeline(input: TokenStream) -> TokenStream {
     let input = parse_macro_input!(input as DeriveInput);
@@ -28,6 +29,7 @@ pub fn derive_pipeline(input: TokenStream) -> TokenStream {
     TokenStream::from(gen)
 }
 
+/// Derive an orbtk as_any type. It returns a token stream object.
 #[proc_macro_derive(AsAny)]
 pub fn derive_as_any(input: TokenStream) -> TokenStream {
     let input = parse_macro_input!(input as DeriveInput);
@@ -49,6 +51,7 @@ pub fn derive_as_any(input: TokenStream) -> TokenStream {
     TokenStream::from(gen)
 }
 
+/// Derive into an orbtk render object. It returns a token stream object.
 #[proc_macro_derive(IntoRenderObject)]
 pub fn derive_into_render_object(input: TokenStream) -> TokenStream {
     let input = parse_macro_input!(input as DeriveInput);
@@ -66,6 +69,7 @@ pub fn derive_into_render_object(input: TokenStream) -> TokenStream {
     TokenStream::from(gen)
 }
 
+/// Derive into an orbtk layout object. It returns a token stream object.
 #[proc_macro_derive(IntoLayout)]
 pub fn derive_into_layout(input: TokenStream) -> TokenStream {
     let input = parse_macro_input!(input as DeriveInput);
@@ -83,6 +87,7 @@ pub fn derive_into_layout(input: TokenStream) -> TokenStream {
     TokenStream::from(gen)
 }
 
+/// Derive into an orbtk event object. It returns a token stream object.
 #[proc_macro_derive(Event)]
 pub fn derive_event(input: TokenStream) -> TokenStream {
     let input = parse_macro_input!(input as DeriveInput);
@@ -96,6 +101,7 @@ pub fn derive_event(input: TokenStream) -> TokenStream {
     TokenStream::from(gen)
 }
 
+/// Derive into an orbtk handler object. It returns a token stream object.
 #[proc_macro_derive(IntoHandler)]
 pub fn derive_into_handler(input: TokenStream) -> TokenStream {
     let input = parse_macro_input!(input as DeriveInput);
@@ -113,6 +119,7 @@ pub fn derive_into_handler(input: TokenStream) -> TokenStream {
     TokenStream::from(gen)
 }
 
+/// Derive into an orbtk widget context object. It returns a token stream object.
 #[proc_macro_derive(WidgetCtx, attributes(property))]
 pub fn derive_widget_ctx(input: TokenStream) -> TokenStream {
     let input = parse_macro_input!(input as DeriveInput);

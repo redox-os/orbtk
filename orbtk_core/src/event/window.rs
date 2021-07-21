@@ -4,6 +4,7 @@ use super::*;
 
 use crate::{proc_macros::*, widget_base::*};
 
+/// The enumeration of valid window events.
 #[derive(Clone, Event)]
 pub enum WindowEvent {
     Resize { width: f64, height: f64 },
@@ -13,8 +14,10 @@ pub enum WindowEvent {
 
 pub type WindowHandlerFn = dyn Fn(&mut StatesContext, WindowEvent) -> bool + 'static;
 
+/// The structure handling windows events.
 #[derive(IntoHandler)]
 pub struct WindowEventHandler {
+    /// A reference counted handler.
     pub handler: Rc<WindowHandlerFn>,
 }
 

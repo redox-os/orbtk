@@ -38,7 +38,8 @@ impl State for SelectionBehaviorState {
 }
 
 widget!(
-    /// The `SelectionBehavior` widget is used to handle internal the pressed behavior of a widget.
+    /// The `SelectionBehavior` widget will take care to handle the actions,
+    /// that should be triggered if text regions are marked or selected.
     ///
     /// **style:** `check-box`
     SelectionBehavior<SelectionBehaviorState>: MouseHandler {
