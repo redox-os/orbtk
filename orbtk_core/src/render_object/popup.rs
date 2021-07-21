@@ -1,6 +1,6 @@
 use crate::{
     render_object::*,
-    utils::{Point, Rectangle},
+    utils::Point,
 };
 
 /// The target of the popup, given as an entity or as fixed point coordinate.
@@ -15,7 +15,7 @@ pub enum PopupTarget {
 
 impl Default for PopupTarget {
     fn default() -> Self {
-	Self::Point(Point::new(0.0, 30.0))
+	Self::Point(Point::new(0.0, 0.0))
     }
 }
 
@@ -49,10 +49,10 @@ impl IntoPropertySource<PopupTarget> for Point {
 /// between the selection box and the drop down popup.
 #[derive(Clone, Debug, PartialEq)]
 pub enum Placement {
-    Top(f64),
     Bottom(f64),
     Left(f64),
     Right(f64),
+    Top(f64),
 }
 
 impl Default for Placement {
@@ -71,44 +71,60 @@ impl Placement {
 	}
     }
 
+    /// Returns the placement name.
+    pub fn get_name(&self, index: i32) -> String {
+	match index {
+	    0 => "Bottom".to_string(),
+	    1 => "Left".to_string(),
+	    2 => "Right".to_string(),
+	    3 => "Top".to_string(),
+	    _ => {
+		eprintln!("popup: placement variant with index {} not coverd!",
+			  index);
+		std::process::exit(1);
+	    }
+	}
+    }
+
+    /// Returns the placement index.
+    pub fn get_index(&self, string: &str) -> u32  {
+	match string {
+	    "Bottom" => 0,
+	    "Left" => 1,
+	    "Right" => 2,
+	    "Top" => 3,
+	    _ => {
+		eprintln!("popup: placement variant {} not coverd!",
+			  string);
+		std::process::exit(1);
+	    }
+	}
+    }
+
     /// Place the popup widget relative to the `top` of its parent target.
     /// An optional `margin` adds a distance between popup and parent target.
     // before the function was called into_top()
-    pub fn to_top(self) -> Self {
+    pub fn top(self) -> Self {
 	Self::Top(self.get_margin())
     }
 
     /// Place the popup widget relative to the `bottom` of its parent target.
     /// An optional `margin` adds a distance between popup and parent target.
-    pub fn to_bottom(self) -> Self {
+    pub fn bottom(self) -> Self {
 	Self::Bottom(self.get_margin())
     }
     /// Place the popup widget relative to the left of its parent target.
     /// An optional `margin` adds a distance between popup and parent target.
-    pub fn to_left(self) -> Self {
+    pub fn left(self) -> Self {
 	Self::Left(self.get_margin())
     }
     /// Place the popup widget relative to the `right` of its parent target.
     /// An optional `margin` adds a distance between popup and parent target.
-    pub fn to_right(self) -> Self {
+    pub fn right(self) -> Self {
 	Self::Right(self.get_margin())
     }
 }
 
-/*
-impl From<usize> for Placement {
-    fn from(index: usize) -> Self {
-	match entity
-	{
-	    0 => Self::Top,
-	    1 => Self::Botton,
-	    2 => Self::Left,
-	    3 => Self::Right,
-	    _ => panic!()
-	}
-    }
-}
-*/
 into_property_source!(Placement);
 
 /// The `PopupRenderObject` is used to render the contents of a `Popup` widget inside a recangle.
