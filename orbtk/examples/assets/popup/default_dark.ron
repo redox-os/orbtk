@@ -1,0 +1,45 @@
+Theme (
+    styles: {
+	"combo_box_form": (
+	    base: "combo_box",
+	    properties: {
+		"width": 100,
+	    },
+	),
+	"container_form": (
+	    base: "container",
+	    properties: {
+		"background": "#0000FF",
+		"border_brush": "$CONTAINER_BORDER",
+		"border_radius": 3,
+		"border_width": 2,
+		"padding": 8,
+	    },
+	),
+	"popup_form": (
+	    //base: "popup",
+	    properties: {
+		"background": "#FFFFFF",
+		"border_brush": "#00FF00",
+		"border_radius": 3,
+		"border_width": 2,
+		"padding": 8,
+	    },
+	),
+	"popup_text_block": (
+	    //base: "popup",
+	    properties: {
+		"h_align": "center",
+		"v_align": "top",
+		"foreground": "#000000",
+	    },
+	),
+	"target_text_block": (
+	    base: "small_text",
+	    properties: {
+		"h_align": "center",
+		"v_align": "center",
+	    },
+	),
+    }
+)
