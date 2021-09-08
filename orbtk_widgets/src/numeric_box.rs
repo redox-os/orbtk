@@ -4,7 +4,10 @@ use rust_decimal::prelude::*;
 use super::behaviors::MouseBehavior;
 
 use crate::{
-    api::prelude::*, prelude::*, proc_macros::*, shell::prelude::*,
+    api::prelude::*,
+    prelude::*,
+    proc_macros::*,
+    shell::prelude::*,
     // themes::theme_orbtk::*,
 };
 
@@ -22,7 +25,7 @@ pub enum InputAction {
     ChangeByMouseScroll(Point),
     Dec,
     Focus,
-    Inc
+    Inc,
 }
 
 /// Handle the numeric box status elements.

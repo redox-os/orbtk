@@ -335,7 +335,13 @@ impl Template for ButtonView {
 type List = Vec<String>;
 
 // Represents an overview of list widgets like ListView, ItemsWidget and ComboBox.
-widget!(ItemsView { items: List });
+widget!(ItemsView {
+    /// Active seleced index of combo box.
+    selected_index: i32,
+
+    /// Valid list of items.
+    items: List
+});
 
 impl Template for ItemsView {
     fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {

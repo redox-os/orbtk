@@ -5,33 +5,37 @@ use std::{
 
 use super::behaviors::{MouseBehavior, SelectionBehavior};
 
-use crate::{api::prelude::*, prelude::*, proc_macros::*, themes::theme_orbtk::*};
-
-// --- KEYS --
-
-static CONTAINER: &str = "container";
-static ITEMS_PANEL: &str = "items_panel";
-
-// --- KEYS --
+use crate::{
+    api::prelude::*, prelude::*, proc_macros::*, shell::prelude::*, themes::theme_orbtk::*,
+};
 
 type SelectedItem = Option<Entity>;
 
-#[derive(Debug, Copy, Clone)]
-enum Action {
-    CheckMouseUpOutside { position: Point },
-}
+// /// The `ComboBoxItemAction` represent actions that can be sent to `ComboBoxItemState`.
+// #[derive(Debug, Copy, Clone)]
+// enum ComboBoxItemAction {
+//     // react on MouseUp event, if triggered outside the ComboBox bounds
+//     _CheckMouseUpOutside {position: Point},
+
+//     // toggle the selection popup
+//     _ToggleSelection {position: Point},
+// }
 
 /// The `ComboBoxItemState` handles the interaction and selection of a `ComboBoxItem`.
-#[derive(Default, AsAny)]
+#[derive(AsAny, Default)]
 pub struct ComboBoxItemState {
+    //action: Option<ComboBoxItemAction>,
     request_selection_toggle: Cell<bool>,
     index: usize,
-    selected_container: Entity,
+    combobox_selector: Entity,
     combo_box: Entity,
-    // ugly work around for item builder context clone, todo make it better 😉
+    // ugly work around for item builder context clone.
+    // TODO: improve the used algo 😉
     builder: Option<Arc<RefCell<dyn Fn(&mut BuildContext, usize) -> Entity + 'static>>>,
 }
 
+/// The `ComboBoxItemState` handles the selection of a `ComboBoxItem`
+/// as well as the associated interation methods.
 impl ComboBoxItemState {
     fn toggle_selection(&self) {
 	self.request_selection_toggle.set(true);
@@ -109,7 +113,7 @@ impl State for ComboBoxItemState {
 }
 
 widget!(
-    /// The `ComboBoxItem` describes an item inside of a `ComboBox`.
+    /// The `ComboBoxItem` describes an item inside of a `ComboBox` popup.
     ///
     /// **style:** `combo_box_item``
     ComboBoxItem<ComboBoxItemState>: MouseHandler {
@@ -154,6 +158,8 @@ widget!(
     }
 );
 
+/// Method definitions, that react on any given state change inside
+/// the `ComboBoxItem` widget.
 impl ComboBoxItem {
     fn combobox_selector(mut self, combobox_selector: impl Into<Entity>) -> Self {
 	self.state_mut().combobox_selector = combobox_selector.into();
@@ -216,25 +222,43 @@ impl Template for ComboBoxItem {
     }
 }
 
-/// The `ComboBoxState` is used to manipulate the thumb position
-/// inside the popup widget, that is annotated with a slider.
-#[derive(Default, AsAny)]
-pub struct ComboBoxState {
-    popup: Entity,
-    action: Option<Action>,
-    builder: Option<Arc<RefCell<dyn Fn(&mut BuildContext, usize) -> Entity + 'static>>>,
-    count: usize,
-    items_panel: Entity,
-    selected_container: Entity,
+/// The `ComboBoxAction` represent actions that can be sent to `ComboBoxState`.
+#[derive(Clone, Debug)]
+enum ComboBoxAction {
+    // close the selection popup, if MouseUp event is triggered
+    // outside the ComboBox bounds
+    CloseSelection { position: Point },
+
+    // open the selection popup, if MouseDown event is triggered
+    // inside the ComboBox bounds
+    OpenSelection { position: Point },
+
+    // handle selection of popup, if Keyboard event is triggered
+    KeyPressed { key_event: KeyEvent },
 }
 
-impl ComboBoxState {
-    fn _action(&mut self, action: impl Into<Option<ComboBoxAction>>) {
-	self.action = action.into();
-    }
+/// The `ComboBoxState` is used to manipulate the thumb position
+/// inside the popup widget. When user triggers the open event, the
+/// ComboBox widget is annotated with a slider.
+///
+/// Note: The slider is rendered visible, if the number of selectable
+/// items exceed the available size of the popup widget bounds.
+#[derive(AsAny, Default)]
+pub struct ComboBoxState {
+    action: Option<ComboBoxAction>,
+    builder: Option<Arc<RefCell<dyn Fn(&mut BuildContext, usize) -> Entity + 'static>>>,
+    count: usize,
+    items_popup: Entity,
+    popup: Entity,
+    combobox_selector: Entity,
+}
 
-    // closes the popup on mouse up outside of the combobox and popup.
-    fn close_popup(&mut self, ctx: &mut Context, p: Point) {
+/// Method definitions, that react on any given state change inside
+/// the `ComboBox` widget.
+impl ComboBoxState {
+    // closes the popup if `mouse up` is raised outside of the
+    // Combobox related bounds.
+    fn close_selection(&mut self, ctx: &mut Context, p: Point) {
 	let combo_box_position = ctx.widget().clone::<Point>("position");
 	let combo_box_bounds = ctx.widget().clone::<Rectangle>("bounds");
 
@@ -257,8 +281,7 @@ impl ComboBoxState {
 	// upper left point of our ComboBox selector
 	let combo_box_position = ctx.widget().clone::<Point>("position");
 	let combo_box_bounds = ctx.widget().clone::<Rectangle>("bounds");
-	let combo_box_global_bounds =
-	     Rectangle::new(combo_box_position, combo_box_bounds.size());
+        let combo_box_global_bounds = Rectangle::new(combo_box_position, combo_box_bounds.size());
 
 	//let combo_box_placement = ctx.widget().clone::<Placement>("placement");
 
@@ -285,7 +308,7 @@ impl State for ComboBoxState {
 
 	ctx.widget()
 	    .get_mut::<Constraint>("constraint")
-	    .set_width(combo_box_width);
+	   .set_width(combo_box_width);
 
 	ctx.get_widget(self.popup).set("open", false);
 	ctx.get_widget(self.popup)
@@ -391,7 +414,7 @@ impl State for ComboBoxState {
 	    return;
 	}
 
-	if let Some(ComboBoxAction::CloseSelection { position }) = self.action {
+	if let Some(ComboBoxAction::CloseSelection { position }) =  self.action {
 	    ComboBoxState::close_selection(self, ctx, position);
 	}
     }
@@ -401,10 +424,19 @@ impl State for ComboBoxState {
     }
 }
 
-// todo use code of list view item, by create combobox item insert entity of popup container
+// TODO: use code of list view item, by creating a combobox item insert entity of popup container
 
 widget!(
-    /// The `ComboBox` represents an selection widget with a drop-down list.
+    /// The `ComboBox` represents a selection widget with a drop-down box.
+    ///
+    /// The selection box itself presents the active selected item.
+    /// You may activate the drop-down popup by activating a handler
+    /// (Keyboard, Mouse). Select a new item from the presented item
+    /// list. Once the active selection changes, the index pointing
+    /// to the selected item is updated and the item list is
+    /// collapsed. The drop-down box is annotated with a slider.
+    /// Note: The slider is rendered visible, if the number of selectable
+    /// items exceed the available size of the popup widget bounds.
     ///
     /// **style:** `combo_box`
     ComboBox<ComboBoxState>: KeyDownHandler, MouseHandler {
@@ -484,7 +516,7 @@ widget!(
 );
 
 impl ComboBox {
-    /// Define the template build function for the content of the ComboBoxItems.
+    /// Define the build function used to create the content of the ComboBoxItems.
     pub fn items_builder<F: Fn(&mut BuildContext, usize) -> Entity + 'static + Clone>(
 	mut self,
 	builder: F,

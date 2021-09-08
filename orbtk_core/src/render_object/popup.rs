@@ -1,7 +1,4 @@
-use crate::{
-    render_object::*,
-    utils::Point,
-};
+use crate::{render_object::*, utils::Point};
 
 /// The target of the popup, given as an entity or as fixed point coordinate.
 #[derive(Clone, Debug, PartialEq)]
@@ -74,15 +71,14 @@ impl Placement {
 	    6 => "TopLeft".to_string(),
 	    7 => "TopRight".to_string(),
 	    _ => {
-		eprintln!("popup: placement variant with index {} not coverd!",
-			  index);
+		eprintln!("popup: placement variant with index {} not coverd!", index);
 		std::process::exit(1);
 	    }
 	}
     }
 
     /// Returns the placement index.
-    pub fn get_index(&self, string: &str) -> u32  {
+    pub fn get_index(&self, string: &str) -> u32 {
 	match string {
 	    "Bottom" => 0,
 	    "BottomLeft" => 1,
@@ -93,8 +89,7 @@ impl Placement {
 	    "TopLeft" => 6,
 	    "TopRight" => 7,
 	    _ => {
-		eprintln!("popup: placement variant {} not coverd!",
-			  string);
+		eprintln!("popup: placement variant {} not coverd!", string);
 		std::process::exit(1);
 	    }
 	}

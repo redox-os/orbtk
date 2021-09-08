@@ -2,54 +2,54 @@
 Theme (
     styles: {
         // base: "combo_box",
-	"combo_box": (
-	    properties: {
-		"width": 150,
-	    },
-	),
-	"container_form": (
-	    base: "container",
-	    properties: {
-		"background": "#0000FF",
-		"border_brush": "$CONTAINER_BORDER",
-		"border_radius": 3,
-		"border_width": 2,
+        "combo_box": (
+            properties: {
+                "width": 150,
+            },
+        ),
+        "container_form": (
+            base: "container",
+            properties: {
+                "background": "#0000FF",
+                "border_brush": "$CONTAINER_BORDER",
+                "border_radius": 3,
+                "border_width": 2,
                 "height": 200,
                 "padding": 16,
                 "width": 200,
-	    },
-	),
-	"popup_form": (
-	    base: "popup",
-	    properties: {
-		"background": "#FFFFFF",
-		"border_brush": "#000000",
-		"border_radius": 12,
-		"border_width": 5,
+            },
+        ),
+        "popup_form": (
+            base: "popup",
+            properties: {
+                "background": "#FFFFFF",
+                "border_brush": "#000000",
+                "border_radius": 12,
+                "border_width": 5,
                 "margin": 8,
                 "padding": 0,
-	    },
-	),
-	"popup_text_block": (
-	    base: "popup",
-	    properties: {
-		"h_align": "center",
-		"v_align": "top",
-		"foreground": "#000000",
-	    },
-	),
+            },
+        ),
+        "popup_text_block": (
+            base: "popup",
+            properties: {
+                "h_align": "center",
+                "v_align": "top",
+                "foreground": "#000000",
+            },
+        ),
         "popup_numeric_box": (
             base: "numeric_box",
             properties: {
                 "width": 100,
             },
         ),
-	"target_text_block": (
-	    base: "small_text",
-	    properties: {
-		"h_align": "center",
-		"v_align": "center",
-	    },
-	),
+        "target_text_block": (
+            base: "small_text",
+            properties: {
+                "h_align": "center",
+                "v_align": "center",
+            },
+        ),
     }
 )
