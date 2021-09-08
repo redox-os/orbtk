@@ -1,4 +1,4 @@
-// Default theme of Orbtk.
+// Default theme of OrbTk.
 Theme (
     styles: {
 	// -- [START] Base --
@@ -162,13 +162,14 @@ Theme (
 	"button_small": (
 	    base: "button",
 	    properties: {
+                "background": "transparent",
 		"border_radius": 0,
-		"icon_brush": "$CONTENT_FOREGROUND",
 		"font_size": "$ICON_SIZE_12",
-		"background": "transparent",
 		"height": 14,
-		"spacing": 0,
+                "icon_brush": "$CONTENT_FOREGROUND",
+                "margin": 1,
 		"padding": 0,
+                "spacing": 0,
 	    },
 	),
 	"button_square": (
@@ -306,13 +307,46 @@ Theme (
 	    ]
 	),
 	"numeric_box": (
-	    base: "text_box",
+            /* base: "text_box", */
 	    properties: {
+                "background": "$CONTAINER_BACKGROUND",
+                "border_brush": "$CONTAINER_BORDER",
+                "border_radius": 2,
+                "border_width": 1,
 		"foreground": "$CONTENT_FOREGROUND",
+                "height": 32,
 		"icon_up": "$MD_KEYBOARD_ARROW_UP",
 		"icon_down": "$MD_KEYBOARD_ARROW_DOWN",
+                "padding": 0,
+            },
+            states: [
+                (
+                    key: "not_empty",
+                    properties: {
+                        "foreground": "$CONTENT_FOREGROUND",
 	    }
 	),
+                (
+                    key: "hover",
+                    properties: {
+                        "background": "$TEXT_BOX_HOVER_BACKGROUND"
+                    }
+                ),
+                (
+                    key: "focused",
+                    properties: {
+                        "border_brush": "$TEXT_BOX_FOCUSED_BORDER",
+                    }
+                ),
+                (
+                    key: "not_empty_focused",
+                    properties: {
+                        "foreground": "$CONTENT_FOREGROUND",
+                        "border_brush": "$TEXT_BOX_FOCUSED_BORDER",
+                    }
+                ),
+            ]
+        ),
 
 	// -- [END] (Numeric)TextBox --
 
