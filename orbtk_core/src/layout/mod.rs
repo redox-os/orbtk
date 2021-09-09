@@ -25,7 +25,7 @@ mod stack;
 ///
 /// ![cheat-sheet: layout constraints][layout_constraints]
 ///
-/// [layout_constraints]: https://raw.githubusercontent.com/rzerres/orbtk/wip_documentation/orbtk/images/layout_constraints.svg
+/// [layout_constraints]: https://raw.githubusercontent.com/rzerres/orbtk/wip_documentation/orbtk/images/layout_constraints.png
 // /// [layout_constraints.svg]: https://raw.githubusercontent.com/redox-os/orbtk/develop/orbtk/images/layout_constraints.svg
 
 pub trait Layout: Any {
