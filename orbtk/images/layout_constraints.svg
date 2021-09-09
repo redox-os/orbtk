@@ -7,7 +7,7 @@
    id="svg8"
    inkscape:version="1.1 (c4e8f9ed74, 2021-05-24)"
    sodipodi:docname="layout_constraints.svg"
-   inkscape:export-filename="/data/development/orbtk-book/src/img/Structure_Margin_Padding.png"
+   inkscape:export-filename="/data/development/orbtk/orbtk/images/layout_constraints.png"
    inkscape:export-xdpi="96"
    inkscape:export-ydpi="96"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
@@ -733,11 +733,11 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.46375"
-     inkscape:cx="400"
-     inkscape:cy="228.57143"
+     inkscape:zoom="1.4601755"
+     inkscape:cx="366.39431"
+     inkscape:cy="94.509187"
      inkscape:document-units="mm"
-     inkscape:current-layer="layer5"
+     inkscape:current-layer="g11106"
      inkscape:document-rotation="0"
      showgrid="true"
      showguides="true"
@@ -745,8 +745,8 @@
      inkscape:snap-grids="false"
      inkscape:snap-page="false"
      inkscape:snap-text-baseline="false"
-     inkscape:window-width="1280"
-     inkscape:window-height="619"
+     inkscape:window-width="2560"
+     inkscape:window-height="1339"
      inkscape:window-x="0"
      inkscape:window-y="32"
      inkscape:window-maximized="1"
@@ -767,7 +767,7 @@
        orientation="0,914.59356"
        id="guide1367" />
     <sodipodi:guide
-       position="211.98562,130.3283"
+       position="211.50268,80.099677"
        orientation="-399.904,0"
        id="guide1369" />
     <sodipodi:guide
@@ -790,12 +790,26 @@
      inkscape:groupmode="layer"
      id="layer4"
      inkscape:label="Background"
-     style="display:inline" />
+     style="display:inline">
+    <rect
+       style="display:inline;vector-effect:none;fill:#000000;fill-opacity:0.13395;fill-rule:evenodd;stroke:#000000;stroke-width:0.212;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:0.848, 0.848;stroke-dashoffset:0;stroke-opacity:1"
+       id="Frame_Margin"
+       width="210.39"
+       height="97.423935"
+       x="0.66511488"
+       y="7.4462857"
+       rx="0"
+       ry="0"
+       inkscape:label="Frame_Margin"
+       inkscape:export-filename="/data/development/orbtk-book/src/img/layout_constraints.png"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96" />
+  </g>
   <g
      inkscape:groupmode="layer"
      id="layer2"
      inkscape:label="Widget_Margin"
-     style="display:none">
+     style="display:inline">
     <g
        id="g1835"
        transform="translate(-52.840344,81.568538)"
@@ -823,7 +837,7 @@
      inkscape:groupmode="layer"
      id="layer3"
      inkscape:label="Widget_Entity"
-     style="display:none">
+     style="display:inline">
     <text
        xml:space="preserve"
        style="font-size:5.64444px;line-height:125%;font-family:mdl2;-inkscape-font-specification:'mdl2, Normal';letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;fill:none;stroke:#000000;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
@@ -859,7 +873,10 @@
     <g
        id="g11106"
        transform="matrix(0.91054546,0,0,1.0000001,-28.742779,-64.480337)"
-       style="stroke-width:1.04797">
+       style="stroke-width:1.04797"
+       inkscape:export-filename="/data/development/orbtk-book/src/img/layout_constraints.png"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96">
       <circle
          id="path1994"
          style="display:inline;fill:#000000;stroke:#000000;stroke-width:0.277275"
@@ -891,18 +908,7 @@
       <g
          id="g1204"
          transform="matrix(1,0,0,0.90974455,0,63.575872)"
-         style="display:inline;stroke-width:1.09872">
-        <rect
-           style="vector-effect:none;fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#000000;stroke-width:0.23293;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:0.931719, 0.931719;stroke-dashoffset:0;stroke-opacity:1"
-           id="Frame_Margin"
-           width="233.12666"
-           height="106.57688"
-           x="32.966991"
-           y="11.523225"
-           rx="0"
-           ry="0"
-           inkscape:label="Frame_Margin" />
-      </g>
+         style="display:inline;stroke-width:1.09872" />
       <g
          id="g6753"
          transform="matrix(0.8965915,0,0,0.7017979,16.030809,79.228971)"
@@ -910,13 +916,16 @@
         <rect
            style="vector-effect:none;fill:#e5ff80;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1.32112;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
            id="rect6751"
-           width="233.12666"
-           height="106.57688"
-           x="32.966991"
-           y="11.523225"
+           width="236.22044"
+           height="110.09169"
+           x="30.19463"
+           y="10.982322"
            rx="0"
            ry="0"
-           inkscape:label="Frame_Margin" />
+           inkscape:label="Frame_Margin"
+           inkscape:export-filename="/data/development/orbtk-book/src/img/layout_constraints.png"
+           inkscape:export-xdpi="96"
+           inkscape:export-ydpi="96" />
       </g>
       <text
          xml:space="preserve"
@@ -938,7 +947,10 @@
          x="53.040676"
          y="94.975647"
          rx="0"
-         ry="0" />
+         ry="0"
+         inkscape:export-filename="/data/development/orbtk-book/src/img/layout_constraints.png"
+         inkscape:export-xdpi="96"
+         inkscape:export-ydpi="96" />
       <text
          xml:space="preserve"
          style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;line-height:125%;font-family:mdl2;-inkscape-font-specification:'mdl2, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;display:inline;fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:0;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
@@ -985,7 +997,7 @@
          id="path7021" />
       <path
          style="display:inline;fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:0.209594;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-         d="m 219.61673,109.99502 0.10457,39.31945"
+         d="m 219.61673,107.21904 0.10457,42.09541"
          id="path7023" />
       <path
          style="display:inline;fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:0.209594;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
@@ -993,7 +1005,7 @@
          id="path7027" />
       <path
          style="display:inline;fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:0.209594;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-         d="m 71.466606,107.53013 148.276454,-0.4357"
+         d="m 71.899064,106.7815 147.842376,1.01277"
          id="path7031" />
       <g
          id="g9059"
@@ -1038,12 +1050,12 @@
          id="path8483"
          sodipodi:nodetypes="cc" />
       <path
-         style="display:inline;fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:0.209594;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-         d="m 50.478488,92.681839 0.04738,70.303521"
+         style="display:inline;fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:0.209593;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         d="m 50.416596,92.681787 0.06702,71.673733"
          id="path9496" />
       <path
          style="display:inline;fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:0.209593;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-         d="m 249.4986,92.681848 0.0337,70.026012"
+         d="M 249.7132,92.681798 249.695,164.34459"
          id="path9498" />
       <g
          id="g10062"
@@ -1074,36 +1086,42 @@
       </g>
       <path
          style="display:inline;fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:0.209594;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-         d="M 44.654555,92.713414 249.30994,92.277715"
+         d="M 43.200695,92.713414 249.30995,92.277715"
          id="path10018" />
       <path
          style="display:inline;fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:0.209594;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-         d="M 44.654555,155.6846 249.30994,155.2489"
+         d="M 43.283312,156.2913 249.70467,155.8556"
          id="path10020" />
-      <path
-         id="path10088"
-         style="display:inline;fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:2.3967px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-start:url(#marker10100)"
-         d="m 15.537109,102.88281 -0.113281,35.55664 z"
-         transform="matrix(0.29057674,0,0,0.26458331,41.999285,67.210092)" />
-      <text
-         xml:space="preserve"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.36247px;line-height:125%;font-family:mdl2;-inkscape-font-specification:'mdl2, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;display:inline;fill:#800000;fill-opacity:1;stroke:#000000;stroke-width:0.277274px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-         x="104.19839"
-         y="-47.425957"
-         id="text10092"
-         transform="matrix(0,1.0460578,-0.95597011,0,0,0)"><tspan
-           sodipodi:role="line"
-           id="tspan1305"
-           x="104.19839"
-           y="-47.425957">Entity Height</tspan></text>
-      <path
-         style="display:inline;fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:0.664545px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-start:url(#marker10110)"
-         d="m 46.529211,154.37498 -0.04901,-8.38112 -0.01379,-2.35779"
-         id="path10094"
-         sodipodi:nodetypes="ccc" />
+      <g
+         id="g1309">
+        <g
+           id="g1353">
+          <path
+             id="path10088"
+             style="display:inline;fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:2.3967px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-start:url(#marker10100)"
+             d="m 15.537109,102.88281 -0.113281,35.55664 z"
+             transform="matrix(0.29057674,0,0,0.26458331,41.999285,67.210092)" />
+          <text
+             xml:space="preserve"
+             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.36247px;line-height:125%;font-family:mdl2;-inkscape-font-specification:'mdl2, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;display:inline;fill:#800000;fill-opacity:1;stroke:#000000;stroke-width:0.277274px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+             x="104.19839"
+             y="-47.425957"
+             id="text10092"
+             transform="matrix(0,1.0460578,-0.95597011,0,0,0)"><tspan
+               sodipodi:role="line"
+               id="tspan1305"
+               x="104.19839"
+               y="-47.425957">Entity Height</tspan></text>
+          <path
+             style="display:inline;fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:0.664545px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-start:url(#marker10110)"
+             d="m 46.529211,154.37498 -0.04901,-8.38112 -0.01379,-2.35779"
+             id="path10094"
+             sodipodi:nodetypes="ccc" />
+        </g>
+      </g>
       <g
          id="Frame_Content"
-         transform="matrix(1,0,0,1.3260636,34.363076,7.9264877)"
+         transform="matrix(1,0,0,1.3260636,34.197022,7.3804229)"
          style="stroke-width:0;stroke-miterlimit:4;stroke-dasharray:none">
         <title
            id="title4261">Frame_Content</title>
