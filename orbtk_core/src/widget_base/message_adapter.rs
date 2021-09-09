@@ -62,28 +62,31 @@ impl MessageBox {
 ///
 /// # Example
 ///
-#[doc = "The following code example ..."]
 /// ```rust
 /// // State
 /// fn say_hello(entity: Entity, message_adapter: MessageAdapter) {
 ///     message_adapter.send_message(String::from("Hello rustician"), entity);
-///     message_adapter.send_message(String::from("Did you got my message?"), entity);
+///     message_adapter.send_message(String::from("Did you recieve my message?"), entity);
 /// }
 ///
-/// impl Mystate {}
+/// impl MyState {}
 ///
-/// // implementation fo the State
+/// // implementation for the State
 /// impl State for MyState {
 ///     fn message(&mut self, mut messages: MessageReader, _registry: &mut Registry, _ctx: &mut Context) {
 ///         for message in messages.read::<String>() {
-///         println!("{}", message);
+///             println!("{}", message);
+///         }
 ///     }
 /// }
 /// ```
-#[doc = "will print two lines to stdout:"]
-#[doc = "```text"]
-#[doc = "$ Hello rustician,"]
-#[doc = "$ Did you got my message?"]
+///
+/// The example code snippet above will print two lines to stdout:
+///
+/// ```text
+/// $ Hello rustician,
+/// $  Did you receive my message?
+/// ```
 #[derive(Clone, Debug)]
 pub struct MessageAdapter {
     messages: Arc<Mutex<BTreeMap<Entity, HashMap<TypeId, Vec<MessageBox>>>>>,
