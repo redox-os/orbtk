@@ -757,7 +757,7 @@ widget!(
     ///
     /// # Example
     ///
-    /// ```
+    /// ```rust
     /// use orbtk::prelude::*
     ///
     /// widget!(MyInput {
