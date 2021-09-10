@@ -138,65 +138,65 @@ pub enum Brush {
 
 impl Brush {
     pub fn is_transparent(&self) -> bool {
-	match self {
-	    Brush::SolidColor(color) => color.a() == 0,
-	    _ => false,
-	}
+        match self {
+            Brush::SolidColor(color) => color.a() == 0,
+            _ => false,
+        }
     }
 }
 
 impl From<Brush> for Color {
     fn from(b: Brush) -> Color {
-	match b {
-	    Brush::SolidColor(color) => color,
-	    _ => Color::rgb(0, 0, 0),
-	}
+        match b {
+            Brush::SolidColor(color) => color,
+            _ => Color::rgb(0, 0, 0),
+        }
     }
 }
 
 impl From<Brush> for Gradient {
     fn from(b: Brush) -> Gradient {
-	match b {
-	    Brush::Gradient(g) => g,
-	    _ => Gradient::default(),
-	}
+        match b {
+            Brush::Gradient(g) => g,
+            _ => Gradient::default(),
+        }
     }
 }
 
 impl Default for Brush {
     fn default() -> Self {
-	Brush::SolidColor(Color::rgba(0, 0, 0, 0))
+        Brush::SolidColor(Color::rgba(0, 0, 0, 0))
     }
 }
 
 impl From<Color> for Brush {
     fn from(c: Color) -> Brush {
-	Brush::SolidColor(c)
+        Brush::SolidColor(c)
     }
 }
 
 impl From<Gradient> for Brush {
     fn from(g: Gradient) -> Brush {
-	Brush::Gradient(g)
+        Brush::Gradient(g)
     }
 }
 
 impl From<&str> for Brush {
     fn from(s: &str) -> Brush {
-	Expression::from(s).brush().unwrap_or_default()
+        Expression::from(s).brush().unwrap_or_default()
     }
 }
 
 impl From<String> for Brush {
     fn from(s: String) -> Brush {
-	Self::from(&s[..])
+        Self::from(&s[..])
     }
 }
 
 impl From<Value> for Brush {
     fn from(v: Value) -> Self {
-	let value = v.get::<String>();
-	Brush::from(value)
+        let value = v.get::<String>();
+        Brush::from(value)
     }
 }
 
