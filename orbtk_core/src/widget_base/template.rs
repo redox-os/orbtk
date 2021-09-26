@@ -18,10 +18,13 @@ pub trait Template: Sized {
     /// * `_context`: The BuildContext used to build and instantiate new widgets
     ///
     /// # Example
-    /// Define a widget called MyWidget with min, max and val properties with
-    /// type of usize, and then set default values and add a TextBlock child.
     ///
-    /// ```
+    /// Define a widget called MyWidget with min, max and val
+    /// properties. The properties have a type of `usize` and we do
+    /// preset suitable default values. The definition is completed
+    /// with a TextBlock widget, that is the only child.
+    ///
+    /// ```rust
     /// widget!(MyWidget {
     ///     min: usize,
     ///     max: usize,
