@@ -13,7 +13,7 @@ use crate::{
 use super::{component, component_try_mut, Layout};
 
 /// Orders its children in a grid layout with columns and rows. If no
-/// columns and rows are defined the grid layout could also be used as
+/// columns and rows are defined the grid layout can also be used as
 /// an alignment layout.
 #[derive(Default, IntoLayout)]
 pub struct GridLayout {
@@ -184,11 +184,13 @@ impl Layout for GridLayout {
         layouts: &BTreeMap<Entity, Box<dyn Layout>>,
         theme: &Theme,
     ) -> DirtySize {
+	// collapsed entities don't consume any size
         if component::<Visibility>(ecm, entity, "visibility") == Visibility::Collapsed {
             self.desired_size.borrow_mut().set_size(0.0, 0.0);
             return *self.desired_size.borrow();
         }
 
+	// react, if alignment startegy has changed -> set dirty flag
         let horizontal_alignment: Alignment = component(ecm, entity, "h_align");
         let vertical_alignment: Alignment = component(ecm, entity, "v_align");
 
@@ -198,6 +200,7 @@ impl Layout for GridLayout {
             self.desired_size.borrow_mut().set_dirty(true);
         }
 
+	// go ahead an calculate all child size requirements
         self.children_sizes.borrow_mut().clear();
 
         let mut sum_row: BTreeMap<usize, f64> = BTreeMap::new();
@@ -210,6 +213,7 @@ impl Layout for GridLayout {
                 let child_desired_size =
                     child_layout.measure(render_context_2_d, child, ecm, layouts, theme);
 
+		// react, if childs dired_size has changed -> set dirty flag
                 let dirty = child_desired_size.dirty() || self.desired_size.borrow().dirty();
 
                 self.desired_size.borrow_mut().set_dirty(dirty);
@@ -226,6 +230,7 @@ impl Layout for GridLayout {
                 } else {
                     desired_size.0 = desired_size.0.max(child_desired_size.width());
                 }
+
                 // If the child is a grid, add the greatest height per row into sum_row.
                 if let Ok(grid_row) = ecm.component_store().get::<usize>("row", child) {
                     if let Some(current_height) = sum_row.get(grid_row) {
@@ -246,6 +251,7 @@ impl Layout for GridLayout {
             }
         }
 
+	// update desired_size to hold the maximum grid width and height values
         desired_size.0 = desired_size.0.max(sum_col.iter().map(|x| x.1).sum());
         desired_size.1 = desired_size.1.max(sum_row.iter().map(|x| x.1).sum());
 
@@ -253,6 +259,7 @@ impl Layout for GridLayout {
             .borrow_mut()
             .set_size(desired_size.0, desired_size.1);
 
+	// adapt measured size to respect the given constraints
         let size = ecm
             .component_store()
             .get::<Constraint>("constraint", entity)
@@ -261,6 +268,7 @@ impl Layout for GridLayout {
 
         self.desired_size.borrow_mut().set_size(size.0, size.1);
 
+	// result: return the calculated desired_size
         *self.desired_size.borrow()
     }
 
@@ -273,11 +281,13 @@ impl Layout for GridLayout {
         layouts: &BTreeMap<Entity, Box<dyn Layout>>,
         theme: &Theme,
     ) -> (f64, f64) {
+	// collapsed entities don't consume any size -> now rendering needed
         if component::<Visibility>(ecm, entity, "visibility") == Visibility::Collapsed {
             self.desired_size.borrow_mut().set_size(0.0, 0.0);
             return (0.0, 0.0);
         }
 
+	// Only trigger rendering, if entity is dirty
         if !self.desired_size.borrow().dirty() {
             return self.desired_size.borrow().size();
         }
@@ -308,7 +318,6 @@ impl Layout for GridLayout {
         let mut row_heights = BTreeMap::new();
 
         // calculates the auto column widths
-
         for index in 0..ecm.entity_store().children[&entity].len() {
             let child = ecm.entity_store().children[&entity][index];
 
@@ -364,6 +373,7 @@ impl Layout for GridLayout {
             bounds.set_height(size.1);
         }
 
+	// walk down and arrange the addressed childs
         for index in 0..ecm.entity_store().children[&entity].len() {
             let child = ecm.entity_store().children[&entity][index];
 
@@ -374,6 +384,7 @@ impl Layout for GridLayout {
             let mut cell_position = (0.0, 0.0);
             let mut available_size = size;
 
+	    // handle columns
             let has_columns =
                 if let Ok(columns) = ecm.component_store().get::<Blocks>("columns", entity) {
                     !columns.is_empty()
@@ -381,7 +392,6 @@ impl Layout for GridLayout {
                     false
                 };
 
-            // column
             if has_columns {
                 let grid_column =
                     if let Ok(grid_column) = ecm.component_store().get::<usize>("column", child) {
@@ -403,13 +413,13 @@ impl Layout for GridLayout {
                 available_size.0 = size.0;
             }
 
+	    // handle rows
             let has_rows = if let Ok(rows) = ecm.component_store().get::<Blocks>("rows", entity) {
                 !rows.is_empty()
             } else {
                 false
             };
 
-            // rows
             if has_rows {
                 let grid_row =
                     if let Ok(grid_row) = ecm.component_store().get::<usize>("row", child) {
@@ -431,6 +441,7 @@ impl Layout for GridLayout {
                 available_size.1 = size.1;
             }
 
+	    // handle dired_size for given child
             let mut child_desired_size = (0.0, 0.0);
             if let Some(child_layout) = layouts.get(&child) {
                 child_desired_size = child_layout.arrange(
@@ -453,6 +464,7 @@ impl Layout for GridLayout {
                 }
             };
 
+	    // handle bounds of given child
             if let Ok(child_bounds) = ecm
                 .component_store_mut()
                 .get_mut::<Rectangle>("bounds", child)
@@ -485,7 +497,7 @@ impl Layout for GridLayout {
             bounds.set_height(size.1);
         }
 
-        // todo refactor the usage of mark_as_dirty on layouts
+	// TODO: refactor the usage of mark_as_dirty to handle layouts
         mark_as_dirty("bounds", entity, ecm);
 
         self.desired_size.borrow_mut().set_dirty(false);
