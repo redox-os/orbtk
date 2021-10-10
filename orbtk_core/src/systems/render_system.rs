@@ -4,7 +4,8 @@ use dces::prelude::*;
 
 use crate::{prelude::*, render::RenderContext2D, tree::Tree};
 
-/// The `RenderSystem` iterates over all visual widgets and used its render objects to draw them on the screen.
+/// The `RenderSystem` iterates over all visual widgets.
+/// Its calculated render objects are then drawn on the screen.
 #[derive(Constructor)]
 pub struct RenderSystem {
     context_provider: ContextProvider,

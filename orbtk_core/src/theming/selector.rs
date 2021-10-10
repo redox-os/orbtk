@@ -6,7 +6,8 @@ pub struct Selector {
     /// Represents the key of a style.
     pub style: Option<String>,
 
-    // Used to reference the state property list of the given style. The state on the top of the vector is the active one.
+    // Used to reference the state property list of the given
+    // style. The state on the top of the vector is the active one.
     states: Vec<String>,
 
     /// Check if the selector is dirty.
@@ -64,7 +65,9 @@ impl Selector {
         None
     }
 
-    /// Removes the last state from a vector and returns it, or None if it is empty. If there is a new last vector it will be the new active state.
+    /// Removes the last state from a vector and returns it, or None
+    /// if it is empty. If there is a new last vector it will be the
+    /// new active state.
     pub fn pop_state(&mut self) -> Option<String> {
         self.dirty = true;
         self.states.pop()

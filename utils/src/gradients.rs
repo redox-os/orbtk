@@ -8,6 +8,7 @@ pub struct GradientStop {
 }
 
 impl GradientStop {
+    /// Creates a new stop mark.
     pub fn new(pos: Option<OnLinePos>, color: Color) -> GradientStop {
         GradientStop { pos, color }
     }
@@ -130,6 +131,7 @@ impl Default for Gradient {
     }
 }
 
+/// Describes the kind of a gradient.
 #[derive(Copy, Clone, PartialEq, Debug)]
 pub enum GradientKind {
     Linear(LinearGradientCoords),

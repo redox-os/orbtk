@@ -1,3 +1,4 @@
+//! This module contains the layout types of an OrbTk application (Absolute, Fixed, Grid, Padding, Popup, Stack).
 use std::{any::Any, collections::BTreeMap};
 
 use dces::prelude::*;
@@ -18,7 +19,15 @@ mod padding;
 mod popup;
 mod stack;
 
-/// A layout is used to dynamic order the children of a widget.
+/// The layout process will order the children of a given widget in a dynamic iteration.
+/// It will respect constraint values between its elements. The following image illustrates
+/// the relationship between known layout elements:
+///
+/// ![cheat-sheet: layout constraints][layout_constraints]
+///
+/// [layout_constraints]: https://raw.githubusercontent.com/rzerres/orbtk/wip_documentation/orbtk/images/layout_constraints.png
+// /// [layout_constraints.svg]: https://raw.githubusercontent.com/redox-os/orbtk/develop/orbtk/images/layout_constraints.svg
+
 pub trait Layout: Any {
     // Measure all children before the arrangement.
     fn measure(

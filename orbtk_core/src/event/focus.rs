@@ -14,8 +14,10 @@ pub enum FocusEvent {
 
 pub type FocusHandlerFn = dyn Fn(&mut StatesContext, FocusEvent) -> bool + 'static;
 
+/// Structure for the focus handling of an event
 #[derive(IntoHandler)]
 pub struct FocusEventHandler {
+    /// A reference counted handler
     pub handler: Rc<FocusHandlerFn>,
 }
 

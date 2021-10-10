@@ -1,3 +1,5 @@
+//! Handles helper utilities and global methods.
+
 pub use self::alignment::*;
 pub use self::angle::*;
 pub use self::border::*;

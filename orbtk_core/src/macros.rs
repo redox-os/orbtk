@@ -1,6 +1,9 @@
+//! This module contains the macros, to ease common processing tasks inside the OrbTk tree.
+
 pub use crate::{theming::*, utils::prelude::*};
 pub use dces::prelude::*;
 
+/// Derive macro generating an impl of the trait `into_property_source`.
 #[macro_export]
 macro_rules! into_property_source {
     ($type:ty $(: $( $ex_type:ty ),*)* ) => {
@@ -67,7 +70,7 @@ macro_rules! into_property_source {
 /// });
 /// ```
 ///
-/// [`Widget`]: ./widget/trait.Widget.html
+/// [`Widget`]: ./trait.Widget.html
 /// [`builder`]: https://doc.rust-lang.org/1.0.0/style/ownership/builders.html
 /// [`builder pattern`]: https://en.wikipedia.org/wiki/Builder_pattern
 #[macro_export]
@@ -447,8 +450,8 @@ macro_rules! widget {
                     ctx.register_state(entity, this.state);
                 )*
 
-                // register default set of properties
-                register_property(ctx, "bounds", entity, this.bounds);
+                // register a set of properties as components
+                ctx.register_property("bounds", entity, this.bounds);
                 ctx.register_property("position", entity, this.position);
                 ctx.register_property("v_align", entity, this.v_align);
                 ctx.register_property("h_align", entity, this.h_align);
@@ -556,13 +559,16 @@ macro_rules! widget {
     };
 }
 
+/// Derive macro generating an impl of the trait `trigger_event`.
 #[macro_export]
 macro_rules! trigger_event {
     ($event:ident, $event_handler:ident, $trait:ident, $method:tt) => {
+        /// Structure that triggers an activation event for a given entity.
         pub struct $event(pub Entity);
 
         impl Event for $event {}
 
+        /// Structure that triggers an activation event for a handler of an entity.
         pub struct $event_handler(Rc<TriggerHandler>);
 
         impl EventHandler for $event_handler {
@@ -585,6 +591,7 @@ macro_rules! trigger_event {
             }
         }
 
+        /// Valid traits for given trait type.
         pub trait $trait: Sized + Widget {
             fn $method<H: Fn(&mut StatesContext, Entity) + 'static>(self, handler: H) -> Self {
                 self.insert_handler($event_handler(Rc::new(handler)))

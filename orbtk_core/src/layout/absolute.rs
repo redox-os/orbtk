@@ -16,6 +16,7 @@ pub struct AbsoluteLayout {
 }
 
 impl AbsoluteLayout {
+    /// Preset the defaults.
     pub fn new() -> Self {
         AbsoluteLayout::default()
     }
@@ -30,6 +31,7 @@ impl Layout for AbsoluteLayout {
         layouts: &BTreeMap<Entity, Box<dyn Layout>>,
         theme: &Theme,
     ) -> DirtySize {
+	// collapsed entities don't consume any size
         if component::<Visibility>(ecm, entity, "visibility") == Visibility::Collapsed {
             self.desired_size.borrow_mut().set_size(0.0, 0.0);
             return *self.desired_size.borrow();
@@ -43,6 +45,7 @@ impl Layout for AbsoluteLayout {
                 .set_size(bounds.width(), bounds.height());
         }
 
+	// walk down and arrange the addressed childs
         for index in 0..ecm.entity_store().children[&entity].len() {
             let child = ecm.entity_store().children[&entity][index];
             if let Some(child_layout) = layouts.get(&child) {

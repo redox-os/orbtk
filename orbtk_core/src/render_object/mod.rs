@@ -1,4 +1,7 @@
-//! This module contains all render objects used in OrbTk. Render objects are used to define how to draw parts of a widget.
+//! This module contains all render objects used in OrbTk.
+//!
+//! Render objects define how to draw associatied entities of a widget
+//! to the render buffer.
 
 use std::{any::Any, collections::BTreeMap};
 
@@ -22,6 +25,12 @@ mod pipeline;
 mod rectangle;
 mod text;
 
+/// The `RenderObject` trait defines rendering of 2D objects.
+///
+/// The trait is acting as a wrapper to the render subcrate. Calls to
+/// render objects (self, or its children) will consume the `renderer`
+/// methods. The acutual subcrate path is brought into scape with the
+/// identifier `render` which resolves to `orbtk_tinyskia` by now.
 pub trait RenderObject: Any {
     fn render(
         &self,
@@ -59,7 +68,7 @@ pub trait RenderObject: Any {
                 .unwrap_or(&1.0),
         );
 
-        // Could be unwrap because every widget has the clip property
+        // We can safely use unwrap(), because every widget implements the clip property
         let clip = *ecm.component_store().get::<bool>("clip", entity).unwrap();
         if clip {
             if let Ok(bounds) = ecm.component_store().get::<Rectangle>("bounds", entity) {
@@ -113,7 +122,7 @@ pub trait RenderObject: Any {
             render_context.restore();
         }
 
-        // render debug border for each widget
+        // debug mode: render each widget with a border
         if debug {
             if let Ok(bounds) = ecm.component_store().get::<Rectangle>("bounds", entity) {
                 render_context.begin_path();

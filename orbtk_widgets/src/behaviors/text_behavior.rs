@@ -730,7 +730,7 @@ impl State for TextBehaviorState {
 
 widget!(
     /// The TextBehavior widget shares the same logic of handling text input between
-    /// tex-related widgets.
+    /// text-related widgets.
     ///
     /// Attaching to a widget makes it able to handle text input like:
     /// * input characters by keyboard
@@ -740,23 +740,24 @@ widget!(
     /// * delete characters by pressing the Backspace or the Delete key
     /// * run on_activate() callback on pressing the Enter key
     ///
-    /// TextBehavior needs the following prerequisites to able to work:
+    /// Following prerequisties must be met and presented to the TextBehavior
+    /// to make it work correctly:
     /// * a `cursor`: the [`Entity`] of a [`Cursor`] widget
     /// * a `target`: the [`Entity`] of the target widget
     /// * a `text_block`: the [`Entity`] of the [`TextBlock`] widget
     ///
-    /// * and must inherit the following properties from its target:
-    ///     * focused
-    ///     * font
-    ///     * font_size
-    ///     * lose_focus_on_activation
-    ///     * request_focus
-    ///     * text
-    ///     * selection
+    /// As well the widget must inherit the following properties from its target:
+    /// * focused
+    /// * font
+    /// * font_size
+    /// * lose_focus_on_activation
+    /// * request_focus
+    /// * text
+    /// * selection
     ///
     /// # Example
     ///
-    /// ```
+    /// ```rust
     /// use orbtk::prelude::*
     ///
     /// widget!(MyInput {
@@ -806,38 +807,38 @@ widget!(
     /// [`Entity`]: https://docs.rs/dces/0.2.0/dces/entity/struct.Entity.html
     /// [`Cursor`]: ../struct.Cursor.html
     TextBehavior<TextBehaviorState>: ActivateHandler, KeyDownHandler, TextInputHandler, DropHandler, MouseHandler {
-        /// Reference the target (parent) widget e.g. `TextBox` or `PasswordBox`.
-        target: u32,
+    /// Reference the target (parent) widget e.g. `TextBox` or `PasswordBox`.
+    target: u32,
 
-        /// Reference text selection `Cursor`.
-        cursor: u32,
+    /// Reference text selection `Cursor`.
+    cursor: u32,
 
-        /// Reference `TextBlock` that is used to display the text.
-        text_block: u32,
+    /// Reference `TextBlock` that is used to display the text.
+    text_block: u32,
 
-        /// Sets or shares the focused property.
-        focused: bool,
+    /// Sets or shares the focused property.
+    focused: bool,
 
-        /// Sets or shares the font property.
-        font: String,
+    /// Sets or shares the font property.
+    font: String,
 
-        /// Sets or shares the font size property.
-        font_size: f64,
+    /// Sets or shares the font size property.
+    font_size: f64,
 
-        /// Sets or shares ta value that describes if the widget should lose focus on activation (when Enter pressed).
-        lose_focus_on_activation: bool,
+    /// Sets or shares ta value that describes if the widget should lose focus on activation (when Enter pressed).
+    lose_focus_on_activation: bool,
 
-        /// Sets or shares the request_focus property. Used to request focus from outside.Set to `true` to request focus.
-        request_focus: bool,
+    /// Sets or shares the request_focus property. Used to request focus from outside.Set to `true` to request focus.
+    request_focus: bool,
 
-        /// Sets or shares the text property.
-        text: String,
+    /// Sets or shares the text property.
+    text: String,
 
-        /// Sets or shares the text selection property.
-        selection: TextSelection,
+    /// Sets or shares the text selection property.
+    selection: TextSelection,
 
-        /// If set to `true` all character will be focused when the widget gets focus. Default is `true`
-        select_all_on_focus: bool
+    /// If set to `true` all character will be focused when the widget gets focus. Default is `true`
+    select_all_on_focus: bool
     }
 );
 

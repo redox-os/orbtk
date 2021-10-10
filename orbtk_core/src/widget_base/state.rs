@@ -7,18 +7,31 @@ pub trait AsAny: Any {
     fn as_any_mut(&mut self) -> &mut dyn Any;
 }
 
-/// Used to define a state of a [`widget`].
+/// A state trait of a widget (the `state`) comes in handy to provide
+/// interactivity.  It is not required to define a `state` for the
+/// widget. But if you don't, you cut of the possibility to adapt
+/// properties during runtime. The `view` of the widget will stay
+/// static.
 ///
-/// The state holds the logic of a widget which makes it interactive.
-/// The state of a widget is made of a struct which implements this trait with its fields and its methods.
-/// A state of a widget is represented by the current values of its properties.
-/// Each state has to implement this trait.
-/// Each state has to derive or implement the [Default](https://doc.rust-lang.org/std/default/trait.Default.html) and the [`AsAny`] traits.
-/// A state is operating on the properties (components) of the widget, its parent or children, or the state's fields.
-/// It is not mandatory to have a state for a widget (in this case it will be static).
+/// When defining a `state` of a widget, it inherits the values of its
+/// associated properties (`current values`), as well as the implemented system  To gain access, each
+/// state has to derive or implement the [`Default`] and the [`AsAny`]
+/// traits. You are free to implement associated functions to the
+/// `state`, that react on triggered events or adapt current
+/// values. The `properties` are stored via ECM. They are organized in
+/// a tree (parent, children or level entities).
 ///
 /// # Example
-/// ```
+///
+/// The following code will define a widget called `MyWidget` (the
+/// `view`) with an associcated state called `MyState`. The `MyState`
+/// structure defines a propery `count` (a level entity), that will
+/// store values of type usize.  Inside the `state` trait, the method
+/// `init` will manipulate the value of the count property (42). The
+/// `update` method will increment the `count` property each time the
+/// `view` got dirty and initiates a new render cycle.
+///
+/// ```rust
 /// use orbtk::prelude::*;
 ///
 /// #[derive(Default, AsAny)]
@@ -46,34 +59,48 @@ pub trait AsAny: Any {
 /// ```
 ///
 /// [`widget`]: ./trait.Widget.html
+/// [`Default`]: (https://doc.rust-lang.org/std/default/trait.Default.html)
 /// [`AsAny`]: ./trait.AsAny.html
 
 pub trait State: AsAny {
-    /// Init is used for setting up the initial state of a widget, setting up fields to starting values and registering service(s).
-    /// It is called after the widget is created.
+    /// Init is used for setting up the initial state of a widget.
+    ///
+    /// Within the init process, you preset properties with intended
+    /// initial values. You may register service(s).
+    /// It is called **after creation** of a widget.
     ///
     /// # Arguments
     /// * `_registry`: Provides access to the global Service Registry.
-    /// * `_ctx`: Represents the context of the current widget.Lets you manipulate the widget tree.
+    /// * `_ctx`: Represents the context of the current widget. Allows manipulation of the widget tree.
     fn init(&mut self, _registry: &mut Registry, _ctx: &mut Context) {}
 
-    /// Used to cleanup the state and is called after window close is requested.
+    /// Cleanup is used to sanitize the sthe state of a widget.
+    ///
+    /// It is called **after window close** is requested.
+    ///
     /// # Arguments
     /// * `_registry`: Provides access to the global Service Registry.
-    /// * `_ctx`: Represents the context of the current widget.Allows manipulation of the widget tree.
+    /// * `_ctx`: Represents the context of the current widget. Allows manipulation of the widget tree.
     fn cleanup(&mut self, _registry: &mut Registry, _ctx: &mut Context) {}
 
-    /// Updates the state of a widget **before layout is calculated** for the given context when the widget becomes "dirty",
-    /// (e.g.: a property of a widget is changed or an [`event`] is fired)
+    /// Update is used to update the state of a widget.
+    ///
+    /// Within the update process, you react on triggered
+    /// `events`. You need to adapt, if entities of the given context
+    /// are marked **dirty**. Property changes and handler messages
+    /// will fire an [`event`].
+    /// It is called **before layout calculation** is triggered.
     ///
     /// # Arguments
     /// * `_registry`: Provides access to the global Service Registry.
-    /// * `_ctx`: Represents the context of the current widget.Allows manipulation of the widget tree.
+    /// * `_ctx`: Represents the context of the current widget. Allows manipulation of the widget tree.
     ///
-    /// [`event`]: ../trait.Event.html
+    /// [`event`]: ./trait.Event.html
     fn update(&mut self, _registry: &mut Registry, _ctx: &mut Context) {}
 
-    /// Used to read messages that are sent to the widget. This will be called after `update` and before `update_post_layout`.
+    /// This method is called, when a widget sends a message via the `MessageHandler`.
+    /// `messages` will read from the message queue. This will
+    /// be called after `update` and before `update_post_layout`.
     ///
     /// # Arguments
     /// * `_messages`: Provides access to messages of the widget.
@@ -90,6 +117,6 @@ pub trait State: AsAny {
     /// * `_registry`: Provides access to the global Service Registry.
     /// * `_ctx`: Represents the context of the current widget.Allows manipulation of the widget tree.
     ///
-    /// [`event`]: ../trait.Event.html
+    /// [`event`]: ./trait.Event.html
     fn update_post_layout(&mut self, _registry: &mut Registry, _ctx: &mut Context) {}
 }

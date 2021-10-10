@@ -1,3 +1,5 @@
+//! Wrapper consuming tinyskia functions.
+
 use smallvec::SmallVec;
 use std::{
     collections::HashMap,

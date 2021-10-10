@@ -6,7 +6,8 @@ use dictionary::Dictionary;
 
 mod dictionary;
 
-/// Used to build a new `RonLocalization` and configure language file path and initial language.
+/// Used to build a new `RonLocalization` and configure language file
+/// path and initial language.
 #[derive(Debug, Default, Clone)]
 pub struct RonLocalizationBuilder {
     language: String,
@@ -36,7 +37,8 @@ impl RonLocalizationBuilder {
     }
 }
 
-/// `RonLocalization` represents the default implementation of a localization service based on `ron`.
+/// `RonLocalization` represents the default implementation of a
+/// localization service based on `ron`.
 ///
 /// # Example
 ///
@@ -88,7 +90,7 @@ mod tests {
     #[test]
     fn test_text() {
         let de_de = r#"
-        Dictionary( 
+        Dictionary(
             words: {
                 "hello": "Hallo",
                 "world": "Welt",

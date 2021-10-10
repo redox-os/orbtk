@@ -2,6 +2,7 @@ use std::fmt;
 
 use crate::utils::*;
 
+/// Structure used to define render targets.
 #[derive(Clone, Default)]
 pub struct RenderTarget {
     width: u32,
@@ -59,10 +60,12 @@ impl RenderTarget {
         self.height as f64
     }
 
+    /// Gets the data object.
     pub fn data(&self) -> &[u32] {
         &self.data
     }
 
+    /// Gets a mutable data object.
     pub fn data_mut(&mut self) -> &mut [u32] {
         &mut self.data
     }

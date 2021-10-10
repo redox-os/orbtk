@@ -56,26 +56,36 @@ impl MessageBox {
     }
 }
 
-/// The `MessageAdapter` is the thread save entry point to sent and read widget messages that are handled by the `message`
-/// method of a widget `State`,
+/// The `MessageAdapter` provides a thread save entry point to sent
+/// and read messages inside widget entities. They are processed inside the
+/// method `message` defined in each widgets `State` code.
 ///
 /// # Example
 ///
 /// ```rust
+/// // State
 /// fn say_hello(entity: Entity, message_adapter: MessageAdapter) {
-///     message_adapter.send_message(String::from("Hello"), entity);
-///     message_adapter.send_message(String::from("Hello 2"), entity);
+///     message_adapter.send_message(String::from("Hello rustician"), entity);
+///     message_adapter.send_message(String::from("Did you recieve my message?"), entity);
 /// }
 ///
+/// impl MyState {}
+///
+/// // implementation for the State
 /// impl State for MyState {
 ///     fn message(&mut self, mut messages: MessageReader, _registry: &mut Registry, _ctx: &mut Context) {
 ///         for message in messages.read::<String>() {
-///             // prints:
-///             // Hello
-///             // Hello 2
 ///             println!("{}", message);
 ///         }
+///     }
 /// }
+/// ```
+///
+/// The example code snippet above will print two lines to stdout:
+///
+/// ```text
+/// $ Hello rustician,
+/// $  Did you receive my message?
 /// ```
 #[derive(Clone, Debug)]
 pub struct MessageAdapter {
@@ -143,8 +153,9 @@ impl MessageAdapter {
             .collect()
     }
 
-    /// Removes all messages for the given target entity. This is used to remove messages for
-    /// entities that does not have a `State` to read the messages.
+    /// Removes all messages for the given target entity. This is used
+    /// to remove messages for entities that does not have a `State`
+    /// to read the messages.
     pub(crate) fn remove_message_for_entity(&self, target: Entity) {
         self.messages
             .lock()
@@ -168,7 +179,8 @@ impl MessageAdapter {
             .is_empty()
     }
 
-    /// Returns a message reader for the given entity. Moves all messages for the entity from the adapter to the reader.
+    /// Returns a message reader for the given entity. Moves all
+    /// messages for the entity from the adapter to the reader.
     pub(crate) fn message_reader(&self, entity: Entity) -> MessageReader {
         let messages = if let Some(messages) = self
             .messages
@@ -257,7 +269,8 @@ where
             return None;
         }
 
-        // unwrap is ok because only messages of the same type should be stored in the vec
+        // unwrap is ok because only messages of the same type should
+        // be stored in the vec
         Some(self.messages.remove(0).downcast::<M>().unwrap())
     }
 }
