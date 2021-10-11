@@ -119,9 +119,9 @@ impl Default for PopupRenderObject {
     }
 }
 
-impl Into<Box<dyn RenderObject>> for PopupRenderObject {
-    fn into(self) -> Box<dyn RenderObject> {
-	Box::new(self)
+impl From<PopupRenderObject> for Box<dyn RenderObject>  {
+    fn from(box_value: PopupRenderObject) -> Self {
+	Box::new(box_value)
     }
 }
 
