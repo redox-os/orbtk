@@ -82,32 +82,6 @@ impl Layout for PopupLayout {
 
 		    current_constraint.perform((width, height))
 		}
-		Placement::BottomLeft => {
-		    let current_h_align: Alignment = component(ecm, entity, "h_align");
-
-		    let width = current_h_align.align_measure(
-			real_target_bounds.width(),
-			current_bounds.width(),
-			0.0,
-			0.0,
-		    );
-		    let height = current_bounds.height();
-
-		    current_constraint.perform((width, height))
-		}
-		Placement::BottomRight => {
-		    let current_h_align: Alignment = component(ecm, entity, "h_align");
-
-		    let width = current_h_align.align_measure(
-			real_target_bounds.width(),
-			current_bounds.width(),
-			0.0,
-			0.0,
-		    );
-		    let height = current_bounds.height();
-
-		    current_constraint.perform((width, height))
-		}
 		Placement::Left => {
 		    let current_v_align: Alignment = component(ecm, entity, "v_align");
 
@@ -136,32 +110,6 @@ impl Layout for PopupLayout {
 		    current_constraint.perform((width, height))
 		}
 		Placement::Top => {
-		    let current_h_align: Alignment = component(ecm, entity, "h_align");
-
-		    let width = current_h_align.align_measure(
-			real_target_bounds.width(),
-			current_bounds.width(),
-			0.0,
-			0.0,
-		    );
-		    let height = current_bounds.height();
-
-		    current_constraint.perform((width, height))
-		}
-		Placement::TopLeft => {
-		    let current_h_align: Alignment = component(ecm, entity, "h_align");
-
-		    let width = current_h_align.align_measure(
-			real_target_bounds.width(),
-			current_bounds.width(),
-			0.0,
-			0.0,
-		    );
-		    let height = current_bounds.height();
-
-		    current_constraint.perform((width, height))
-		}
-		Placement::TopRight => {
 		    let current_h_align: Alignment = component(ecm, entity, "h_align");
 
 		    let width = current_h_align.align_measure(
