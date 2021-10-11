@@ -63,6 +63,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Replaces Columns and Rows structs with Blocks
 * Set grid columns and rows also as string
 * Refactor grid layout code
+* Add new popup code (version 2: new placement and offset properties)
 
 ### 0.3.1-alpha3
 
