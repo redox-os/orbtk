@@ -929,10 +929,10 @@ impl Template for NavigationView {
 // Contains examples how interaction works in OrbTk.
 widget!(
     InteractiveView<InteractiveState> {
-        settings_text: String,
-        themes: List,
+        count_text: String,
         selected_index: i32,
-        count_text: String
+        settings_text: String,
+        themes: List
     }
 );
 

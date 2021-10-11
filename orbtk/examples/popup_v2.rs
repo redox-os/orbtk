@@ -51,21 +51,21 @@ impl MainViewState {
     fn toggle_popup(&mut self, ctx: &mut Context<'_>) {
 	let open = ctx.child(ID_POPUP).clone::<bool>("open");
 
-	    if open {
+	if open {
 	    Popup::open_set(&mut ctx.child(ID_POPUP), false);
 	    Popup::visibility_set(&mut ctx.child(ID_POPUP), Visibility::Collapsed);
-		Button::text_set(&mut ctx.child(ID_BUTTON), "Click me to show the popup");
-	    } else {
+	    Button::text_set(&mut ctx.child(ID_BUTTON), "Click me to show the popup");
+	} else {
 	    Popup::visibility_set(&mut ctx.child(ID_POPUP), Visibility::Visible);
 	    Popup::open_set(&mut ctx.child(ID_POPUP), true);
-		Button::text_set(&mut ctx.child(ID_BUTTON), "Click me to hide the popup");
-	    }
+	    Button::text_set(&mut ctx.child(ID_BUTTON), "Click me to hide the popup");
+	}
     }
 
     fn update_placement(&mut self, ctx: &mut Context<'_>) {
 	let selected_index: i32 = ctx.child(ID_PLACEMENT_COMBO_BOX).clone("selected_index");
 	let placement: Placement = ctx.child(ID_POPUP).clone_or_default("placement");
-	    match selected_index {
+	match selected_index {
 	    0 => Popup::placement_set(&mut ctx.child(ID_POPUP), placement.bottom()),
 	    1 => Popup::placement_set(&mut ctx.child(ID_POPUP), placement.bottom_left()),
 	    2 => Popup::placement_set(&mut ctx.child(ID_POPUP), placement.bottom_right()),
@@ -74,8 +74,8 @@ impl MainViewState {
 	    5 => Popup::placement_set(&mut ctx.child(ID_POPUP), placement.top()),
 	    6 => Popup::placement_set(&mut ctx.child(ID_POPUP), placement.top_left()),
 	    7 => Popup::placement_set(&mut ctx.child(ID_POPUP), placement.top_right()),
-		_ => panic!(),
-	    }
+	    _ => panic!(),
+	}
 	if cfg!(debug) {
 	    println!(
 		"popup_v2: Placement {:?} (index: {:?}).",

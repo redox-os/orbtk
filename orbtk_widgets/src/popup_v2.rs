@@ -148,7 +148,7 @@ impl PopupState {
     // } else {
     //     println!("Target not found");
     // }
-	//}
+    //}
 
     // Deprecated: use function layout().
     // fn update_visibility_internal(&mut self, _registry: &mut Registry, ctx: &mut Context) {
@@ -207,37 +207,37 @@ widget!(
     ///
     /// **style:** `popup``
     Popup<PopupState> : KeyDownHandler, MouseHandler {
-	/// Sets or shares the background property.
-	background: Brush,
+    /// Sets or shares the background property.
+    background: Brush,
 
-	/// Sets or shares the border brush property.
-	border_brush: Brush,
+    /// Sets or shares the border brush property.
+    border_brush: Brush,
 
-	/// Sets or shares the border radius property.
-	border_radius: f64,
+    /// Sets or shares the border radius property.
+    border_radius: f64,
 
-	/// Sets or shares the border thickness property.
-	border_width: Thickness,
+    /// Sets or shares the border thickness property.
+    border_width: Thickness,
 
-	/// Sets or shares the popup open state.
-	open: bool,
+    /// Sets or shares the popup open state.
+    open: bool,
 
-	/// Sets or shares the padding property.
-	padding: Thickness,
+    /// Sets or shares the padding property.
+    padding: Thickness,
 
-	/// Sets or shares the placement property relative to the
-	/// target position. Valid placement variants are defined via
-	/// the `Placement` enumeration.
-	placement: Placement,
+    /// Sets or shares the placement property relative to the
+    /// target position. Valid placement variants are defined via
+    /// the `Placement` enumeration.
+    placement: Placement,
 
-	/// Sets or shares the offset property that assignes a margin
-	/// between popup and target entity.
-	offset: f64,
+    /// Sets or shares the offset property that assignes a margin
+    /// between popup and target entity.
+    offset: f64,
 
-	///
-	/// Defined ether as an entity (Entity), or as a point
-	/// coordinate (Point).
-	target: PopupTarget
+    ///
+    /// Defined ether as an entity (Entity), or as a point
+    /// coordinate (Point).
+    target: PopupTarget
     }
 );
 
@@ -247,10 +247,10 @@ impl Template for Popup {
     }
 
     fn render_object(&self) -> Box<dyn RenderObject> {
-	Box::new(PopupRenderObject::new())
+        Box::new(PopupRenderObject::new())
     }
 
     fn layout(&self) -> Box<dyn Layout> {
-	PopupLayout::new().into()
+        PopupLayout::new().into()
     }
 }

@@ -40,47 +40,20 @@ impl Layout for PopupLayout {
 	    return *self.desired_size.borrow();
 	}
 
-	/*
-	if let Some(target) = try_component::<u32>(ecm, entity, "target") {
-	    let target_bounds = component::<Rectangle>(ecm, target.into(), "bounds");
-	    component_try_mut::<Constraint>(ecm, entity, "constraint")
-		.unwrap()
-		.set_width(target_bounds.width());
-	}
-
-	let horizontal_alignment: Alignment = component(ecm, entity, "h_align");
-	let vertical_alignment: Alignment = component(ecm, entity, "v_align");
-
-	if horizontal_alignment != self.old_alignment.get().1
-	    || vertical_alignment != self.old_alignment.get().0
-	{
-	    self.desired_size.borrow_mut().set_dirty(true);
-	}
-
-	if constraint.height() > 0.0 {
-	    self.desired_size
-		.borrow_mut()
-		.set_height(constraint.height());
-	}
-	 */
-
-	// TODO: implement usage of padding
-	let _padding: Thickness = component(ecm, entity, "padding");
-
 	if let Some(target) = try_component::<PopupTarget>(ecm, entity, "target") {
 	    let current_bounds: Rectangle = component(ecm, entity, "bounds");
 	    let current_constraint: Constraint = component(ecm, entity, "constraint");
 
 	    let real_target_bounds = match target {
 		PopupTarget::Entity(entity) => {
-		    let target_position: Point = component(ecm, entity.into(), "position");
+		    let target_position: Point = component(ecm, entity, "position");
 
 		    // WARNING: widget bounds (width an height values)
 		    // will be measured as available space for the
 		    // widget. Only in state `post_layout_update` it
 		    // will reflect the effective size of the given
 		    // entity.
-		    let mut target_bounds: Rectangle = component(ecm, entity.into(), "bounds");
+		    let mut target_bounds: Rectangle = component(ecm, entity, "bounds");
 		    target_bounds.set_position(target_position);
 		    target_bounds
 		}
@@ -91,8 +64,7 @@ impl Layout for PopupLayout {
 		}
 	    };
 
-	    let placement: Placement =
-		component_or_default(ecm, entity, "placement");
+	    let placement: Placement = component_or_default(ecm, entity, "placement");
 
 	    let new_popup_size = match placement {
 		Placement::Bottom => {
@@ -251,7 +223,7 @@ impl Layout for PopupLayout {
 	    println!("Target not found");
 	}
 
-	    *self.desired_size.borrow()
+	*self.desired_size.borrow()
     }
 
     fn arrange(

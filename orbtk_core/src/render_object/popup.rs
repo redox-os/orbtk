@@ -43,41 +43,36 @@ impl IntoPropertySource<PopupTarget> for Point {
     }
 }
 
-/// Popups placement relative to the target.
-///
-/// An otional distance attribute (float), defines the margin
-/// between the selection box and the drop down popup.
+/// Defines popup placement options relative to its target.
 #[derive(Clone, Debug, PartialEq)]
 pub enum Placement {
-    Bottom(f64),
-    Left(f64),
-    Right(f64),
-    Top(f64),
+    Bottom,
+    BottomLeft,
+    BottomRight,
+    Left,
+    Right,
+    Top,
+    TopLeft,
+    TopRight,
 }
 
 impl Default for Placement {
     fn default() -> Self {
-	Self::Bottom(5.0)
+	Self::Bottom
     }
 }
 impl Placement {
-    /// Calculate the `margin` between popup and parent target (64bit float).
-    pub fn get_margin(&self) -> f64 {
-	match self {
-	    Self::Top(margin) => *margin,
-	    Self::Bottom(margin) => *margin,
-	    Self::Left(margin) => *margin,
-	    Self::Right(margin) => *margin,
-	}
-    }
-
     /// Returns the placement name.
     pub fn get_name(&self, index: i32) -> String {
 	match index {
 	    0 => "Bottom".to_string(),
-	    1 => "Left".to_string(),
-	    2 => "Right".to_string(),
-	    3 => "Top".to_string(),
+	    1 => "BottomLeft".to_string(),
+	    2 => "BottomRight".to_string(),
+	    3 => "Left".to_string(),
+	    4 => "Right".to_string(),
+	    5 => "Top".to_string(),
+	    6 => "TopLeft".to_string(),
+	    7 => "TopRight".to_string(),
 	    _ => {
 		eprintln!("popup: placement variant with index {} not coverd!",
 			  index);
@@ -90,9 +85,13 @@ impl Placement {
     pub fn get_index(&self, string: &str) -> u32  {
 	match string {
 	    "Bottom" => 0,
-	    "Left" => 1,
-	    "Right" => 2,
-	    "Top" => 3,
+	    "BottomLeft" => 1,
+	    "BottomRight" => 2,
+	    "Left" => 3,
+	    "Right" => 4,
+	    "Top" => 5,
+	    "TopLeft" => 6,
+	    "TopRight" => 7,
 	    _ => {
 		eprintln!("popup: placement variant {} not coverd!",
 			  string);
@@ -101,27 +100,44 @@ impl Placement {
 	}
     }
 
-    /// Place the popup widget relative to the `top` of its parent target.
-    /// An optional `margin` adds a distance between popup and parent target.
-    // before the function was called into_top()
-    pub fn top(self) -> Self {
-	Self::Top(self.get_margin())
+    /// Place the popup widget relative to the `bottom` of its parent target.
+    pub fn bottom(self) -> Self {
+	Self::Bottom
     }
 
-    /// Place the popup widget relative to the `bottom` of its parent target.
-    /// An optional `margin` adds a distance between popup and parent target.
-    pub fn bottom(self) -> Self {
-	Self::Bottom(self.get_margin())
+    /// Place the popup widget relative to the `bottom` and `left` edge of its parent target.
+    pub fn bottom_left(self) -> Self {
+	Self::BottomLeft
     }
+
+    /// Place the popup widget relative to the `bottom` and `right` edge of its parent target.
+    pub fn bottom_right(self) -> Self {
+	Self::BottomRight
+    }
+
     /// Place the popup widget relative to the left of its parent target.
-    /// An optional `margin` adds a distance between popup and parent target.
     pub fn left(self) -> Self {
-	Self::Left(self.get_margin())
+	Self::Left
     }
+
     /// Place the popup widget relative to the `right` of its parent target.
-    /// An optional `margin` adds a distance between popup and parent target.
     pub fn right(self) -> Self {
-	Self::Right(self.get_margin())
+	Self::Right
+    }
+    /// Place the popup widget relative to the `top` of its parent target.
+    pub fn top(self) -> Self {
+	Self::Top
+    }
+
+    /// Place the popup widget relative to the `top` of its parent target.
+    /// Place the popup widget relative to the `top` and `left` edge of its parent target.
+    pub fn top_left(self) -> Self {
+	Self::TopLeft
+    }
+
+    /// Place the popup widget relative to the `top` and `right` edge of its parent target.
+    pub fn top_right(self) -> Self {
+	Self::TopRight
     }
 }
 
@@ -153,17 +169,16 @@ impl RenderObject for PopupRenderObject {
 	    let current_bounds: Rectangle = ctx.widget().clone("bounds");
 	    let current_constraint: Constraint = ctx.widget().clone("constraint");
 
-	    // println!("render popup: bounds.width={:?} bounds.height={:?}",
-	    //          current_bounds.width(),
-	    //          current_bounds.height());
-
-	    let real_target_bounds = match target {
+	    let target_bounds = match target {
 		PopupTarget::Entity(entity) => {
-		    let target_position: Point = ctx.get_widget(entity.into()).clone("position");
+		    let target_position: Point = ctx.get_widget(entity).clone("position");
 
-		    //WARNING: this is true only if called during post_layout_update, otherwise the bounds will refere to space available to the widget, not the effective size
-		    let mut target_bounds: Rectangle =
-			ctx.get_widget(entity.into()).clone("bounds");
+		    // WARNING: target_bounds are only reflecting the
+		    // actual effective size, if refered in
+		    // post_layout_update function. Otherwise the
+		    // bounds will refere to the space bounds
+		    // available to the given widget.
+		    let mut target_bounds: Rectangle = ctx.get_widget(entity).clone("bounds");
 		    target_bounds.set_position(target_position);
 		    target_bounds
 		}
@@ -174,24 +189,24 @@ impl RenderObject for PopupRenderObject {
 		}
 	    };
 
-	    let relative_position: Placement =
-		ctx.widget().clone_or_default("relative_position");
+	    let placement: Placement = ctx.widget().clone_or_default("placement");
+	    let offset: f64 = ctx.widget().clone_or_default("offset");
 
-	    let new_popup_bounds = match relative_position {
-		Placement::Left(margin) => {
+	    let new_popup_bounds = match placement {
+		Placement::Left => {
 		    let current_v_align: Alignment = ctx.widget().clone("v_align");
 
-		    let x = real_target_bounds.x() - current_bounds.width() - margin;
+		    let x = target_bounds.x() - current_bounds.width() - offset;
 		    let y = current_v_align.align_position(
-			real_target_bounds.height(),
+			target_bounds.height(),
 			current_bounds.height(),
-			real_target_bounds.y(),
-			real_target_bounds.y() + real_target_bounds.height(),
+			target_bounds.y(),
+			target_bounds.y() + target_bounds.height(),
 		    );
 
 		    let width = current_bounds.width();
 		    let height = current_v_align.align_measure(
-			real_target_bounds.height(),
+			target_bounds.height(),
 			current_bounds.height(),
 			0.0,
 			0.0,
@@ -199,20 +214,20 @@ impl RenderObject for PopupRenderObject {
 
 		    Rectangle::new((x, y), current_constraint.perform((width, height)))
 		}
-		Placement::Right(margin) => {
+		Placement::Right => {
 		    let current_v_align: Alignment = ctx.widget().clone("v_align");
 
-		    let x = real_target_bounds.x() + real_target_bounds.width() + margin;
+		    let x = target_bounds.x() + target_bounds.width() + offset;
 		    let y = current_v_align.align_position(
-			real_target_bounds.height(),
+			target_bounds.height(),
 			current_bounds.height(),
-			real_target_bounds.y(),
-			real_target_bounds.y() + real_target_bounds.height(),
+			target_bounds.y(),
+			target_bounds.y() + target_bounds.height(),
 		    );
 
 		    let width = current_bounds.width();
 		    let height = current_v_align.align_measure(
-			real_target_bounds.height(),
+			target_bounds.height(),
 			current_bounds.height(),
 			0.0,
 			0.0,
@@ -220,18 +235,18 @@ impl RenderObject for PopupRenderObject {
 
 		    Rectangle::new((x, y), current_constraint.perform((width, height)))
 		}
-		Placement::Top(margin) => {
+		Placement::Top => {
 		    let current_h_align: Alignment = ctx.widget().clone("h_align");
 
 		    let x = current_h_align.align_position(
-			real_target_bounds.width(),
+			target_bounds.width(),
 			current_bounds.width(),
-			real_target_bounds.x(),
-			real_target_bounds.x() + real_target_bounds.width(),
+			target_bounds.x(),
+			target_bounds.x() + target_bounds.width(),
 		    );
-		    let y = real_target_bounds.y() - current_bounds.height() - margin;
+		    let y = target_bounds.y() - current_bounds.height() - offset;
 		    let width = current_h_align.align_measure(
-			real_target_bounds.width(),
+			target_bounds.width(),
 			current_bounds.width(),
 			0.0,
 			0.0,
@@ -240,18 +255,98 @@ impl RenderObject for PopupRenderObject {
 
 		    Rectangle::new((x, y), current_constraint.perform((width, height)))
 		}
-		Placement::Bottom(margin) => {
+		Placement::TopLeft => {
 		    let current_h_align: Alignment = ctx.widget().clone("h_align");
 
 		    let x = current_h_align.align_position(
-			real_target_bounds.width(),
+			target_bounds.width(),
 			current_bounds.width(),
-			real_target_bounds.x(),
-			real_target_bounds.x() + real_target_bounds.width(),
+			target_bounds.x(),
+			target_bounds.x() + target_bounds.width(),
 		    );
-		    let y = real_target_bounds.y() + real_target_bounds.height() + margin;
+		    let y = target_bounds.y() - current_bounds.height() - offset;
 		    let width = current_h_align.align_measure(
-			real_target_bounds.width(),
+			target_bounds.width(),
+			current_bounds.width(),
+			0.0,
+			0.0,
+		    );
+		    let height = current_bounds.height();
+
+		    Rectangle::new((x, y), current_constraint.perform((width, height)))
+		}
+		Placement::TopRight => {
+		    let current_h_align: Alignment = ctx.widget().clone("h_align");
+
+		    let x = current_h_align.align_position(
+			target_bounds.width(),
+			current_bounds.width(),
+			target_bounds.x(),
+			target_bounds.x() + target_bounds.width(),
+		    );
+		    let y = target_bounds.y() - current_bounds.height() - offset;
+		    let width = current_h_align.align_measure(
+			target_bounds.width(),
+			current_bounds.width(),
+			0.0,
+			0.0,
+		    );
+		    let height = current_bounds.height();
+
+		    Rectangle::new((x, y), current_constraint.perform((width, height)))
+		}
+		Placement::Bottom => {
+		    let current_h_align: Alignment = ctx.widget().clone("h_align");
+
+		    let x = current_h_align.align_position(
+			target_bounds.width(),
+			current_bounds.width(),
+			target_bounds.x(),
+			target_bounds.x() + target_bounds.width(),
+		    );
+		    let y = target_bounds.y() + target_bounds.height() + offset;
+		    let width = current_h_align.align_measure(
+			target_bounds.width(),
+			current_bounds.width(),
+			0.0,
+			0.0,
+		    );
+		    let height = current_bounds.height();
+
+		    Rectangle::new((x, y), current_constraint.perform((width, height)))
+		}
+		Placement::BottomLeft => {
+		    let current_h_align: Alignment = ctx.widget().clone("h_align");
+
+		    let x = current_h_align.align_position(
+			target_bounds.width(),
+			current_bounds.width(),
+			target_bounds.x(),
+			target_bounds.x() + target_bounds.width(),
+		    );
+		    let y = target_bounds.y() + target_bounds.height() + offset;
+		    let width = current_h_align.align_measure(
+			target_bounds.width(),
+			current_bounds.width(),
+			0.0,
+			0.0,
+		    );
+		    let height = current_bounds.height();
+
+		    Rectangle::new((x, y), current_constraint.perform((width, height)))
+		}
+		Placement::BottomRight => {
+		    let current_h_align: Alignment = ctx.widget().clone("h_align");
+
+		    let x = current_h_align.align_position(
+			target_bounds.width(),
+			current_bounds.width(),
+			target_bounds.x(),
+			target_bounds.x() + target_bounds.width(),
+		    );
+		    let y = target_bounds.y() + target_bounds.height() + offset;
+		    let width = current_h_align.align_measure(
+			target_bounds.width(),
 			current_bounds.width(),
 			0.0,
 			0.0,
