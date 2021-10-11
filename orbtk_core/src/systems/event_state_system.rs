@@ -86,8 +86,12 @@ impl EventStateSystem {
         {
             let registry = &mut self.registry.borrow_mut();
 
-            let mut ctx =
-                Context::new((entity, ecm), theme, &self.context_provider, render_context);
+            let mut ctx = Context::new(
+                (entity, ecm),
+                theme,
+                &self.context_provider,
+                render_context,
+            );
 
             if let Some(state) = self.context_provider.states.borrow_mut().get_mut(&entity) {
                 state.cleanup(registry, &mut ctx);
