@@ -60,37 +60,20 @@ impl MainViewState {
 	    Popup::open_set(&mut ctx.child(ID_POPUP), true);
 		Button::text_set(&mut ctx.child(ID_BUTTON), "Click me to hide the popup");
 	    }
-	if cfg!(debug) {
-	    println!("popup_v2: toggled {:?}.",
-		     ctx.child(ID_POPUP).get::<String>("name"));
-	    println!("Current placement: {:?}",
-		     ctx.child(ID_POPUP).get::<Placement>("placement")
-	    );
-	    println!("Current visibility: {:?}",
-		     ctx.child(ID_POPUP).get::<Visibility>("visibility"));
-	}
     }
 
     fn update_placement(&mut self, ctx: &mut Context<'_>) {
 	let selected_index: i32 = ctx.child(ID_PLACEMENT_COMBO_BOX).clone("selected_index");
 	let placement: Placement = ctx.child(ID_POPUP).clone_or_default("placement");
 	    match selected_index {
-	    0 => Popup::placement_set(&mut ctx.child(ID_POPUP),
-				      placement.bottom()),
-	    1 => Popup::placement_set(&mut ctx.child(ID_POPUP),
-				      placement.bottom_left()),
-	    2 => Popup::placement_set(&mut ctx.child(ID_POPUP),
-				      placement.bottom_right()),
-	    3 => Popup::placement_set(&mut ctx.child(ID_POPUP),
-				      placement.left()),
-	    4 => Popup::placement_set(&mut ctx.child(ID_POPUP),
-				      placement.right()),
-	    5 => Popup::placement_set(&mut ctx.child(ID_POPUP),
-				      placement.top()),
-	    6 => Popup::placement_set(&mut ctx.child(ID_POPUP),
-				      placement.top_left()),
-	    7 => Popup::placement_set(&mut ctx.child(ID_POPUP),
-				      placement.top_right()),
+	    0 => Popup::placement_set(&mut ctx.child(ID_POPUP), placement.bottom()),
+	    1 => Popup::placement_set(&mut ctx.child(ID_POPUP), placement.bottom_left()),
+	    2 => Popup::placement_set(&mut ctx.child(ID_POPUP), placement.bottom_right()),
+	    3 => Popup::placement_set(&mut ctx.child(ID_POPUP), placement.left()),
+	    4 => Popup::placement_set(&mut ctx.child(ID_POPUP), placement.right()),
+	    5 => Popup::placement_set(&mut ctx.child(ID_POPUP), placement.top()),
+	    6 => Popup::placement_set(&mut ctx.child(ID_POPUP), placement.top_left()),
+	    7 => Popup::placement_set(&mut ctx.child(ID_POPUP), placement.top_right()),
 		_ => panic!(),
 	    }
 	if cfg!(debug) {
@@ -106,12 +89,12 @@ impl MainViewState {
 	let offset: f64 = ctx.child(ID_PLACEMENT_OFFSET).clone("val");
 	Popup::offset_set(&mut ctx.child(ID_POPUP), offset);
 
-	//if cfg!(debug) {
+	if cfg!(debug) {
 	    println!(
 		"popup_v2: Offset {:?}.",
 		ctx.child(ID_POPUP).get::<f64>("offset")
 	    );
-	//}
+	}
     }
 }
 
