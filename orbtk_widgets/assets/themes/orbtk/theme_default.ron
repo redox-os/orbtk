@@ -355,15 +355,16 @@ Theme (
         "combo_box": (
             base: "base",
             properties: {
-                "font_size": "$FONT_SIZE_12",
-                "foreground": "$CONTENT_FOREGROUND",
-                "icon_brush": "$CONTENT_FOREGROUND",
                 "background": "$BUTTON_BACKGROUND",
                 "border_width": 0,
+                "font_size": "$FONT_SIZE_12",
+                "foreground": "$CONTENT_FOREGROUND",
                 "height": 32,
+                "icon": "$MD_KEYBOARD_ARROW_DOWN",
+                "icon_brush": "$CONTENT_FOREGROUND",
+                "offset": 1,
                 "padding_left": 6,
                 "padding_right": 6,
-                "icon": "$MD_KEYBOARD_ARROW_DOWN",
             },
             states: [
                 (
