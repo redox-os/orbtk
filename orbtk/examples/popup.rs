@@ -67,9 +67,9 @@ impl MainViewState {
         let placement: Placement = ctx.child(ID_POPUP).clone_or_default("placement");
         match selected_index {
             0 => Popup::placement_set(&mut ctx.child(ID_POPUP), placement.bottom()),
-	    1 => Popup::placement_set(&mut ctx.child(ID_POPUP), placement.left()),
-	    2 => Popup::placement_set(&mut ctx.child(ID_POPUP), placement.right()),
-	    3 => Popup::placement_set(&mut ctx.child(ID_POPUP), placement.top()),
+            1 => Popup::placement_set(&mut ctx.child(ID_POPUP), placement.left()),
+            2 => Popup::placement_set(&mut ctx.child(ID_POPUP), placement.right()),
+            3 => Popup::placement_set(&mut ctx.child(ID_POPUP), placement.top()),
             _ => panic!(),
         }
         if cfg!(debug) {
@@ -98,10 +98,10 @@ impl MainViewState {
 impl State for MainViewState {
     fn init(&mut self, _registry: &mut Registry, ctx: &mut Context) {
         // initialize the popup properties
-	let offset: f64 = ctx.child(ID_PLACEMENT_OFFSET).clone("val");
-	Popup::offset_set(&mut ctx.child(ID_POPUP), offset);
-	Popup::open_set(&mut ctx.child(ID_POPUP), false);
-	Popup::visibility_set(&mut ctx.child(ID_POPUP), Visibility::Collapsed);
+        let offset: f64 = ctx.child(ID_PLACEMENT_OFFSET).clone("val");
+        Popup::offset_set(&mut ctx.child(ID_POPUP), offset);
+        Popup::open_set(&mut ctx.child(ID_POPUP), false);
+        Popup::visibility_set(&mut ctx.child(ID_POPUP), Visibility::Collapsed);
     }
 
     fn messages(
@@ -195,7 +195,6 @@ impl Template for MainView {
             //.target(Point::new(0.0, 0.0))
             .height(180.0)
             .open(false)
-            .offset(1.0)
             .width(180.0)
             .target(target_container)
         .child(
@@ -276,7 +275,8 @@ impl Template for MainView {
                                     .attach(Grid::row(0))
                                     .attach(Grid::column(2))
                                     .count(count_placements)
-				    .style("combo_box")
+                                    .style("popup_combo_box")
+                                    .placement(Placement::Left)
                                     .items_builder(move |ibc, index| {
                                         let text = MainView::placements_ref(&ibc.get_widget(id))
                                             [index]

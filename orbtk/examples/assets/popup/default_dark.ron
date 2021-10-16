@@ -1,10 +1,10 @@
 // Popup: extended default theme.
 Theme (
     styles: {
-        // base: "combo_box",
-        "combo_box": (
+        "popup_combo_box": (
+            base: "combo_box",
             properties: {
-                "width": 150,
+                "offset": 3
             },
         ),
         "container_form": (
@@ -16,7 +16,7 @@ Theme (
                 "border_width": 2,
                 "height": 200,
                 "padding": 16,
-                "width": 200,
+                "width": 200
             },
         ),
         "popup_form": (
@@ -27,28 +27,28 @@ Theme (
                 "border_radius": 12,
                 "border_width": 5,
                 "margin": 8,
-                "padding": 0,
+                "padding": 0
             },
         ),
         "popup_text_block": (
             base: "popup",
             properties: {
-                "h_align": "center",
-                "v_align": "top",
                 "foreground": "#000000",
+                "h_align": "center",
+                "v_align": "top"
             },
         ),
         "popup_numeric_box": (
             base: "numeric_box",
             properties: {
-                "width": 100,
+                "width": 100
             },
         ),
         "target_text_block": (
             base: "small_text",
             properties: {
                 "h_align": "center",
-                "v_align": "center",
+                "v_align": "center"
             },
         ),
     }
