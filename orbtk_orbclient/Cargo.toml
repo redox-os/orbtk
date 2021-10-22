@@ -7,7 +7,7 @@ repository = "https://github.com/redox-os/orbtk"
 readme = "README.md"
 license = "MIT"
 keywords = ["shell", "window", "ui"]
-edition = "2018"
+edition = "2021"
 
 [lib]
 doctest = false

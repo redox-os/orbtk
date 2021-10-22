@@ -66,6 +66,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Add new popup code (version 2: new placement and offset properties)
 * Add` message-handler` example
 * Support feature flag support in `showcase` example
+* Upgrade cargo definitions to use rust edition 2021
 
 ### 0.3.1-alpha3
 
