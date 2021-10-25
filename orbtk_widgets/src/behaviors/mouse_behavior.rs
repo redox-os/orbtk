@@ -70,7 +70,7 @@ widget!(
     /// The `MouseBehavior` widget will take care to handle the actions,
     /// that should be triggered if the mouse pressed event is triggered.
     ///
-    /// **style:** `check-box`
+    /// **style:** `check_box`
     MouseBehavior<MouseBehaviorState>: MouseHandler {
         /// Sets or shares the target of the behavior.
         target: u32,
