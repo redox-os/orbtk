@@ -84,7 +84,7 @@ pub fn print_tree(entity: Entity, depth: usize, ecm: &mut EntityComponentManager
     };
 
     crate::shell::CONSOLE.log(format!(
-        "{}{} (entity: {}{})",
+        "{}{} (entity: {}, {})",
         "| ".repeat(depth),
         name,
         entity.0,
