@@ -118,7 +118,7 @@ impl RenderContext2D {
                         (start, end)
                     }
                 };
-                let g_stops = build_unit_percent_gradient(&stops, end.distance(start), |p, c| {
+                let g_stops = build_unit_percent_gradient(stops, end.distance(start), |p, c| {
                     let mut color = tiny_skia::Color::from_rgba8(c.b(), c.g(), c.r(), c.a());
                     color.set_alpha(color.alpha() * global_alpha);
                     tiny_skia::GradientStop::new(p as f32, color)

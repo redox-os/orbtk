@@ -21,12 +21,8 @@ impl PostLayoutStateSystem {
         render_context: &mut RenderContext2D,
     ) {
         {
-            let mut ctx = Context::new(
-                (entity, ecm),
-                &theme,
-                &self.context_provider,
-                render_context,
-            );
+            let mut ctx =
+                Context::new((entity, ecm), theme, &self.context_provider, render_context);
 
             if let Some(state) = self.context_provider.states.borrow_mut().get_mut(&entity) {
                 state.cleanup(&mut self.registry.borrow_mut(), &mut ctx);

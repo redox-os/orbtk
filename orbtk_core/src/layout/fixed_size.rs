@@ -75,7 +75,7 @@ impl Layout for FixedSizeLayout {
                             .map(|water_mark| {
                                 measure_text(
                                     render_context_2_d,
-                                    &water_mark,
+                                    water_mark,
                                     font.as_str(),
                                     *font_size,
                                 )

@@ -68,7 +68,7 @@ impl EventStateSystem {
                 &mut WidgetContainer::new(
                     removed,
                     ecm,
-                    &theme,
+                    theme,
                     Some(&self.context_provider.event_adapter),
                 ),
             );
@@ -86,12 +86,8 @@ impl EventStateSystem {
         {
             let registry = &mut self.registry.borrow_mut();
 
-            let mut ctx = Context::new(
-                (entity, ecm),
-                &theme,
-                &self.context_provider,
-                render_context,
-            );
+            let mut ctx =
+                Context::new((entity, ecm), theme, &self.context_provider, render_context);
 
             if let Some(state) = self.context_provider.states.borrow_mut().get_mut(&entity) {
                 state.cleanup(registry, &mut ctx);
@@ -135,7 +131,7 @@ impl EventStateSystem {
                             ecm,
                             &message_adapter,
                         ),
-                        &event,
+                        event,
                     )
                 });
                 return true;

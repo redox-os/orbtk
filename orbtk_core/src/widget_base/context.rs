@@ -51,7 +51,7 @@ impl<'a> Context<'a> {
         Context {
             entity: ecs.0,
             ecm: ecs.1,
-            theme: Rc::clone(&theme),
+            theme: Rc::clone(theme),
             provider,
             new_states: BTreeMap::new(),
             remove_widget_list: vec![],

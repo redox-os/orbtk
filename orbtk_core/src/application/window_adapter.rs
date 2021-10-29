@@ -243,7 +243,7 @@ pub fn create_window<F: Fn(&mut BuildContext) -> Entity + 'static>(
             &context_provider.layouts,
             &context_provider.handler_map,
             &mut *context_provider.states.borrow_mut(),
-            &theme,
+            theme,
             context_provider.event_adapter.clone(),
         ));
 
@@ -258,7 +258,7 @@ pub fn create_window<F: Fn(&mut BuildContext) -> Entity + 'static>(
             &context_provider.layouts,
             &context_provider.handler_map,
             &mut *context_provider.states.borrow_mut(),
-            &theme,
+            theme,
             context_provider.event_adapter.clone(),
         ));
 
@@ -317,7 +317,7 @@ pub fn create_window<F: Fn(&mut BuildContext) -> Entity + 'static>(
     world
         .entity_component_manager()
         .component_store_mut()
-        .register("theme", window, Rc::clone(&theme));
+        .register("theme", window, Rc::clone(theme));
     world
         .entity_component_manager()
         .component_store_mut()

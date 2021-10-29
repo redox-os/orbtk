@@ -84,7 +84,7 @@ pub trait RenderObject: Any {
         }
 
         self.render_self(
-            &mut Context::new((entity, ecm), &theme, context_provider, render_context),
+            &mut Context::new((entity, ecm), theme, context_provider, render_context),
             &global_position,
         );
 
@@ -111,7 +111,7 @@ pub trait RenderObject: Any {
             entity,
             ecm,
             context_provider,
-            &theme,
+            theme,
             offsets,
             debug,
         );
@@ -159,7 +159,7 @@ pub trait RenderObject: Any {
                     child,
                     ecm,
                     context_provider,
-                    &theme,
+                    theme,
                     offsets,
                     debug,
                 );
