@@ -424,28 +424,34 @@ impl State for TableState {
 }
 
 widget!(
-    /// The TableView is designed to visualise collection of data broken into columns and rows.
+    /// The TableView is designed to visualize a collection of data
+    /// that is broken into columns and rows.
     ///
-    /// The columns are the fields of a struct, and the rows is the instances of that struct.
-    /// A TableView is therefore very similar to the [`ListView`] widget, with the addition of support for columns and sorting.
+    /// Columns are derived from fields of a data struct. Rows are the
+    /// stuct intances. The TableView widget acts similar to the
+    /// [`ListView`] widget.
     ///
-    /// The TableView has the features of:
-    /// * Automatically adjust column widths based on the width of the cell
-    /// * Sorting rows by column
+    /// # Features
+    /// * Atomatic creation of data columns.
+    /// * Automatic adjustment of column width (taking the actual cell width).
+    /// * Interactive selectable sort of data.
+    ///   The row contents is sorted in respect to the choosen column
+    ///   sort direction.
     ///
     /// # Examples
-    /// To create a TableView, you must define at least one column with a unique ID, and implement the `row_builder` closure.
-    /// Please see the table_view example, or the showcase.
+    /// To create a TableView, define at least a data source with one column.
+    /// The column id's need to be unique. The `row_builder` closure will
+    /// implement the needed properties. Please consult existing `table_view` example,
+    /// or `showcase` example for further details.
     ///
     /// # Ownership
-    /// Due to the current architecture of orbtk,
-    /// the TableView does not own the data that is displayed nor does not know about.
-    /// Most of its features implemented and relies on using callbacks (closures).
+    /// The current architecture of orbtk, doesn't allow ownership of data for a
+    /// given widget. The feature implementation relies on callbacks (`closures`).
     ///
     /// # Panics
-    /// The TableView will panics at runtime in the following cases:
-    /// * the developer does not define at least one column
-    /// * the defined column's `id` property is empty.
+    /// Runtime panics will occure, for the following cases:
+    /// * Minimum of `one` column isn't met.
+    /// * Property `id` of a column is empty.
     ///
     /// [`ListView`]: ./struct.ListView.html
     TableView<TableState> {
@@ -464,10 +470,11 @@ widget!(
         /// Sets or shares the column count property.
         column_count: usize,
 
-        /// Sets or shares the Entity of the widget is holding the data to display
+        /// Sets or shares the widget entity that presets the
+        /// data.
         data_source: u32,
 
-        /// Set it tro `true` to trigger redrawing of the items.
+        /// A boolean that triggers redrawing of items.
         request_update: bool,
 
         /// Sets or shares the row count property.
@@ -530,7 +537,7 @@ impl Template for TableView {
 impl TableView {
     /// Adds a new column to the header of the TableView. The widget
     /// will create a `Button` that handles an on_click callback. The
-    /// callback will trigger row sorting of the given column_id.
+    /// callback will trigger row sorting of the given column id.
     /// The style is **table_column_header**.
     ///
     /// # Arguments:
@@ -546,6 +553,7 @@ impl TableView {
         self
     }
 
+    /// Creates a customizable column header.
     pub fn custom_column(mut self, header: Entity) -> Self {
         self.state
             .actions
@@ -562,9 +570,11 @@ impl TableView {
     ///
     /// # Arguments
     /// * `&mut BuildContext`: query widgets by its Entity.
-    /// * `usize`: the current row index when TableView draws the rows.TableView will
-    /// loop starting from 0 until it reaches the value `row_count`.You can use this index
-    /// to query the container holding the data to be displayed.
+    /// * `usize`: the current row index when TableView draws the rows.
+    ///
+    /// TableView will loop starting from 0 until it reaches the value
+    /// `row_count`. You can use this index to query the container
+    /// holding the data to be displayed.
     pub fn row_builder<F: Fn(&mut BuildContext, usize, &mut Vec<Entity>) + 'static>(
         mut self,
         builder: F,
@@ -574,15 +584,17 @@ impl TableView {
     }
 
     /// Defines the callback function for sorting rows of the `TableView`.
-    /// Clicking on one of the TableView column headers will trigger sorting, and this callback
-    /// will be used during sorting.
+    /// Clicking on one of the TableView column headers will trigger
+    /// sorting, and this callback will be used during sorting.
     ///
     /// # Arguments:
-    /// * `&str:` the sorting predicate, e.g. the id of the column the TableView is sorted by.
-    /// * `TableSortDirection`: the current order of the sorting.
+    /// * `&str:` the sorting predicate, e.g. the id of the column used to sort the TableView.
+    /// * `TableSortDirection`: the current sorting order.
     /// * `Entity`: The entitiy of the widget containing the data that will be displayed.
-    ///   The value of the `data_source` property. Using the `context` in combination with the
-    ///   entity id will enable the query of other properties as well.
+    /// * `data_source` property value.
+    ///
+    /// Using the `context` in combination with the entity id will
+    /// enable the query of other properties as well.
     pub fn on_sort<F: Fn(&str, TableSortDirection, Entity, &mut Context) + 'static>(
         mut self,
         sorter: F,
@@ -684,8 +696,9 @@ impl State for TableCellState {
 }
 
 widget!(
-    /// Used to represent a cell with its position in the matrix of a `TableView`.
-    /// Wraps a widget during building rows from `TableView::row_builder` callback.
+    /// Used to represent a cell inside the `TableView`.
+    /// A cell determinse the position inside the table matrix. It wraps
+    /// a widget when rendering rows via `TableView::row_builder` callback.
     TableCell<TableCellState>: MouseHandler {
         /// Sets or shares the background property.
         background: Brush,
@@ -699,7 +712,8 @@ widget!(
         /// Sets or shares the border brush property.
         border_brush: Brush,
 
-        /// Sets or shares the index of the column this cell belongs to in the TableView.
+        /// Sets or shares the column index of a cell
+        /// used for placment inside the TableView.
         column_index: usize,
 
         /// Sets or shares the font property.
@@ -711,20 +725,22 @@ widget!(
         /// Sets or shares the foreground property.
         foreground: Brush,
 
-        /// Indicates if the widget is hovered by the mouse cursor.
+        /// Indicates a hover event triggered by the mouse cursor.
         hover: bool,
 
         /// Sets or shares the padding property.
         padding: Thickness,
 
-        /// Sets or shares the entity of the parent TableView this cell belongs to.
+        /// Sets or shares the parent entity of a cell
+        /// used for placement inside the TableView.
         parent: u32,
 
         /// Sets or shares the pressed property.
         /// Indicates that the widget was clicked by the mouse.
         pressed: bool,
 
-        /// Sets or shares the index of the row this cell belongs to in the TableView.
+        /// Sets or shares the row index of a cell inside
+        /// the TableView.
         row_index: usize,
 
         /// Sets or shares the selected property.
@@ -809,10 +825,12 @@ impl TableColumnHeaderState {
 
 widget!(
     /// Represents a custom column header in a TableView.
-    /// Wraps a widget by its Entity to preserve the custom header's on_click callback (if it is has any)
-    /// and able to send a sorting message to the TableView at the same time.
+    /// Wraps a widget by its entity. This is used to preserve header's
+    /// on_click callback. The callback triggers a message to sort
+    /// the row data.
     TableColumnHeader: MouseHandler {
-        /// Sets or shares the entity of the TableView this column header is attached to.
+        /// Sets or shares the entity of the TableView this column
+        /// header is attached to.
         parent: u32
 });
 
