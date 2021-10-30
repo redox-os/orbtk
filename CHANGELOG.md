@@ -107,6 +107,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * TextBox select all (Ctrl + a)
 * Text input support for !, @, #
 * Borderless window
+* Add `table_view` widget
 
 ### 0.3.1-alpha1
 
