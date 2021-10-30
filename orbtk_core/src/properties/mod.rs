@@ -32,7 +32,7 @@ where
 }
 
 /// Used to build or share a property.
-#[derive(PartialEq, Debug)]
+#[derive(Debug, PartialEq)]
 pub enum PropertySource<P: Component + Debug> {
     Source(Entity),
     KeySource(String, Entity),
@@ -88,8 +88,11 @@ into_property_source!(PathBuf);
 // Implementation of PropertySource for utils types
 into_property_source!(utils::Alignment: &str);
 into_property_source!(utils::Brush: &str, utils::Color, utils::Value);
+into_property_source!(utils::Constraint: utils::ConstraintBuilder);
+into_property_source!(utils::Filter: &str, String, Vec<String>, Vec<&str>);
 into_property_source!(utils::Orientation: &str);
 into_property_source!(utils::Point: f64, i32, (i32, i32), (f64, f64));
+into_property_source!(utils::SelectionMode: &str);
 into_property_source!(utils::Size: f64, i32, (i32, i32), (f64, f64));
 into_property_source!(
     utils::Rectangle: (i32, i32, i32, i32),
@@ -105,10 +108,8 @@ into_property_source!(
     (f64, f64, f64, f64),
     utils::Value
 );
-into_property_source!(utils::SelectionMode: &str);
 into_property_source!(utils::Visibility: &str);
 into_property_source!(Vec<String>);
-into_property_source!(utils::Filter: &str, String, Vec<String>, Vec<&str>);
 
 // Implementation of css types
 into_property_source!(theming::Selector: &str, String);
@@ -119,11 +120,10 @@ into_property_source!(render::Image: &str, String, (u32, u32, Vec<u32>));
 
 // Implementation of custom property types
 into_property_source!(Blocks: BlocksBuilder, &str, String);
-into_property_source!(utils::Constraint: utils::ConstraintBuilder);
 into_property_source!(DefaultRenderPipeline);
+into_property_source!(FocusState);
+into_property_source!(KeyboardState);
 into_property_source!(ScrollViewerMode: (&str, &str));
 into_property_source!(SelectedEntities: HashSet<Entity>);
 into_property_source!(SelectedIndices: HashSet<usize>);
 into_property_source!(TextSelection: (usize, usize));
-into_property_source!(FocusState);
-into_property_source!(KeyboardState);

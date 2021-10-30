@@ -41,7 +41,7 @@ widget!(
     /// The `SelectionBehavior` widget will take care to handle the actions,
     /// that should be triggered if text regions are marked or selected.
     ///
-    /// **style:** `check-box`
+    /// **style:** `check_box`
     SelectionBehavior<SelectionBehaviorState>: MouseHandler {
         /// Sets or shares the target of the behavior.
         target: u32,
