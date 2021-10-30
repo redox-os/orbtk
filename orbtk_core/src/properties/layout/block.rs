@@ -201,16 +201,6 @@ impl Blocks {
         BlocksBuilder::new()
     }
 
-    /// Returns the number of elements in the blocks list, also referred to as its 'length'.
-    pub fn len(&self) -> usize {
-        self.0.len()
-    }
-
-    /// Returns a boolean if the block is empty.
-    pub fn is_empty(&self) -> bool {
-        self.0.is_empty()
-    }
-
     /// Returns a reference to a block.
     pub fn get(&self, block: usize) -> Option<&Block> {
         self.0.get(block)
@@ -221,6 +211,11 @@ impl Blocks {
         self.0.get_mut(block)
     }
 
+    /// Returns a boolean if the block is empty.
+    pub fn is_empty(&self) -> bool {
+        self.0.is_empty()
+    }
+
     /// Returns an iterator over the slice.
     pub fn iter(&self) -> Iter<Block> {
         self.0.iter()
@@ -229,6 +224,11 @@ impl Blocks {
     /// Returns a mutable iterator over the slice.
     pub fn iter_mut(&mut self) -> IterMut<Block> {
         self.0.iter_mut()
+    }
+
+    /// Returns the number of elements in the blocks list, also referred to as its 'length'.
+    pub fn len(&self) -> usize {
+        self.0.len()
     }
 }
 
