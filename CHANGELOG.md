@@ -58,11 +58,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Add `Brush` handling gradients (respecting angles, directions, color codes)
 * Add fluent design inspired theme (dark and light)
 * Add fonts and icon sets specific to fluent design (Microsoft Segoe look)
-* Add message example
+* Add `message` example
 * Remove widgets example
 * Replaces Columns and Rows structs with Blocks
 * Set grid columns and rows also as string
 * Refactor grid layout code
+* Add `message-handler` example
+* Support features flag in `showcase` example
 
 ### 0.3.1-alpha3
 
