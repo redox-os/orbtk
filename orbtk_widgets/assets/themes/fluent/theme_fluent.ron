@@ -470,6 +470,88 @@ Theme (
 
         // -- [END] Lists --
 
+        // -- [START] TableView --
+
+        "table_view": (
+            base: "base",
+            properties: {
+                "background": "$CONTAINER_BACKGROUND",
+                "border_brush": "$CONTAINER_BORDER",
+                "border_width": 1,
+                "border_radius": 2
+            }
+        ),
+        "table_column_header": (
+            base: "base",
+            properties: {
+                "background": "$BUTTON_BACKGROUND",
+                "border_brush": "CONTAINER_BORDER",
+                "border_radius": 0,
+                "border_width": 1,
+                "font_size": "$FONT_SIZE_12",
+                "foreground": "$CONTENT_FOREGROUND",
+                "height": 32,
+                "icon_brush": "$CONTENT_FOREGROUND",
+                "icon_size": "$ICON_SIZE_16"
+            },
+            states: [
+                (
+                    key: "selected",
+                    properties: {
+                        "background": "$BUTTON_BACKGROUND_SELECTED"
+                    }
+                ),
+                (
+                    key: "hover",
+                    properties: {
+                        "background": "$BUTTON_BACKGROUND_HOVER"
+                    }
+                ),
+                (
+                    key: "pressed",
+                    properties: {
+                        "background": "$BUTTON_BACKGORUND_PRESSED"
+                    }
+                ),
+                (
+                    key: "disabled",
+                    properties: {
+                        "background": "$BUTTON_BACKGROUND_DISABLED",
+                        "foreground": "$BUTTON_FOREGROUND_DISABLED",
+                        "icon_brush": "$BUTTON_FOREGROUND_DISABLED",
+                        "opacity": 1
+                    }
+                ),
+            ],
+        ),
+        "table_cell": (
+            properties: {
+                "background": "transparent",
+                "font_size": "$FONT_SIZE_12",
+                "foreground": "$CONTENT_FOREGROUND",
+                "padding_left": 8,
+                "padding_right": 8
+            },
+            states: [
+                (
+                    key: "selected",
+                    properties: {
+                        "background": "$ACCENT_COLOR",
+                        "foreground": "$CONTENT_FOREGROUND_INVERTED"
+                    }
+                ),
+                (
+                    key: "pressed",
+                    properties: {
+                        "background": "$ACCENT_COLOR",
+                        "foreground": "$CONTENT_FOREGROUND_INVERTED"
+                    }
+                )
+            ]
+        ),
+
+        // -- [End] TableView --
+
         // -- [START] TabWidget --
 
         "tab_widget": (
