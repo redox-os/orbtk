@@ -416,7 +416,7 @@ impl State for ComboBoxState {
             return;
         }
 
-        if let Some(ComboBoxAction::CloseSelection { position }) =  self.action {
+        if let Some(ComboBoxAction::CloseSelection { position }) = self.action {
             ComboBoxState::close_selection(self, ctx, position);
         }
     }

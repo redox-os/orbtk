@@ -117,7 +117,7 @@ impl State for MainViewState {
                 }
                 MainViewAction::UpdatePlacement => {
                     MainViewState::update_placement(self, ctx);
-                    }
+                }
                 MainViewAction::UpdateOffset => {
                     MainViewState::update_offset(self, ctx);
                 }
@@ -197,21 +197,21 @@ impl Template for MainView {
             .open(false)
             .width(180.0)
             .target(target_container)
-        .child(
-            Container::new()
+            .child(
+                Container::new()
                     .child(
                         Stack::new()
                             .id(ID_POPUP_STACK)
                             .orientation("vertical")
                             .spacing(16.0)
-                .child(
-                    TextBlock::new()
+                            .child(
+                                TextBlock::new()
                                     .style("popup_text_block")
-                        .h_align("center")
+                                    .h_align("center")
                                     .v_align("center")
                                     .text("Popup Header")
                                     .build(ctx),
-                )
+                            )
                             .child(
                                 TextBlock::new()
                                     .style("popup_text_block")
@@ -219,7 +219,7 @@ impl Template for MainView {
                                     .v_align("center")
                                     .text("Popup content")
                                     .build(ctx),
-        )
+                            )
                             .build(ctx),
                     )
                     .build(ctx),
@@ -238,18 +238,18 @@ impl Template for MainView {
                     .id(ID_GRID)
                     .rows("80, 200, 200, *")
                     .columns("200, 200, 250")
-                .child(
-                    Button::new()
+                    .child(
+                        Button::new()
                             .id(ID_BUTTON)
                             .attach(Grid::row(0))
                             .attach(Grid::column(1))
                             .text("Click me to show the popup")
                             .on_click(move |state, _entity| -> bool {
                                 state.send_message(MainViewAction::TogglePopup, id);
-                            true
-                        })
+                                true
+                            })
                             .build(ctx),
-                )
+                    )
                     .child(
                         Grid::new()
                             .id(ID_GRID_PLACEMENT)
@@ -318,7 +318,7 @@ impl Template for MainView {
                     )
                     .child(target_container)
                     .build(ctx),
-        )
+            )
     }
 }
 
