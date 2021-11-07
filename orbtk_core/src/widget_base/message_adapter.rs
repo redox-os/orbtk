@@ -104,38 +104,18 @@ impl MessageAdapter {
 
     /// Send a new message to the message pipeline.
     pub fn send_message<M: Any + Send>(&self, message: M, target: Entity) {
-        if !self.messages.lock().unwrap().contains_key(&target) {
-            self.messages
-                .lock()
-                .expect("MessageAdapter::send_message: Cannot lock messages.")
-                .insert(target, HashMap::new());
-        }
-
-        let type_id = TypeId::of::<M>();
-
-        if !self
+        // Docs say this method must be thread safe
+        // to ensure thread safety,
+        // do not release this lock until this method execution ends
+        let mut locked_messages = self
             .messages
             .lock()
-            .expect("MessageAdapter::send_message: Cannot lock messages.")
-            .get(&target)
-            .unwrap()
-            .contains_key(&type_id)
-        {
-            self.messages
-                .lock()
-                .expect("MessageAdapter::send_message: Cannot lock messages.")
-                .get_mut(&target)
-                .unwrap()
-                .insert(type_id, vec![]);
-        }
-
-        self.messages
-            .lock()
-            .expect("MessageAdapter::send_message: Cannot lock messages.")
-            .get_mut(&target)
-            .unwrap()
-            .get_mut(&type_id)
-            .unwrap()
+            .expect("MessageAdapter::send_message: Cannot lock messages.");
+        locked_messages
+            .entry(target)
+            .or_insert_with(|| HashMap::new())
+            .entry(TypeId::of::<M>())
+            .or_insert_with(|| vec![])
             .push(MessageBox::new(message, target));
 
         self.window_sender
