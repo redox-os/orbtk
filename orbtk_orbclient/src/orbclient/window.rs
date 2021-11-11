@@ -33,18 +33,18 @@ pub struct Window<A>
 where
     A: WindowAdapter,
 {
-    window: orbclient::Window,
     adapter: A,
-    render_context: RenderContext2D,
-    request_receiver: Option<mpsc::Receiver<WindowRequest>>,
-    //window_state: WindowState,
+    close: bool,
+    has_clipboard_update: bool,
     mouse: MouseState,
     update: bool,
     redraw: Arc<AtomicBool>,
-    close: bool,
-    has_clipboard_update: bool,
+    render_context: RenderContext2D,
+    request_receiver: Option<mpsc::Receiver<WindowRequest>>,
     #[cfg(not(target_os = "redox"))]
     _sdl2_sync_thread: Option<thread::JoinHandle<()>>,
+    //window_state: WindowState,
+    window: orbclient::Window,
 }
 
 // Internal sync method for OrbClient sdl2 backend
@@ -63,9 +63,9 @@ fn init_sync(
             let _ = internal_sender.send(request.clone());
             if request == WindowRequest::Redraw {
                 let _ = event_sender.push_event(event::Event::Window {
+                    win_event: event::WindowEvent::None,
                     window_id: id,
                     timestamp: 0,
-                    win_event: event::WindowEvent::None,
                 });
             }
         }
@@ -80,13 +80,12 @@ where
 {
     #[cfg(target_os = "redox")]
     pub fn new(
-        window: orbclient::Window,
         adapter: A,
         render_context: RenderContext2D,
         request_receiver: Option<mpsc::Receiver<WindowRequest>>,
+        window: orbclient::Window,
     ) -> Self {
         Window {
-            window,
             adapter,
             render_context,
             request_receiver,
@@ -96,15 +95,16 @@ where
             redraw: Arc::new(AtomicBool::new(true)),
             close: false,
             has_clipboard_update: true,
+            window,
         }
     }
 
     #[cfg(not(target_os = "redox"))]
     pub fn new(
-        window: orbclient::Window,
         adapter: A,
         render_context: RenderContext2D,
         request_receiver: Option<mpsc::Receiver<WindowRequest>>,
+        window: orbclient::Window,
     ) -> Self {
         let mut adapter = adapter;
         let redraw: Arc<AtomicBool> = Arc::new(AtomicBool::new(true));
@@ -121,17 +121,17 @@ where
         };
 
         Window {
-            window,
             adapter,
-            render_context,
-            _sdl2_sync_thread,
-            request_receiver,
-            // window_state: WindowState::default(),
-            mouse: MouseState::default(),
-            update: true,
-            redraw,
             close: false,
             has_clipboard_update: true,
+            mouse: MouseState::default(),
+            redraw,
+            render_context,
+            request_receiver,
+            _sdl2_sync_thread,
+            update: true,
+            // window_state: WindowState::default(),
+            window,
         }
     }
 
@@ -148,6 +148,7 @@ where
 }
 
 #[cfg(not(target_os = "redox"))]
+// Safety: Explain why we are allowed to handout a handle
 unsafe impl<A> raw_window_handle::HasRawWindowHandle for Window<A>
 where
     A: WindowAdapter,
@@ -161,85 +162,6 @@ impl<A> Window<A>
 where
     A: WindowAdapter,
 {
-    /// Check if the window is open.
-    pub fn is_open(&self) -> bool {
-        !self.close
-    }
-
-    fn push_mouse_event(&mut self, pressed: bool, button: MouseButton) {
-        let state = if pressed {
-            ButtonState::Down
-        } else {
-            ButtonState::Up
-        };
-
-        self.adapter.mouse_event(MouseEvent {
-            position: Point::new(self.mouse.mouse_pos.0 as f64, self.mouse.mouse_pos.1 as f64),
-            button,
-            state,
-        });
-    }
-
-    fn push_key_event(&mut self, key_event: orbclient::KeyEvent) {
-        let mut key = Key::from(key_event.character);
-        let state = {
-            if key_event.pressed {
-                ButtonState::Down
-            } else {
-                ButtonState::Up
-            }
-        };
-
-        let text = {
-            if key_event.character != '\0'
-                && key_event.character != '\n'
-                && key_event.character != '\u{1b}'
-            {
-                key_event.character.to_string()
-            } else {
-                match key_event.scancode {
-                    orbclient::K_ALT => key = Key::Alt,
-                    orbclient::K_BKSP => key = Key::Backspace,
-                    orbclient::K_CAPS => key = Key::CapsLock,
-                    orbclient::K_CTRL => key = Key::Control,
-                    orbclient::K_DEL => key = Key::Delete,
-                    orbclient::K_DOWN => key = Key::Down,
-                    orbclient::K_ENTER => key = Key::Enter,
-                    orbclient::K_ESC => key = Key::Escape,
-                    orbclient::K_HOME => {
-                        key = Key::Home;
-                    }
-                    orbclient::K_LEFT => key = Key::Left,
-                    orbclient::K_LEFT_SHIFT => key = Key::ShiftL,
-                    orbclient::K_RIGHT => key = Key::Right,
-                    orbclient::K_RIGHT_SHIFT => key = Key::ShiftR,
-                    orbclient::K_TAB => key = Key::Tab,
-                    orbclient::K_UP => key = Key::Up,
-                    _ => key = Key::Unknown,
-                };
-                String::default()
-            }
-        };
-
-        self.adapter.key_event(KeyEvent { state, key, text });
-    }
-
-    /// Updates the clipboard.
-    pub fn update_clipboard(&mut self) {
-        let mut clipboard_value = if self.has_clipboard_update() {
-            self.has_clipboard_update = false;
-            Some(self.window.clipboard())
-        } else {
-            None
-        };
-
-        self.adapter.clipboard_update(&mut clipboard_value);
-
-        if let Some(value) = clipboard_value {
-            self.window.set_clipboard(value.as_str());
-        }
-    }
-
     /// Drain events and propagate the events to the adapter.
     pub fn drain_events(&mut self) {
         for event in self.window.events() {
@@ -328,6 +250,69 @@ where
         }
     }
 
+    /// Check if the window is open.
+    pub fn is_open(&self) -> bool {
+        !self.close
+    }
+
+    fn push_key_event(&mut self, key_event: orbclient::KeyEvent) {
+        let mut key = Key::from(key_event.character);
+        let state = {
+            if key_event.pressed {
+                ButtonState::Down
+            } else {
+                ButtonState::Up
+            }
+        };
+
+        let text = {
+            if key_event.character != '\0'
+                && key_event.character != '\n'
+                && key_event.character != '\u{1b}'
+            {
+                key_event.character.to_string()
+            } else {
+                match key_event.scancode {
+                    orbclient::K_ALT => key = Key::Alt,
+                    orbclient::K_BKSP => key = Key::Backspace,
+                    orbclient::K_CAPS => key = Key::CapsLock,
+                    orbclient::K_CTRL => key = Key::Control,
+                    orbclient::K_DEL => key = Key::Delete,
+                    orbclient::K_DOWN => key = Key::Down,
+                    orbclient::K_ENTER => key = Key::Enter,
+                    orbclient::K_ESC => key = Key::Escape,
+                    orbclient::K_HOME => {
+                        key = Key::Home;
+                    }
+                    orbclient::K_LEFT => key = Key::Left,
+                    orbclient::K_LEFT_SHIFT => key = Key::ShiftL,
+                    orbclient::K_RIGHT => key = Key::Right,
+                    orbclient::K_RIGHT_SHIFT => key = Key::ShiftR,
+                    orbclient::K_TAB => key = Key::Tab,
+                    orbclient::K_UP => key = Key::Up,
+                    _ => key = Key::Unknown,
+                };
+                String::default()
+            }
+        };
+
+        self.adapter.key_event(KeyEvent { state, key, text });
+    }
+
+    fn push_mouse_event(&mut self, pressed: bool, button: MouseButton) {
+        let state = if pressed {
+            ButtonState::Down
+        } else {
+            ButtonState::Up
+        };
+
+        self.adapter.mouse_event(MouseEvent {
+            position: Point::new(self.mouse.mouse_pos.0 as f64, self.mouse.mouse_pos.1 as f64),
+            button,
+            state,
+        });
+    }
+
     /// Receives window request from the application and handles them.
     pub fn receive_requests(&mut self) {
         if let Some(request_receiver) = &self.request_receiver {
@@ -352,18 +337,6 @@ where
         }
     }
 
-    /// Runs update on the adapter.
-    pub fn update(&mut self) {
-        //super::CONSOLE.time("complete");
-        if !self.update {
-            return;
-        }
-
-        self.adapter.run(&mut self.render_context);
-        self.update = false;
-        self.redraw.store(true, Ordering::Relaxed)
-    }
-
     /// Swaps the current frame buffer.
     pub fn render(&mut self) {
         if self.redraw.load(Ordering::Relaxed) {
@@ -383,5 +356,32 @@ where
         }
 
         self.window.sync();
+    }
+
+    /// Runs update on the adapter.
+    pub fn update(&mut self) {
+        //super::CONSOLE.time("complete");
+        if !self.update {
+            return;
+        }
+
+        self.adapter.run(&mut self.render_context);
+        self.update = false;
+        self.redraw.store(true, Ordering::Relaxed)
+    }
+    /// Updates the clipboard.
+    pub fn update_clipboard(&mut self) {
+        let mut clipboard_value = if self.has_clipboard_update() {
+            self.has_clipboard_update = false;
+            Some(self.window.clipboard())
+        } else {
+            None
+        };
+
+        self.adapter.clipboard_update(&mut clipboard_value);
+
+        if let Some(value) = clipboard_value {
+            self.window.set_clipboard(value.as_str());
+        }
     }
 }

@@ -11,54 +11,39 @@ pub struct WindowBuilder<'a, A: 'static>
 where
     A: WindowAdapter,
 {
-    shell: &'a mut Shell<A>,
     adapter: A,
-    title: String,
-    resizeable: bool,
     always_on_top: bool,
     borderless: bool,
-    fonts: HashMap<String, &'static [u8]>,
     bounds: Rectangle,
+    fonts: HashMap<String, &'static [u8]>,
     request_receiver: Option<mpsc::Receiver<WindowRequest>>,
+    resizeable: bool,
+    shell: &'a mut Shell<A>,
+    title: String,
 }
 
 impl<'a, A> WindowBuilder<'a, A>
 where
     A: WindowAdapter,
 {
-    /// Creates a new window builder.
-    pub fn new(shell: &'a mut Shell<A>, adapter: A) -> Self {
-        WindowBuilder {
-            shell,
-            adapter,
-            title: String::default(),
-            resizeable: false,
-            always_on_top: false,
-            borderless: false,
-            fonts: HashMap::new(),
-            bounds: Rectangle::new((0.0, 0.0), (100.0, 75.0)),
-            request_receiver: None,
-        }
-    }
-
     /// Creates the window builder from a settings object.
     pub fn from_settings(settings: WindowSettings, shell: &'a mut Shell<A>, adapter: A) -> Self {
         WindowBuilder {
-            shell,
             adapter,
-            title: settings.title,
-            resizeable: settings.resizeable,
             always_on_top: settings.always_on_top,
             borderless: settings.borderless,
-            fonts: settings.fonts,
             bounds: Rectangle::new(settings.position, (settings.size.0, settings.size.1)),
+            fonts: settings.fonts,
             request_receiver: None,
+            resizeable: settings.resizeable,
+            shell,
+            title: settings.title,
         }
     }
 
-    /// Sets the title.
-    pub fn title(mut self, title: impl Into<String>) -> Self {
-        self.title = title.into();
+    /// Sets always_on_top.
+    pub fn always_on_top(mut self, always_on_top: bool) -> Self {
+        self.always_on_top = always_on_top;
         self
     }
 
@@ -68,33 +53,9 @@ where
         self
     }
 
-    /// Sets resizeable.
-    pub fn resizeable(mut self, resizeable: bool) -> Self {
-        self.resizeable = resizeable;
-        self
-    }
-
-    /// Sets always_on_top.
-    pub fn always_on_top(mut self, always_on_top: bool) -> Self {
-        self.always_on_top = always_on_top;
-        self
-    }
-
     /// Sets the bounds.
     pub fn bounds(mut self, bounds: impl Into<Rectangle>) -> Self {
         self.bounds = bounds.into();
-        self
-    }
-
-    /// Registers a new font with family key.
-    pub fn font(mut self, family: impl Into<String>, font_file: &'static [u8]) -> Self {
-        self.fonts.insert(family.into(), font_file);
-        self
-    }
-
-    /// Register a window request receiver to communicate with the window shell from outside.
-    pub fn request_receiver(mut self, request_receiver: mpsc::Receiver<WindowRequest>) -> Self {
-        self.request_receiver = Some(request_receiver);
         self
     }
 
@@ -131,10 +92,49 @@ where
         }
 
         self.shell.window_shells.push(Window::new(
-            window,
             self.adapter,
             render_context,
             self.request_receiver,
+            window,
         ));
+    }
+
+    /// Registers a new font with family key.
+    pub fn font(mut self, family: impl Into<String>, font_file: &'static [u8]) -> Self {
+        self.fonts.insert(family.into(), font_file);
+        self
+    }
+
+    /// Creates a new window builder.
+    pub fn new(shell: &'a mut Shell<A>, adapter: A) -> Self {
+        WindowBuilder {
+            adapter,
+            always_on_top: false,
+            borderless: false,
+            bounds: Rectangle::new((0.0, 0.0), (100.0, 75.0)),
+            fonts: HashMap::new(),
+            request_receiver: None,
+            resizeable: false,
+            shell,
+            title: String::default(),
+        }
+    }
+
+    /// Sets resizeable.
+    pub fn resizeable(mut self, resizeable: bool) -> Self {
+        self.resizeable = resizeable;
+        self
+    }
+
+    /// Register a window request receiver to communicate with the window shell from outside.
+    pub fn request_receiver(mut self, request_receiver: mpsc::Receiver<WindowRequest>) -> Self {
+        self.request_receiver = Some(request_receiver);
+        self
+    }
+
+    /// Sets the title.
+    pub fn title(mut self, title: impl Into<String>) -> Self {
+        self.title = title.into();
+        self
     }
 }
