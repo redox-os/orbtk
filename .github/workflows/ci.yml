@@ -47,7 +47,7 @@ jobs:
         uses: actions-rs/cargo@v1
         with:
           command: build
-          args: --tests
+          args: --tests --features bundled
       - name: cargo test
         uses: actions-rs/cargo@v1
         with:
