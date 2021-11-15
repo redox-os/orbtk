@@ -113,9 +113,9 @@ impl MessageAdapter {
             .expect("MessageAdapter::send_message: Cannot lock messages.");
         locked_messages
             .entry(target)
-            .or_insert_with(|| HashMap::new())
+            .or_insert_with(HashMap::new)
             .entry(TypeId::of::<M>())
-            .or_insert_with(|| vec![])
+            .or_insert_with(Vec::new)
             .push(MessageBox::new(message, target));
 
         self.window_sender

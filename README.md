@@ -287,6 +287,18 @@ To switch the language on runtime the `set_language` method of the [Context](htt
 
 ## Run Examples
 
+### Build with sdl2 installation
+
+On `Linux`, `macOS` and `Windows` a `sdl2` installation is needed. Check https://github.com/Rust-SDL2/rust-sdl2 how to install it.
+
+### Build with sdl2 from source
+
+Alternative `sdl2` can build within `OrbTk`. You have to use the `bundled` feature of `OrbTk` for that.
+
+```shell
+cargo run --example showcase --features bundled
+```
+
 To build and run the examples you *will* need an C compiler (like `gcc`, `clang`, or MS's own compiler).
 
 On Linux you also nee to install `cmake`. e.g.: 
