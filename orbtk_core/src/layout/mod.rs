@@ -11,6 +11,7 @@ pub use self::grid::*;
 pub use self::padding::*;
 pub use self::popup::*;
 pub use self::stack::*;
+pub use self::table_view::*;
 
 mod absolute;
 mod fixed_size;
@@ -18,6 +19,7 @@ mod grid;
 mod padding;
 mod popup;
 mod stack;
+mod table_view;
 
 /// The layout process will order the children of a given widget in a dynamic iteration.
 /// It will respect constraint values between its elements. The following image illustrates
