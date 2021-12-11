@@ -18,25 +18,6 @@ pub struct MessageBox {
 }
 
 impl MessageBox {
-    /// Creates a new `MessageBox`.
-    pub fn new<M: Any + Send>(message: M, target: Entity) -> Self {
-        MessageBox {
-            message: Box::new(message),
-            target,
-            message_type: TypeId::of::<M>(),
-        }
-    }
-
-    /// Check if the given type is the type of the message.
-    pub fn is_type<M: Any>(&self) -> bool {
-        self.message_type == TypeId::of::<M>()
-    }
-
-    /// Returns the type of the event.
-    pub fn message_type(&self) -> TypeId {
-        self.message_type
-    }
-
     /// Downcasts the box to a concrete message.
     pub fn downcast<M: Any>(self) -> Result<M, String> {
         if self.message_type == TypeId::of::<M>() {
@@ -53,6 +34,30 @@ impl MessageBox {
         }
 
         Err("Wrong message type".to_string())
+    }
+
+    /// Check if the given type is the type of the message.
+    pub fn is_type<M: Any>(&self) -> bool {
+        self.message_type == TypeId::of::<M>()
+    }
+
+    /// Creates a new `MessageBox`.
+    pub fn new<M: Any + Send>(message: M, target: Entity) -> Self {
+        MessageBox {
+            message: Box::new(message),
+            target,
+            message_type: TypeId::of::<M>(),
+        }
+    }
+
+    /// Returns the type of the event.
+    pub fn message_type(&self) -> TypeId {
+        self.message_type
+    }
+
+    /// Returns the target of the event.
+    pub fn target(&self) -> Entity {
+        self.target
     }
 }
 
