@@ -79,16 +79,16 @@ You can also check out the OrbTk template project to start a new project: https:
 use orbtk::prelude::*;
 
 fn main() {
-      Application::new()
-        .window(|ctx| {
-            Window::new()
-                .title("OrbTk - minimal example")
-                .position((100.0, 100.0))
-                .size(420.0, 730.0)
-                .child(TextBlock::new().text("OrbTk").build(ctx))
-                .build(ctx)
-        })
-        .run();
+	  Application::new()
+		.window(|ctx| {
+			Window::new()
+				.title("OrbTk - minimal example")
+				.position((100.0, 100.0))
+				.size(420.0, 730.0)
+				.child(TextBlock::new().text("OrbTk").build(ctx))
+				.build(ctx)
+		})
+		.run();
 }
 ```
 
@@ -102,12 +102,12 @@ Basic usage of the widget! macro:
 
 ```rust
 widget!(
-    MyWidget {
-      background: Brush,
-      count: u32,
-      text: String,
-      ...
-    }
+	MyWidget {
+	  background: Brush,
+	  count: u32,
+	  text: String,
+	  ...
+	}
 );
 ```
 
@@ -120,51 +120,52 @@ Basic usage of the Template trait:
 
 ```rust
 impl Template for MyWidget {
-    fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {
-         self.name("MyWidget")
-            .style("my_widget_style")
-            .background("#000000")
-            .count(0)
-            .text("Initial text")
-            .child(Container::new()
-                    // Container references the same background as MyWidget
-                    .background(id)
-                    .child(TextBlock::new()
-                            // TextBlock references the same text as MyWidget
-                            .text(id)
-                            .build(ctx)
-                    )
-                    .build(ctx)
-            )
-    }
+	fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {
+		 self.name("MyWidget")
+			.style("my_widget_style")
+			.background("#000000")
+			.count(0)
+			.text("Initial text")
+			.child(Container::new()
+					// Container references the same background as MyWidget
+					.background(id)
+					.child(TextBlock::new()
+							// TextBlock references the same text as MyWidget
+							.text(id)
+							.build(ctx)
+					)
+					.build(ctx)
+			)
+	}
 }
 ```
 
 ### Widget State
 
-The state of a widget is used to update its inner state. Each state has to implement the [State trait](https://github.com/redox-os/orbtk/blob/develop/orbtk_core/src/widget_base/state.rs). The inner state of a widget is represented by the 
-current values of its properties.
+The state of a widget is used to update its inner state. Each state has to implement the
+[State trait](https://github.com/redox-os/orbtk/blob/develop/orbtk_core/src/widget_base/state.rs).
+The inner state of a widget is represented by the current values of its properties.
 
 Basic usage of the state trait:
 
 ```rust
 #[derive(Default, AsAny)]
 struct MyState {
-    ...
+	...
 }
 
 impl State for MyState {
-    fn update(&mut self, _: &mut Registry, ctx: &mut Context) {
-        // update the widget
-        ...
-    }
+	fn update(&mut self, _: &mut Registry, ctx: &mut Context) {
+		// update the widget
+		...
+	}
 }
 
 widget!(
-    // Add MyState as state of MyWidget
-    MyWidget<MyState> {
-        ...
-    }
+	// Add MyState as state of MyWidget
+	MyWidget<MyState> {
+		...
+	}
 );
 ```
 
@@ -180,70 +181,70 @@ OrbTk provides a theme engine base on [RON](https://github.com/ron-rs/ron). The 
 * Dynamic theme switch
 * State styling (pressed | selected | focused | disabled)
 
-Short example: 
+Short example:
 ```ron
 Theme (
-    styles: {
-        "base": (
-            properties: {
-                "font_size": "$FONT_SIZE_12",
-                "font_family": "$MEDIUM_FONT",
-            }
-        ),
-        "button": (
-            base: "base",
-            properties: {
-                "background": "$BLACK",
-            },
-            states: [
-                (
-                    key: "pressed",
-                    properties: {
-                        "background": "$WHITE",
-                    }
-                )
-            ]
-        )
-    },
-    resource: {
-        "BLACK": "#000000",
-        "WHITE": "#ffffff",
-        "MEDIUM_FONT": "Roboto-Medium",
-        "FONT_SIZE_12": 12,
-        "FONT_SIZE_16": 16,
-    }
+	styles: {
+		"base": (
+			properties: {
+				"font_size": "$FONT_SIZE_12",
+				"font_family": "$MEDIUM_FONT",
+			}
+		),
+		"button": (
+			base: "base",
+			properties: {
+				"background": "$BLACK",
+			},
+			states: [
+				(
+					key: "pressed",
+					properties: {
+						"background": "$WHITE",
+					}
+				)
+			]
+		)
+	},
+	resource: {
+		"BLACK": "#000000",
+		"WHITE": "#ffffff",
+		"MEDIUM_FONT": "Roboto-Medium",
+		"FONT_SIZE_12": 12,
+		"FONT_SIZE_16": 16,
+	}
 )
 ```
 
-OrbTk will also provide a plain mechanism to style and theme widgets and UIs. 
+OrbTk will also provide a plain mechanism to style and theme widgets and UIs.
 
 ### Localization
 
-OrbTk provides the possibility to register a application wide localization service. A localization service has to 
+OrbTk provides the possibility to register a application wide localization service. A localization service has to
 implement the [Localization](https://github.com/redox-os/orbtk/blob/develop/orbtk_core/src/localization/mod.rs) trait.
 
 *Example*
 
 ```rust
 pub struct MyLocalization {
-    ...
+	...
 }
 
 impl Localization for MyLocalization {
-    /// Gets the current language by language key e.g. `en_US` or `de_DE`.
-    fn language(&self) -> &String {
-        ...
-    }
+	/// Gets the current language by language key e.g. `en_US` or `de_DE`.
+	fn language(&self) -> &String {
+		...
+	}
 
-    /// Sets the current language by key e.g. `en_US` or `de_DE`.
-    fn set_language(&mut self, key: &str) {
-        ...
-    }
+	/// Sets the current language by key e.g. `en_US` or `de_DE`.
+	fn set_language(&mut self, key: &str) {
+		...
+	}
 
-    /// Gets the translated text for the given key. If there is no given translation the `key` will be returned as result.
-    fn text(&self, key: String) -> String {
-        ...
-    }
+	/// Gets the translated text for the given key. If there is no given translation the `key` will be returned as result.
+	fn text(&self, key: String) -> String {
+		...
+	}
 }
 ```
 
@@ -253,33 +254,33 @@ It is possible to register a localization service on an application. There is al
 
 ```rust
 let de_de = r#"
-    Dictionary( 
-        words: {
-            "hello": "Hallo",
-            "world": "Welt",
-        }
-    )
-    "#;
+	Dictionary(
+		words: {
+			"hello": "Hallo",
+			"world": "Welt",
+		}
+	)
+	"#;
 
 Application::new()
-    .localization(
-        RonLocalization::create()
-            // sets the initial language
-            .language("en_US")
-            // adds an language dictionary to the localization service. 
-            .dictionary("de_DE", de_de)
-            .build()
-    )
-    .window(|ctx| {
-        Window::new()
-            .title("OrbTk - showcase example")
-            .position((100, 100))
-            .size(600, 730)
-            .resizeable(true)
-            .child(TextBlock::new().text("hello").build(ctx))
-            .build(ctx)
-    })
-    .run();
+	.localization(
+		RonLocalization::create()
+			// sets the initial language
+			.language("en_US")
+			// adds an language dictionary to the localization service.
+			.dictionary("de_DE", de_de)
+			.build()
+	)
+	.window(|ctx| {
+		Window::new()
+			.title("OrbTk - showcase example")
+			.position((100, 100))
+			.size(600, 730)
+			.resizeable(true)
+			.child(TextBlock::new().text("hello").build(ctx))
+			.build(ctx)
+	})
+	.run();
 ```
 In this example the text property with the value `hello` is the key of the localization service. If there is no localization service or no given dictionary for the current language the value of the property will drawn. It is possible to start the development of an complete without localization and add it later.
 
@@ -301,7 +302,7 @@ cargo run --example showcase --features bundled
 
 To build and run the examples you *will* need an C compiler (like `gcc`, `clang`, or MS's own compiler).
 
-On Linux you also nee to install `cmake`. e.g.: 
+On Linux you also nee to install `cmake`. e.g.:
 
 ```shell
 sudo apt install cmake
@@ -331,7 +332,7 @@ To run the examples as a browser, electron or cordova app you have to install ca
 cargo install -f cargo-node
 ```
 
-Before you can use cargo-node you have to install `npm` version 6.9.0, which is included with `Node.js` version 10.16.3. You can download it from https://nodejs.org/dist/v10.16.3/. 
+Before you can use cargo-node you have to install `npm` version 6.9.0, which is included with `Node.js` version 10.16.3. You can download it from https://nodejs.org/dist/v10.16.3/.
 
 Rust's `cargo` is also required. The rest of cargo-node's dependencies are installed automatically.
 
@@ -373,7 +374,8 @@ To build and run the latest version of the OrbTk manual check: [Manual](https://
 
 ### OrbTk book
 
-There is a (wip) OrbTk book check [OrbTk book](https://github.com/redox-os/orbtk-book)
+There is a (wip) OrbTk book. Please check out the [online version](https://github.com/redox-os/orbtk-book/wiki)
+or checkout the repository [OrbTk book](https://github.com/redox-os/orbtk-book)
 
 ## crates structure
 
@@ -392,7 +394,7 @@ There is a (wip) OrbTk book check [OrbTk book](https://github.com/redox-os/orbtk
 ## Showcases
 
 * [Plural Planner](https://codeberg.org/PluralTools/Plural): Task app
-* [twin-commander](https://github.com/kivimango/twin-commander): A twin-panel file manager specifically for the Redox OS 
+* [twin-commander](https://github.com/kivimango/twin-commander): A twin-panel file manager specifically for the Redox OS
 * [Space Editor](https://codeberg.org/flovanco/space-editor): 2D Tile Map Editor compatible with OrbGame
 
 ## Contribution
@@ -403,7 +405,7 @@ If you want to help improve OrbTk you submit your feedback in the issue tracker,
 
 * Documentation for all `pub` structs, traits and funs
 * Add tests if needed
-* Use static &str for widget ids and new style definitions 
+* Use static &str for widget ids and new style definitions
 * For widget development check ProgressBar or Slider as example
 * Add changes to changelog
 * Expand examples or create a new one if needed
