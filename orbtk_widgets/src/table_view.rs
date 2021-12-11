@@ -6,6 +6,8 @@ use std::{
 };
 
 // Constants
+const ID_TABLE_VIEW: &str = "TableView";
+const ID_TABLE_VIEW_STACK: &str = "__STACK__";
 const ID_TABLE_VIEW_GRID_HEADER: &str = "__COLUMNS_HEADER__";
 const ID_TABLE_VIEW_GRID_DATA: &str = "__DATA_GRID__";
 const ICON_ORDER_ASCENDING: &str = "\u{e05e}";
@@ -64,23 +66,41 @@ impl Default for TableSortDirection {
     }
 }
 
+// [START] state: TableView
+
+/// Specifies the structure to handle `TableView` elements and their associated states.
 #[derive(Default, AsAny)]
-struct TableState {
+struct TableViewState {
+    /// Vector with handled actions
     actions: Vec<TableAction>,
+    /// Sets or shares the count propery for given columns.
     column_count: usize,
+    /// Sets the entity id for grid containing data values.
     data_grid: Entity,
+    /// Sets or shares a HashMap that stores the column width for given data columns.
     data_column_width: HashMap<usize, f64>,
+    /// Sets or shares a HashMap that stores the column width for given header columns.
     header_column_width: HashMap<usize, f64>,
+    /// Sets the entity id for grid containing header values.
     header_grid: Entity,
+    /// Triggers internal update method.
     request_update: bool,
+    /// Calls the row builder.
     row_builder: RowBuilder,
+    /// Sets or shares the count propery for given rows.
     row_count: usize,
+    /// Sets or shares a reference to the selected enteties.
     selected_entities: RefCell<HashSet<Entity>>,
+    /// Sets or shares the sorting order for the given header.
     sorted_column_header: Option<Entity>,
+    /// Sets or shares the sorting order for the given rows.
     sorter: RowSorter,
 }
 
-impl TableState {
+/// The `TableViewState` handles column and row management. You may
+/// create, sort and adjust them via the supported associated
+/// functions.
+impl TableViewState {
     fn adjust_columns(&self, ctx: &mut Context) {
         // Header and Data grid starts with no columns: adjust column count to real one
         let adjusted_columns = Blocks::create().repeat("auto", self.column_count).build();
@@ -92,6 +112,7 @@ impl TableState {
         ctx.widget().set::<usize>("column_count", self.column_count);
     }
 
+    // TODO: move to layout function
     fn adjust_column_width(&mut self, ctx: &mut Context) {
         let table_view = ctx.entity();
 
@@ -163,12 +184,12 @@ impl TableState {
             .set::<Blocks>("rows", new_rows);
     }
 
-    fn generate_column_headers(&mut self, ctx: &mut Context) {
+    fn create_column_headers(&mut self, ctx: &mut Context) {
         for action in &self.actions {
             match action {
                 TableAction::AddDefaultColumn(title, column_id) => {
                     let table_view = ctx.entity();
-                    let c_id = column_id.clone();
+                    let column_id = column_id.clone();
                     let build_context = &mut ctx.build_context();
                     let header = Button::new()
                         .id(column_id.clone())
@@ -177,9 +198,9 @@ impl TableState {
                         .text(title.clone())
                         .on_click(move |states, _| -> bool {
                             states
-                                .get_mut::<TableState>(table_view)
+                                .get_mut::<TableViewState>(table_view)
                                 .actions
-                                .push(TableAction::Sort(c_id.clone()));
+                                .push(TableAction::Sort(column_id.clone()));
                             false
                         })
                         .build(build_context);
@@ -206,7 +227,7 @@ impl TableState {
         self.adjust_columns(ctx);
     }
 
-    fn generate_cells(&mut self, ctx: &mut Context) {
+    fn create_cells(&mut self, ctx: &mut Context) {
         let actual_row_count = ctx.widget().clone::<usize>("row_count");
         let should_update = ctx.widget().clone::<bool>("request_update");
         let table_view = ctx.entity();
@@ -360,21 +381,23 @@ impl TableState {
     }
 }
 
-impl State for TableState {
+/// Method definitions, that react on any given state change inside
+/// the `TableViewItem` widget.
+impl State for TableViewState {
     fn init(&mut self, _reg: &mut Registry, ctx: &mut Context) {
         self.data_grid = ctx
             .entity_of_child(ID_TABLE_VIEW_GRID_DATA)
-            .expect("TableState.init(): Table data grid could not be found.");
+            .expect("TableViewState.init(): TableView data_grid can't be found.");
         self.header_grid = ctx
             .entity_of_child(ID_TABLE_VIEW_GRID_HEADER)
-            .expect("TableState.init(): Table column header grid could not be found.");
+            .expect("TableViewState.init(): TableView header_grid can't be found.");
 
-        // must be come first because it is explicitly sets the column_count property
-        self.generate_column_headers(ctx);
+        // run first, to explicitly sets the column_count property
+        self.create_column_headers(ctx);
 
         self.data_column_width = HashMap::new();
         self.header_column_width = HashMap::with_capacity(self.column_count);
-        self.generate_cells(ctx);
+        self.create_cells(ctx);
     }
 
     fn update(&mut self, _registry: &mut Registry, ctx: &mut Context) {
@@ -384,7 +407,7 @@ impl State for TableState {
                 self.sort_rows(column_id, ctx);
             }
         }
-        self.generate_cells(ctx);
+        self.create_cells(ctx);
     }
 
     fn update_post_layout(&mut self, _registry: &mut Registry, ctx: &mut Context) {
@@ -423,38 +446,47 @@ impl State for TableState {
     }
 }
 
+// [End] state: TableView
+
+// [Start] view: TableView
+
 widget!(
-    /// The TableView is designed to visualize a collection of data
+    /// The `TableView` is designed to visualize a collection of data
     /// that is broken into columns and rows.
     ///
     /// Columns are derived from fields of a data struct. Rows are the
-    /// stuct intances. The TableView widget acts similar to the
+    /// stuct instances. The TableView widget acts similar to the
     /// [`ListView`] widget.
     ///
     /// # Features
+    ///
     /// * Atomatic creation of data columns.
     /// * Automatic adjustment of column width (taking the actual cell width).
-    /// * Interactive selectable sort of data.
-    ///   The row contents is sorted in respect to the choosen column
-    ///   sort direction.
+    /// * Interactive selectable sort of data. The row contents is sorted in
+    /// respect to the choosen column sort direction.
     ///
     /// # Examples
-    /// To create a TableView, define at least a data source with one column.
-    /// The column id's need to be unique. The `row_builder` closure will
-    /// implement the needed properties. Please consult existing `table_view` example,
-    /// or `showcase` example for further details.
+    ///
+    /// To create a `TableView`, you need to define a data source that
+    /// has a minimum column count of one. Column id's need to be
+    /// unique. The `row_builder` closure will implement the needed
+    /// properties. Please consult existing `table_view` example, or
+    /// `showcase` example for further details.
     ///
     /// # Ownership
+    ///
     /// The current architecture of orbtk, doesn't allow ownership of data for a
     /// given widget. The feature implementation relies on callbacks (`closures`).
     ///
     /// # Panics
+    ///
     /// Runtime panics will occure, for the following cases:
+    ///
     /// * Minimum of `one` column isn't met.
     /// * Property `id` of a column is empty.
     ///
     /// [`ListView`]: ./struct.ListView.html
-    TableView<TableState> {
+    TableView<TableViewState> {
         /// Sets or shares the background property.
         background: Brush,
 
@@ -473,6 +505,9 @@ widget!(
         /// Sets or shares the widget entity that presets the
         /// data.
         data_source: u32,
+
+        /// Sets or shares the padding property.
+        padding: Thickness,
 
         /// A boolean that triggers redrawing of items.
         request_update: bool,
@@ -498,42 +533,7 @@ widget!(
     }
 );
 
-impl Template for TableView {
-    fn template(self, _id: Entity, build_context: &mut BuildContext) -> Self {
-        self.name("TableView")
-            .style("table_view")
-            .background("transparent")
-            .border_brush("transparent")
-            .border_radius(0)
-            .border_width(0)
-            .column_count(0)
-            .request_update(false)
-            .row_count(0)
-            .selection_mode(SelectionMode::Single)
-            .selected_indices(HashSet::new())
-            .selected_entities(HashSet::new())
-            .child(
-                Stack::new()
-                    .orientation("vertical")
-                    .child(
-                        Grid::new()
-                            .id(ID_TABLE_VIEW_GRID_HEADER)
-                            .columns("*")
-                            .rows("36.0")
-                            .build(build_context),
-                    )
-                    .child(
-                        Grid::new()
-                            .id(ID_TABLE_VIEW_GRID_DATA)
-                            .columns("*")
-                            .rows("*")
-                            .build(build_context),
-                    )
-                    .build(build_context),
-            )
-    }
-}
-
+// associated functions for TableView
 impl TableView {
     /// Adds a new column to the header of the TableView. The widget
     /// will create a `Button` that handles an on_click callback. The
@@ -546,7 +546,7 @@ impl TableView {
     pub fn column<T: AsRef<str>>(mut self, title: T, column_id: T) -> Self {
         let title = title.as_ref().to_owned();
         let column_id = column_id.as_ref().to_owned();
-        assert!(!column_id.is_empty(), "column_id must be not empty!");
+        assert!(!column_id.is_empty(), "column_id can't be empty!");
         self.state
             .actions
             .push(TableAction::AddDefaultColumn(title, column_id));
@@ -604,6 +604,54 @@ impl TableView {
     }
 }
 
+impl Template for TableView {
+    fn template(self, _id: Entity, build_context: &mut BuildContext) -> Self {
+        self.id(ID_TABLE_VIEW)
+            .name(ID_TABLE_VIEW)
+            .style("table_view")
+            .background("transparent")
+            .border_brush("transparent")
+            .border_radius(0)
+            .border_width(0)
+            .column_count(0)
+            .request_update(false)
+            .row_count(0)
+            .selection_mode(SelectionMode::Single)
+            .selected_indices(HashSet::new())
+            .selected_entities(HashSet::new())
+            .child(
+                Stack::new()
+                    .id(ID_TABLE_VIEW_STACK)
+                    .orientation("vertical")
+                    .child(
+                        Grid::new()
+                            .id(ID_TABLE_VIEW_GRID_HEADER)
+                            .columns("*")
+                            .rows("36.0")
+                            .build(build_context),
+                    )
+                    .child(
+                        Grid::new()
+                            .id(ID_TABLE_VIEW_GRID_DATA)
+                            .columns("*")
+                            .rows("*")
+                            .build(build_context),
+                    )
+                    .build(build_context),
+            )
+    }
+
+    fn render_object(&self) -> Box<dyn RenderObject> {
+        RectangleRenderObject.into()
+    }
+
+    fn layout(&self) -> Box<dyn Layout> {
+        TableViewLayout::new().into()
+    }
+}
+
+// [End] view: TableView
+
 // +-----------------------------------------------------------------+
 // | ___________     ___.   .__         _________        .__  .__    |
 // | \__    ___/____ \_ |__ |  |   ____ \_   ___ \  ____ |  | |  |   |
@@ -618,6 +666,8 @@ struct TableCellState {
     request_selection_toggle: Cell<bool>,
 }
 
+/// Method definitions, that react on any given state change inside
+/// the `TableCell` widget.
 impl TableCellState {
     fn toggle_selection(&self) {
         self.request_selection_toggle.set(true);
@@ -775,14 +825,6 @@ impl Template for TableCell {
                     .build(ctx),
             )
     }
-
-    fn render_object(&self) -> Box<dyn RenderObject> {
-        RectangleRenderObject.into()
-    }
-
-    fn layout(&self) -> Box<dyn Layout> {
-        PaddingLayout::new().into()
-    }
 }
 
 // +------------------------------------------------------------------------------------------------------------------------------+
@@ -794,16 +836,27 @@ impl Template for TableCell {
 // |                \/    \/          \/        \/                        \/     \/       \/       \/     \/      \/    \/        |
 // +------------------------------------------------------------------------------------------------------------------------------+
 
-enum TableColumnHeaderAction {
+// [Start] state: TableViewColumnHeader
+
+enum TableViewColumnHeaderAction {
     OnClick,
 }
 
+/// The `TableViewColumnHeaderState` handles the interaction and selection of `column headers`.
 #[derive(Default, AsAny)]
-struct TableColumnHeaderState {
-    actions: Vec<TableColumnHeaderAction>,
+struct TableViewColumnHeaderState {
+    actions: Vec<TableViewColumnHeaderAction>,
 }
 
-impl State for TableColumnHeaderState {
+/// The `TableViewColumnHeaderState` handles the selection of a `column headers`
+/// as well as the associated interation methods.
+impl TableViewColumnHeaderState {
+    fn on_click(&mut self) {
+        self.actions.push(TableViewColumnHeaderAction::OnClick);
+    }
+}
+
+impl State for TableViewColumnHeaderState {
     fn update(&mut self, _registry: &mut Registry, ctx: &mut Context) {
         for _ in &self.actions {
             // sends a message to the TableView to sort the table by the custom header's ID
@@ -817,28 +870,26 @@ impl State for TableColumnHeaderState {
     }
 }
 
-impl TableColumnHeaderState {
-    fn on_click(&mut self) {
-        self.actions.push(TableColumnHeaderAction::OnClick);
-    }
-}
+// [End] state: TableViewColumnHeader
 
 widget!(
     /// Represents a custom column header in a TableView.
     /// Wraps a widget by its entity. This is used to preserve header's
     /// on_click callback. The callback triggers a message to sort
     /// the row data.
-    TableColumnHeader: MouseHandler {
+    TableViewColumnHeader: MouseHandler {
         /// Sets or shares the entity of the TableView this column
         /// header is attached to.
         parent: u32
 });
 
-impl Template for TableColumnHeader {
+impl Template for TableViewColumnHeader {
     fn template(self, id: Entity, _ctx: &mut BuildContext) -> Self {
-        self.name("TableColumnHeader").on_click(move |states, _| {
-            states.get_mut::<TableColumnHeaderState>(id).on_click();
+        self.name("TableViewColumnHeader").on_click(move |states, _| {
+            states.get_mut::<TableViewColumnHeaderState>(id).on_click();
             false
         })
     }
 }
+
+// [End] view: TableViewColumnHeader
