@@ -15,6 +15,8 @@ const ICON_ORDER_DESCENDING: &str = "\u{e068}";
 
 type RowBuilder = Option<Box<dyn Fn(&mut BuildContext, usize, &mut Vec<Entity>)>>;
 type RowSorter = Option<Box<dyn Fn(&str, TableSortDirection, Entity, &mut Context)>>;
+
+#[derive(Debug)]
 pub enum TableAction {
     AddDefaultColumn(String, String),
     AddCustomColumn(Entity),
@@ -398,6 +400,24 @@ impl State for TableViewState {
         self.data_column_width = HashMap::new();
         self.header_column_width = HashMap::with_capacity(self.column_count);
         self.create_cells(ctx);
+    }
+
+    fn messages(
+        &mut self,
+        mut messages: MessageReader,
+        _registry: &mut Registry,
+        _ctx: &mut Context,
+    ) {
+        for message in messages.read::<TableAction>() {
+            match message {
+                TableAction::Sort(_) => {
+                    println!("Got message: {:?}", message);
+                }
+                _ => {
+                    println!("Catchall message: {:?}", message);
+                }
+            }
+        }
     }
 
     fn update(&mut self, _registry: &mut Registry, ctx: &mut Context) {
@@ -864,6 +884,7 @@ impl State for TableViewColumnHeaderState {
             if let Some(header_widget) = ctx.try_child_from_index(0) {
                 let column_id = header_widget.get::<String>("id");
                 let message = TableAction::Sort(column_id.to_owned());
+                println!("Send message: {:?}", &message);
                 ctx.send_message(message, table_view);
             }
         }
