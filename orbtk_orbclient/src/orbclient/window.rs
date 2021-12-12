@@ -24,11 +24,13 @@ use raw_window_handle::HasRawWindowHandle;
 
 use orbtk_utils::Point;
 
-/// Represents a wrapper for an orbclient window.
-
+/// Represents a wrapper structure consumed by an orbclient window.
+///
 /// Events are handled and propagated to the window adapter. The
-/// window adapter updates involved entities and activates the render
-/// pipeline.
+/// window adapter will update corresponding entities, that are marked
+/// `dirty`. If needed, the render pipeline will process those
+/// entities and update the render buffer. Results are forwarded to
+/// the output device.
 pub struct Window<A>
 where
     A: WindowAdapter,
@@ -47,7 +49,7 @@ where
     window: orbclient::Window,
 }
 
-// Internal sync method for OrbClient sdl2 backend
+// Internal sync method betwee OrbClient and sdl2 backend
 #[cfg(not(target_os = "redox"))]
 fn init_sync(
     window: &orbclient::Window,
@@ -148,7 +150,7 @@ where
 }
 
 #[cfg(not(target_os = "redox"))]
-// Safety: Explain why we are allowed to handout a handle
+// TODO: Safety: Explain why we are allowed to consume a raw window handle
 unsafe impl<A> raw_window_handle::HasRawWindowHandle for Window<A>
 where
     A: WindowAdapter,
@@ -358,7 +360,7 @@ where
         self.window.sync();
     }
 
-    /// Runs update on the adapter.
+    /// Triggers an update for the given window adapter.
     pub fn update(&mut self) {
         //super::CONSOLE.time("complete");
         if !self.update {

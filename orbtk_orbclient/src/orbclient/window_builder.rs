@@ -6,7 +6,8 @@ use crate::{
     WindowSettings,
 };
 
-/// The `WindowBuilder` is used to construct a window shell for the minifb backend.
+/// The `WindowBuilder` is used to construct an os independent window
+/// shell that will communicate with the supported render backends.
 pub struct WindowBuilder<'a, A: 'static>
 where
     A: WindowAdapter,
@@ -59,7 +60,7 @@ where
         self
     }
 
-    /// Builds the window shell and add it to the application `Shell`.
+    /// Builds the window shell. The shell will be linked to the application `Shell`.
     pub fn build(self) {
         let mut render_context = RenderContext2D::new(self.bounds.width(), self.bounds.height());
 
@@ -85,7 +86,7 @@ where
             self.title.as_str(),
             &flags,
         )
-        .expect("WindowBuilder: Could no create an orblient window.");
+        .expect("WindowBuilder: Could not create an orblient window.");
 
         for (family, font) in self.fonts {
             render_context.register_font(&family, font);
@@ -99,7 +100,7 @@ where
         ));
     }
 
-    /// Registers a new font with family key.
+    /// Registers a new font via a string that will identify the font family.
     pub fn font(mut self, family: impl Into<String>, font_file: &'static [u8]) -> Self {
         self.fonts.insert(family.into(), font_file);
         self
@@ -120,19 +121,20 @@ where
         }
     }
 
-    /// Sets resizeable.
+    /// Mark window as resizeable.
     pub fn resizeable(mut self, resizeable: bool) -> Self {
         self.resizeable = resizeable;
         self
     }
 
-    /// Register a window request receiver to communicate with the window shell from outside.
+    /// Register a window request receiver to communicate with the
+    /// window shell via interprocess communication.
     pub fn request_receiver(mut self, request_receiver: mpsc::Receiver<WindowRequest>) -> Self {
         self.request_receiver = Some(request_receiver);
         self
     }
 
-    /// Sets the title.
+    /// Sets the window title.
     pub fn title(mut self, title: impl Into<String>) -> Self {
         self.title = title.into();
         self
