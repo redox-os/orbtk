@@ -42,3 +42,4 @@ serde_derive = "1.0.106"
 [features]
 log = ["orbtk_orbclient/log"]
 debug = ["orbtk_core/debug"]
+bundled = ["orbtk_orbclient/bundled"]
