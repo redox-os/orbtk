@@ -14,6 +14,7 @@ pub use self::default::*;
 pub use self::font_icon::*;
 pub use self::image::*;
 pub use self::pipeline::*;
+pub use self::popup::*;
 pub use self::rectangle::*;
 pub use self::text::*;
 
@@ -22,6 +23,7 @@ mod default;
 mod font_icon;
 mod image;
 mod pipeline;
+mod popup;
 mod rectangle;
 mod text;
 
