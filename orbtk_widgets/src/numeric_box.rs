@@ -4,7 +4,11 @@ use rust_decimal::prelude::*;
 use super::behaviors::MouseBehavior;
 
 use crate::{
-    api::prelude::*, prelude::*, proc_macros::*, shell::prelude::*, themes::theme_orbtk::*,
+    api::prelude::*,
+    prelude::*,
+    proc_macros::*,
+    shell::prelude::*,
+    // themes::theme_orbtk::*,
 };
 
 // --- KEYS --
@@ -17,15 +21,15 @@ pub static STYLE_BTN: &str = "numeric_box_button";
 
 /// Enumeration of valid input actions
 pub enum InputAction {
-    Inc,
-    Dec,
     ChangeByKey(KeyEvent),
     ChangeByMouseScroll(Point),
+    Dec,
     Focus,
+    Inc,
 }
 
-/// Used to handle the numeric box status elements.
-#[derive(Default, AsAny)]
+/// Handle the numeric box status elements.
+#[derive(AsAny, Default)]
 pub struct NumericBoxState {
     pub action: Option<InputAction>,
     pub input: Entity,
@@ -96,7 +100,7 @@ impl State for NumericBoxState {
     fn init(&mut self, _: &mut Registry, ctx: &mut Context) {
         self.input = ctx.entity_of_child(ID_INPUT).expect(
             "NumericBoxState
-        .init(): the child input could not be found!",
+	.init(): the child input could not be found!",
         );
         self.event_adapter = ctx.event_adapter();
         self.min = default_or("min", 0.0, ctx);
@@ -155,12 +159,15 @@ impl State for NumericBoxState {
 }
 
 widget!(
-    /// `NumericBox` is used to let the user increase or decrease
-    /// the value of the input by a given, fixed value called `step` until it reaches the upper or
-    /// lower bounds.
-    /// The widget can be controlled by clicking on the two control buttons, or the keybaord's
-    /// Up and Down, Numpad+ and Numpad- keys, or the mouse scroll.
-    /// Note: after the widget is initialized, changing the min, max or step properties has no effect.
+    /// `NumericBox` is used to let the user increase or decrease the
+    /// value of the input by a given, fixed value called `step` until
+    /// it reaches the upper or lower bounds.
+    /// The widget is controlled using keyboard actions (Up and Down
+    /// keys, Numpad+ and Numpad- keys) or mouse actions (wheel motion).
+    /// Note: after the widget is initialized, changing the
+    /// min, max or step properties has no effect.
+    ///
+    /// * style: `numeric_box`
     ///
     /// # Examples:
     /// Create a NumericBox with default values:
@@ -173,55 +180,55 @@ widget!(
     /// NumericBox::new().min(10.0).max(100.0).val(50.0).step(5.0).build(ctx)
     /// ```
     NumericBox<NumericBoxState>: ActivateHandler, KeyDownHandler {
-        /// Sets or shares the background color property
-        background: Brush,
+    /// Sets or shares the background color property
+    background: Brush,
 
-        /// Sets or shares the border color property
-        border_brush: Brush,
+    /// Sets or shares the border color property
+    border_brush: Brush,
 
-        /// Sets or shares the border width property
-        border_width: Thickness,
+    /// Sets or shares the border width property
+    border_width: Thickness,
 
-        /// Sets or shares the border radius property
-        border_radius: f64,
+    /// Sets or shares the border radius property
+    border_radius: f64,
 
-        /// Sets or shares the focused property
-        focused: bool,
+    /// Sets or shares the focused property
+    focused: bool,
 
-        /// Sets or shares the foreground color property
-        foreground: Brush,
+    /// Sets or shares the foreground color property
+    foreground: Brush,
 
-        /// Sets or shares the font size property.
-        font_size: f64,
+    /// Sets or shares the font size property.
+    font_size: f64,
 
-        /// Sets or shares the font property.
-        font: String,
+    /// Sets or shares the font property.
+    font: String,
 
-        /// Sets or shares the value that describes if the NumericBox should lose focus on activation (when enter pressed).
-        lose_focus_on_activation: bool,
+    /// Sets or shares the value that describes if the NumericBox should lose focus on activation (when enter pressed).
+    lose_focus_on_activation: bool,
 
-        /// Sets or shares the minimum allowed value property
-        min: f64,
+    /// Sets or shares the minimum allowed value property
+    min: f64,
 
-        /// Sets or shares the maximum allowed value property
-        max: f64,
+    /// Sets or shares the maximum allowed value property
+    max: f64,
 
-        /// Sets or shares the stepping value property
-        step: f64,
+    /// Sets or shares the stepping value property
+    step: f64,
 
-        /// Sets or shares the current value property
-        val: f64,
+    /// Sets or shares the current value property
+    val: f64,
 
-        /// Indicates if the widget is hovered by the mouse cursor.
-        hover: bool,
+    /// Indicates if the widget is hovered by the mouse cursor.
+    hover: bool,
 
-        /// Represents the up icon of the up button.
-        icon_up: String,
+    /// Represents the up icon of the up button.
+    icon_up: String,
 
-        /// Represents the up icon of the down button
-        icon_down: String,
+    /// Represents the up icon of the down button
+    icon_down: String,
 
-        padding: Thickness
+    padding: Thickness
     }
 );
 
@@ -229,21 +236,13 @@ impl Template for NumericBox {
     fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {
         self.name("NumericBox")
             .style("numeric_box")
-            .background("transparent")
-            .foreground(colors::LINK_WATER_COLOR)
-            .border_brush("#647b91")
-            .border_width(1.0)
-            .border_radius(3.0)
             .focused(false)
-            .height(32.0)
             .lose_focus_on_activation(true)
             .min(0.0)
-            .max(200.0)
+            //.min_width(128)
             .step(1.0)
+            .v_align("center")
             .val(0.0)
-            .icon_up(material_icons_font::MD_KEYBOARD_ARROW_UP)
-            .icon_down(material_icons_font::MD_KEYBOARD_ARROW_DOWN)
-            .min_width(128.0)
             .child(
                 MouseBehavior::new()
                     .on_mouse_down(move |states, _| {
@@ -266,22 +265,20 @@ impl Template for NumericBox {
                     .rows("16, 16")
                     .child(
                         TextBox::new()
-                            .margin(("padding", id))
                             .id(ID_INPUT)
                             .style("")
                             .attach(Grid::column(0))
                             .attach(Grid::row_span(2))
                             .attach(Grid::row(0))
-                            .foreground(id)
-                            .border_brush("transparent")
                             .border_width(0)
-                            .font_size(id)
+                            .enabled(false)
+                            .foreground(("foreground", id))
                             .background("transparent")
                             .h_align("stretch")
-                            .enabled(false)
-                            .v_align("center")
-                            .text("0")
                             .lose_focus_on_activation(id)
+                            .margin(("padding", id))
+                            .text("0")
+                            .v_align("center")
                             .build(ctx),
                     )
                     .child(
@@ -289,10 +286,9 @@ impl Template for NumericBox {
                             .style("button_small")
                             .attach(Grid::column(1))
                             .attach(Grid::row(0))
-                            .min_width(14)
-                            .height(15)
                             .icon(("icon_up", id))
-                            .margin(1)
+                            .max_width(64)
+                            .min_width(14)
                             .on_click(move |states, _| {
                                 states
                                     .get_mut::<NumericBoxState>(id)
@@ -306,11 +302,10 @@ impl Template for NumericBox {
                             .style("button_small")
                             .attach(Grid::column(1))
                             .attach(Grid::row(1))
-                            .min_width(14)
-                            .height(15)
-                            .padding(0.0)
-                            .margin(1)
                             .icon(("icon_down", id))
+                            .max_width(64)
+                            .min_width(14)
+                            .padding(0.0)
                             .on_click(move |states, _| {
                                 states
                                     .get_mut::<NumericBoxState>(id)

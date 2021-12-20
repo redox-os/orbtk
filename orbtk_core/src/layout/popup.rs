@@ -1,7 +1,4 @@
-use std::{
-    cell::{Cell, RefCell},
-    collections::BTreeMap,
-};
+use std::{cell::RefCell, collections::BTreeMap};
 
 use dces::prelude::*;
 
@@ -10,17 +7,18 @@ use crate::{
     utils::prelude::*,
 };
 
-use super::{component, component_try_mut, try_component, Layout};
+use super::{component, component_or_default, component_try_mut, try_component, Layout};
 
-/// Add padding to the widget.
+/// The `PopupLayout` handles measuring and arrangement of a `Popup` widget.
 #[derive(Default, IntoLayout)]
 pub struct PopupLayout {
+    // TODO: Add padding to the widget.
     desired_size: RefCell<DirtySize>,
-    old_alignment: Cell<(Alignment, Alignment)>,
 }
 
+/// Associated functions, that react on any given state change inside the `Popup` widget.
 impl PopupLayout {
-    /// Preset the defaults.
+    /// Instatiate a new PopupLayout object.
     pub fn new() -> Self {
         PopupLayout::default()
     }
@@ -35,75 +33,142 @@ impl Layout for PopupLayout {
         layouts: &BTreeMap<Entity, Box<dyn Layout>>,
         theme: &Theme,
     ) -> DirtySize {
+        // if visibility is collapsed, the entity is rendered but
+        // shouldn't consume any size in the render buffer.
         if component::<Visibility>(ecm, entity, "visibility") == Visibility::Collapsed {
             self.desired_size.borrow_mut().set_size(0.0, 0.0);
             return *self.desired_size.borrow();
         }
 
-        if let Some(target) = try_component::<u32>(ecm, entity, "target") {
-            let target_bounds = component::<Rectangle>(ecm, target.into(), "bounds");
-            component_try_mut::<Constraint>(ecm, entity, "constraint")
-                .unwrap()
-                .set_width(target_bounds.width());
-        }
+        if let Some(target) = try_component::<PopupTarget>(ecm, entity, "target") {
+            let current_bounds: Rectangle = component(ecm, entity, "bounds");
+            let current_constraint: Constraint = component(ecm, entity, "constraint");
 
-        let horizontal_alignment: Alignment = component(ecm, entity, "h_align");
-        let vertical_alignment: Alignment = component(ecm, entity, "v_align");
+            let real_target_bounds = match target {
+                PopupTarget::Entity(entity) => {
+                    let target_position: Point = component(ecm, entity, "position");
 
-        if horizontal_alignment != self.old_alignment.get().1
-            || vertical_alignment != self.old_alignment.get().0
-        {
-            self.desired_size.borrow_mut().set_dirty(true);
-        }
+                    // WARNING: widget bounds (width an height values)
+                    // will be measured as available space for the
+                    // widget. Only in state `post_layout_update` it
+                    // will reflect the effective size of the given
+                    // entity.
+                    let mut target_bounds: Rectangle = component(ecm, entity, "bounds");
+                    target_bounds.set_position(target_position);
+                    target_bounds
+                }
+                PopupTarget::Point(mut point) => {
+                    point.set_x(point.x() + current_bounds.width() / 2.0);
+                    point.set_y(point.y() + current_bounds.height() / 2.0);
+                    Rectangle::new(point, (0.0, 0.0))
+                }
+            };
 
-        let constraint: Constraint = component(ecm, entity, "constraint");
-        if constraint.width() > 0.0 {
-            self.desired_size.borrow_mut().set_width(constraint.width());
-        }
+            let placement: Placement = component_or_default(ecm, entity, "placement");
 
-        if constraint.height() > 0.0 {
-            self.desired_size
-                .borrow_mut()
-                .set_height(constraint.height());
-        }
+            let new_popup_size = match placement {
+                Placement::Bottom => {
+                    let current_h_align: Alignment = component(ecm, entity, "h_align");
 
-        let padding: Thickness = component(ecm, entity, "padding");
+                    let width = current_h_align.align_measure(
+                        real_target_bounds.width(),
+                        current_bounds.width(),
+                        0.0,
+                        0.0,
+                    );
+                    let height = current_bounds.height();
 
-        for index in 0..ecm.entity_store().children[&entity].len() {
-            let child = ecm.entity_store().children[&entity][index];
+                    //let y = real_target_bounds.y() - current_bounds.height();
 
-            if let Some(child_layout) = layouts.get(&child) {
-                let child_desired_size =
-                    child_layout.measure(render_context_2_d, child, ecm, layouts, theme);
-                let mut desired_size = self.desired_size.borrow().size();
+                    current_constraint.perform((width, height))
+                }
+                Placement::Left => {
+                    let current_v_align: Alignment = component(ecm, entity, "v_align");
 
-                let dirty = child_desired_size.dirty() || self.desired_size.borrow().dirty();
-                self.desired_size.borrow_mut().set_dirty(dirty);
+                    let width = current_bounds.width();
+                    let height = current_v_align.align_measure(
+                        real_target_bounds.height(),
+                        current_bounds.height(),
+                        0.0,
+                        0.0,
+                    );
 
-                let child_margin = *ecm
-                    .component_store()
-                    .get::<Thickness>("margin", child)
-                    .unwrap();
+                    // respect given bound constraints
+                    current_constraint.perform((width, height))
+                }
+                Placement::Right => {
+                    let current_v_align: Alignment = component(ecm, entity, "v_align");
 
-                desired_size.0 = desired_size.0.max(
-                    child_desired_size.width()
-                        + padding.left()
-                        + padding.right()
-                        + child_margin.left()
-                        + child_margin.right(),
-                );
-                desired_size.1 = desired_size.1.max(
-                    child_desired_size.height()
-                        + padding.top()
-                        + padding.bottom()
-                        + child_margin.top()
-                        + child_margin.left(),
-                );
+                    let width = current_bounds.width();
+                    let height = current_v_align.align_measure(
+                        real_target_bounds.height(),
+                        current_bounds.height(),
+                        0.0,
+                        0.0,
+                    );
 
-                self.desired_size
-                    .borrow_mut()
-                    .set_size(desired_size.0, desired_size.1);
+                    current_constraint.perform((width, height))
+                }
+                Placement::Top => {
+                    let current_h_align: Alignment = component(ecm, entity, "h_align");
+
+                    let width = current_h_align.align_measure(
+                        real_target_bounds.width(),
+                        current_bounds.width(),
+                        0.0,
+                        0.0,
+                    );
+                    let height = current_bounds.height();
+
+                    current_constraint.perform((width, height))
+                }
+            };
+
+            {
+                let mut desired_size = self.desired_size.borrow_mut();
+                desired_size.set_width(new_popup_size.0);
+                desired_size.set_height(new_popup_size.1);
             }
+
+            let padding: Thickness = component(ecm, entity, "padding");
+            for index in 0..ecm.entity_store().children[&entity].len() {
+                let child = ecm.entity_store().children[&entity][index];
+
+                if let Some(child_layout) = layouts.get(&child) {
+                    let child_desired_size =
+                        child_layout.measure(render_context_2_d, child, ecm, layouts, theme);
+                    let mut desired_size = self.desired_size.borrow().size();
+
+                    let dirty = child_desired_size.dirty() || self.desired_size.borrow().dirty();
+                    self.desired_size.borrow_mut().set_dirty(dirty);
+
+                    let child_margin = *ecm
+                        .component_store()
+                        .get::<Thickness>("margin", child)
+                        .unwrap();
+
+                    desired_size.0 = desired_size.0.max(
+                        child_desired_size.width()
+                            + padding.left()
+                            + padding.right()
+                            + child_margin.left()
+                            + child_margin.right(),
+                    );
+                    desired_size.1 = desired_size.1.max(
+                        child_desired_size.height()
+                            + padding.top()
+                            + padding.bottom()
+                            + child_margin.top()
+                            + child_margin.left(),
+                    );
+
+                    self.desired_size
+                        .borrow_mut()
+                        .set_size(desired_size.0, desired_size.1);
+                }
+            }
+        } else {
+            println!("Target not found");
         }
 
         *self.desired_size.borrow()

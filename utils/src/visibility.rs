@@ -8,7 +8,7 @@ pub enum Visibility {
     /// layout pipeline. It **does** consume memory in the render buffer.
     Hidden,
 
-    /// The widget isn't displayed but `is` rendered. Thus it **dos
+    /// The widget isn't displayed but `is` rendered. Thus it **does
     /// not** consume space in the layout.
     Collapsed,
 }

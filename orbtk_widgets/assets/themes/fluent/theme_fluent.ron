@@ -407,20 +407,20 @@ Theme (
         "combo_box": (
             base: "base",
             properties: {
-                "height": 32,
-                "font_size": "$FONT_SIZE_12",
-                "foreground": "$CONTENT_FOREGROUND",
-                "icon_brush": "$BOX_BORDER",
                 "background": "$BOX_BACKGROUND",
                 "border_brush": "$BOX_BORDER",
                 "border_radius": 2,
-                "padding_left": 12,
-                "padding_right": 12,
                 "border_width": 1,
+                "font_size": "$FONT_SIZE_12",
+                "foreground": "$CONTENT_FOREGROUND",
                 "height": 32,
                 "icon_size": "$ICON_SIZE_12",
                 "icon": "$MDL2_SCROLL_CHEVRON_DOWN_BOLD_LEGACY",
-                "icon_font": "$MDL2_ICON_FONT"
+                "icon_brush": "$BOX_BORDER",
+                "icon_font": "$MDL2_ICON_FONT",
+                "padding_left": 12,
+                "padding_right": 12,
+                "offset": 1
             },
             states: [
                  (
