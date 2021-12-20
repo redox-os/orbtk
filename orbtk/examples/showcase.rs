@@ -142,7 +142,7 @@ fn main() {
                 .title("OrbTk - showcase example")
                 .position((100, 100))
                 .size(1000, 730)
-                .resizeable(true)
+                .resizable(true)
                 .child(
                     MainView::new()
                         .id(ID_MAIN_VIEW)

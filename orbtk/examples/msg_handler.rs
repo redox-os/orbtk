@@ -457,7 +457,7 @@ pub fn main() {
             Window::new()
                 .title("OrbTK - Message Handler")
                 .position((100.0, 100.0))
-                .resizeable(true)
+                .resizable(true)
                 .size(450.0, 400.0)
                 .child(
                     Stack::new()

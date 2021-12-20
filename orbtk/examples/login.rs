@@ -227,7 +227,7 @@ fn main() {
                 .title("OrbTk - PasswordBox example")
                 .position((125.0, 125.0))
                 .size(468.0, 730.0)
-                .resizeable(true)
+                .resizable(true)
                 .child(LoginForm::new().build(ctx))
                 .build(ctx)
         })
