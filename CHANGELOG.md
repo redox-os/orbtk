@@ -66,6 +66,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Add `message-handler` example
 * Support features flag in `showcase` example
 * Add `bundled` feature
+* Rename `resizeable` to `resizable`
 
 ### 0.3.1-alpha3
 
