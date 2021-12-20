@@ -125,8 +125,8 @@ widget!(
         /// Sets or shares the title property.
         title: String,
 
-        /// Sets or shares the resizeable property.
-        resizeable: bool,
+        /// Sets or shares the resizable property.
+        resizable: bool,
 
         /// Sets or shares the property if this window should always be on top.
         always_on_top: bool,
@@ -169,6 +169,13 @@ impl Window {
             handler: Rc::new(handler),
         })
     }
+
+    /// Sets or shares the resizable property.
+    #[inline(always)]
+    #[deprecated = "Use resizable instead"]
+    pub fn resizeable<P: IntoPropertySource<bool>>(self, resizeable: P) -> Self {
+        self.resizable(resizeable)
+    }
 }
 
 impl Template for Window {
@@ -178,7 +185,7 @@ impl Template for Window {
             .size(100.0, 100.0)
             .style(STYLE_WINDOW)
             .title("Window")
-            .resizeable(false)
+            .resizable(false)
             .always_on_top(false)
             .on_window_event(move |ctx, event| {
                 ctx.get_mut::<WindowState>(id)
