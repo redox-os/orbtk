@@ -67,6 +67,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Support features flag in `showcase` example
 * Add new popup code (version 2: new placement and offset properties)
 * Add `bundled` feature
+* Rename `resizeable` to `resizable`
 
 ### 0.3.1-alpha3
 

@@ -299,7 +299,7 @@ pub fn create_window<F: Fn(&mut BuildContext) -> Entity + 'static>(
         resizeable: *world
             .entity_component_manager()
             .component_store()
-            .get::<bool>("resizeable", window)
+            .get::<bool>("resizable", window)
             .unwrap(),
         always_on_top: *world
             .entity_component_manager()
