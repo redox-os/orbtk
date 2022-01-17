@@ -339,7 +339,7 @@ fn main() {
                 .title("OrbTk - Popup example")
                 .position((100.0, 100.0))
                 .size(680, 690.0)
-                .resizeable(true)
+                .resizable(true)
                 .child(MainView::new().build(ctx))
                 .build(ctx)
         })
