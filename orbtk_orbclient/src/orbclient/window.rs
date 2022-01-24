@@ -55,6 +55,7 @@ fn init_sync(
     window: &orbclient::Window,
     receiver: mpsc::Receiver<WindowRequest>,
 ) -> (mpsc::Receiver<WindowRequest>, thread::JoinHandle<()>) {
+    // channel: sends will never block, they are asynchronous
     let (internal_sender, internal_receiver) = mpsc::channel();
 
     let event_sender = window.event_sender();
