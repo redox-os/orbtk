@@ -8,9 +8,9 @@ widget!(
         /// Sets or shares the image property.
         ///
         /// Set image property:
-        /// * &str: `Image::new().image("path/to/image.png").build(xt)`
-        /// * String: `Image::new().image(String::from()).build(xt)`
-        /// * (width: u32, height: u32, data: Vec<u32>): `Image::new().image((width, height, vec![0; width * height]));`
+        /// * &str: `ImageWidget::new().image("path/to/image.png").build(xt)`
+        /// * String: `ImageWidget::new().image(String::from()).build(xt)`
+        /// * (width: u32, height: u32, data: Vec<u32>): `ImageWidget::new().image((width, height, vec![0; width * height]));`
         image: Image
     }
 );
