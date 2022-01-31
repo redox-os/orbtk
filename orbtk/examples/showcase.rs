@@ -424,7 +424,7 @@ impl Template for ItemsView {
                             .name(ID_ITEMS_VIEW_COMBO_BOX)
                             .count(items_count)
                             //.enabled(false)
-                            .items_builder(move | bc, index | {
+                            .items_builder(move |bc, index| {
                                 let text = ItemsView::items_ref(&bc.get_widget(id))[index].clone();
                                 TextBlock::new()
                                     .id(ID_ITEMS_VIEW_COMBO_BOX_TEXT)
@@ -712,7 +712,7 @@ impl Template for LocalizationView {
                         .id(ID_LOCALIZATION_VIEW_STACK_COMBO_BOX)
                         .name(ID_LOCALIZATION_VIEW_STACK_COMBO_BOX)
                         .count(count)
-                        .items_builder(move | bc, index | {
+                        .items_builder(move |bc, index| {
                             let text =
                                 LocalizationView::languages_ref(&bc.get_widget(id))[index].clone();
                             TextBlock::new()
