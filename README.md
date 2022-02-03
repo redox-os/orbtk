@@ -368,14 +368,22 @@ You can build and view the latest documentation by executing the following comma
 cargo doc --no-deps --open
 ```
 
-### OrbTk Manual
-
-To build and run the latest version of the OrbTk manual check: [Manual](https://github.com/redox-os/orbtk/tree/develop/manual)
-
 ### OrbTk book
 
-There is a (wip) OrbTk book. Please check out the [online version](https://github.com/redox-os/orbtk-book/wiki)
-or checkout the repository [OrbTk book](https://github.com/redox-os/orbtk-book)
+The OrbTk book is written from a developers perspective. It aims to
+introduce the basic concept, beside a bird's eye view of the toolkit
+structure. An in depth discussion of the provided crates is followed
+by example listings. This section collects example code with annotated
+blocks. The annotations are targeting best practice usage of available
+widgets, their interaction with other modules coupled with a
+descriptive text where reasonable.
+
+A precompiled version is available for [online](https://github.com/redox-os/orbtk-book/wiki) reading.
+You are invited to checkout its repository at [OrbTk book](https://github.com/redox-os/orbtk-book).
+
+Please do **not** expect at finalized version. It is not complete at
+all. The given statis is `marked as work in progress` (WIP). Any help to
+improve the chapters and/or translations are quite welcome.
 
 ## crates structure
 
