@@ -16,7 +16,7 @@
    xmlns:cc="http://creativecommons.org/ns#"
    xmlns:dc="http://purl.org/dc/elements/1.1/">
   <title
-     id="title7912">OrbTK - Space</title>
+     id="title7912">OrbTk - Space</title>
   <metadata
      id="metadata7904">
     <rdf:RDF>
@@ -25,7 +25,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title>OrbTK - Space</dc:title>
+        <dc:title>OrbTk - Space</dc:title>
         <cc:license
            rdf:resource="http://creativecommons.org/licenses/by-sa/4.0/" />
         <dc:date>04.04.2021</dc:date>
@@ -36,10 +36,10 @@
         </dc:creator>
         <dc:publisher>
           <cc:Agent>
-            <dc:title>The OrbTK Developer</dc:title>
+            <dc:title>The OrbTk Developer</dc:title>
           </cc:Agent>
         </dc:publisher>
-        <dc:description>OrbTK with space background</dc:description>
+        <dc:description>OrbTk with space background</dc:description>
       </cc:Work>
       <cc:License
          rdf:about="http://creativecommons.org/licenses/by-sa/4.0/">

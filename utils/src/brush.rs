@@ -70,7 +70,7 @@ use crate::prelude::*;
 ///
 /// **WIP: The given implementation is using (utils/colors.txt). This has to be adopted!!!**
 ///
-/// OrbTK maintains a list of color names as constants. You may
+/// OrbTk maintains a list of color names as constants. You may
 /// directly choose their string value inside the code.
 ///
 /// Example color names are:

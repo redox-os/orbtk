@@ -433,7 +433,7 @@ impl State for SenderState {
 
 /// The message handler window.
 ///
-/// This OrbTK example application presents two views:
+/// This OrbTk example application presents two views:
 /// * The [SenderView]: The user will capture a message string. When
 ///   triggering the send button that message will be send to a target
 ///   entity, the ReceiverView. Every time a message is send,
@@ -455,7 +455,7 @@ pub fn main() {
                 .build(ctx);
 
             Window::new()
-                .title("OrbTK - Message Handler")
+                .title("OrbTk - Message Handler")
                 .position((100.0, 100.0))
                 .resizable(true)
                 .size(450.0, 400.0)

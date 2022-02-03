@@ -1,19 +1,19 @@
 #![crate_name = "orbtk"]
 #![crate_type = "lib"]
 
-//! # OrbTK - The Orbital Toolkit
+//! # OrbTk - The Orbital Toolkit
 //!
 //! ![Welcome to the OrbTk planet.][orbtk_planet]
 //!
-//! The `OrbTK` crate implements a cross-platform (G)UI toolkit for
+//! The `OrbTk` crate implements a cross-platform (G)UI toolkit for
 //! building scalable user interfaces. The codebase is natively build
 //! with the `Rust` programming language.
 //!
-//! `OrbTK` provides a [functional reactive-like][functional_reative] API. It depends on
+//! `OrbTk` provides a [functional reactive-like][functional_reative] API. It depends on
 //! the rust [`DCES`][dces] crate, that provides an Entity Component
 //! System. Interaction with `DCES` is managed via the `Entity
-//! Component Manager`(ECM), a wrapper API, that transparently mapps `OrbTK` widgets
-//! to `ECM`  entities and `OrbTK` properties to `ECM` components.
+//! Component Manager`(ECM), a wrapper API, that transparently mapps `OrbTk` widgets
+//! to `ECM`  entities and `OrbTk` properties to `ECM` components.
 //!
 //! The main goals of `OrbTk` are speed, ease of use, and cross-platform compatibility.
 //!
@@ -27,11 +27,11 @@
 //#![feature(extern_doc)]
 //#[doc(include="../README.md")]
 
-/// Tries to make your OrbTK experience more convenient.
+/// Tries to make your OrbTk experience more convenient.
 /// It will automatically import traits and types into scope, that you likely need in your app.
 pub use orbtk_orbclient::prelude::initialize;
 
-/// Handles core implenentations (OrbTK building blocks).
+/// Handles core implenentations (OrbTk building blocks).
 pub mod core {
     pub use orbtk_core::application;
     pub use orbtk_core::localization;
