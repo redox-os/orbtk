@@ -1,7 +1,7 @@
 use crate::{Angle, Color, OnLinePos, OnPlanePos, Point, RelativeDir};
 
 /// Describes a position on a colorful gradient.
-#[derive(Copy, Clone, Default, Debug, PartialEq)]
+#[derive(Copy, Clone, Debug, Default, PartialEq)]
 pub struct GradientStop {
     pub pos: Option<OnLinePos>,
     pub color: Color,

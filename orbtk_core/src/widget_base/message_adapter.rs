@@ -42,7 +42,9 @@ impl MessageBox {
     }
 
     /// Creates a new `MessageBox`.
-    pub fn new<M: Any + Send>(message: M, target: Entity) -> Self {
+    pub fn new<M>(message: M, target: Entity) -> Self
+    where M: Any + Send
+    {
         MessageBox {
             message: Box::new(message),
             target,
