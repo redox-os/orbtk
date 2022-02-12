@@ -293,7 +293,7 @@ impl TabWidgetState {
             // Select the tab just inserted
             self.selected = 0;
             self.refresh_selected_tab(ctx);
-    }
+        }
     }
 
     /// Get the tab index associated with the passed body.
@@ -555,30 +555,30 @@ impl Template for TabWidget {
             .id(TAB_WIDGET)
             .style("tab_widget")
             .child(
-            Grid::new()
+                Grid::new()
                     .name(TAB_GRID)
                     .id(TAB_GRID)
-                .rows("34, *")
-                .child(
-                    Stack::new()
-                        .id(HEADER_CONTAINER)
+                    .rows("34, *")
+                    .child(
+                        Stack::new()
+                            .id(HEADER_CONTAINER)
                             .name(HEADER_CONTAINER)
-                        .orientation("horizontal")
-                        .spacing(id)
-                        .build(ctx),
-                )
-                .child(
-                    Container::new()
-                        .id(BODY_CONTAINER)
+                            .orientation("horizontal")
+                            .spacing(id)
+                            .build(ctx),
+                    )
+                    .child(
+                        Container::new()
+                            .id(BODY_CONTAINER)
                             .name(BODY_CONTAINER)
-                        .background(id)
-                        .border_brush(id)
-                        .border_width(id)
-                        .border_radius(id)
-                        .attach(Grid::row(1))
-                        .build(ctx),
-                )
-                .build(ctx),
-        )
+                            .background(id)
+                            .border_brush(id)
+                            .border_width(id)
+                            .border_radius(id)
+                            .attach(Grid::row(1))
+                            .build(ctx),
+                    )
+                    .build(ctx),
+            )
     }
 }
