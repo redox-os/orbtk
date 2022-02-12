@@ -12,13 +12,22 @@ The main goals of OrbTk are speed, ease of use, and cross-platform compatibility
 
 ## Screenshots
 
-<img alt="showcase" src="https://github.com/redox-os/orbtk-assets/blob/main/screenshots/orbtk-showcase-macos.png">
+The next images are taken from example applications, that have been compiled for MacOS / OS-X.
+
+* The `showcase` example
+
+<img alt="showcase" src="https://raw.githubusercontent.com/redox-os/orbtk/develop/orbtk/screenshots/showcase_button_macos.png">
+
+* Themed `calculator` examples
 
 <p float="left">
-<img alt="calculator-macos" height="300" src="https://github.com/redox-os/orbtk-assets/blob/main/screenshots/orbtk-calculator-macos.png">
-<img alt="calculator-macos-light" height="300" src="https://github.com/redox-os/orbtk-assets/blob/main/screenshots/orbtk-calculator-light-macos.png">
-<img alt="calculator-redox" height="300" src="https://github.com/redox-os/orbtk-assets/blob/main/screenshots/orbtk-calculator-redox.png">
+<img alt="calculator_dark_macos" height="300" src="https://raw.githubusercontent.com/redox-os/orbtk/develop/orbtk/screenshots/calculator_dark_macos.png">
+<img alt="calculator_light_macos" height="300" src="https://raw.githubusercontent.com/redox-os/orbtk/develop/orbtk/screenshots/calculator_light_macos.png">
+<img alt="calculator_redox" height="300" src="https://raw.githubusercontent.com/redox-os/orbtk/develop/orbtk/screenshots/calculator_redox.png">
 </p>
+
+Other screenshots have been rendered from [examples code](https://github.com/redox-os/orbtk/blob/develop/orbtk/examples/README.md), that is stored
+inside the `orbtk` crate.
 
 ## Features:
 
@@ -56,6 +65,33 @@ The main goals of OrbTk are speed, ease of use, and cross-platform compatibility
 * 3D context
 * More integrated debugging tools
 
+## Documentation
+
+### Build and open documentation
+
+You can build and view the latest documentation by executing the following command:
+
+```text
+cargo doc --no-deps --open
+```
+
+### OrbTk book
+
+The OrbTk book is written from a developers perspective. It aims to
+introduce the basic concept, beside a bird's eye view of the toolkit
+structure. An in depth discussion of the provided crates is followed
+by example listings. This section collects example code with annotated
+blocks. The annotations are targeting best practice usage of available
+widgets, their interaction with other modules coupled with a
+descriptive text where reasonable.
+
+A precompiled version is available for [online](https://github.com/redox-os/orbtk-book/wiki) reading.
+You are invited to checkout its repository at [OrbTk book](https://github.com/redox-os/orbtk-book).
+
+Please do **not** expect at finalized version. It is not complete at
+all. The given statis is `marked as work in progress` (WIP). Any help to
+improve the chapters and/or translations are quite welcome.
+
 ## Usage
 
 To include OrbTk in your project, add this dependency
@@ -71,7 +107,7 @@ line to your `Cargo.toml` file:
 ```text
 orbtk = { git = "https://github.com/redox-os/orbtk.git", branch = "develop" }
 ```
-You can also check out the OrbTk template project to start a new project: https://github.com/redox-os/orbtk-template.
+You can also check out the OrbTk template project to start a new project: https://github.com/redox-os/orbtk-template
 
 ## Minimal Example
 
@@ -357,33 +393,6 @@ cargo node run --target electron --example showcase
 ```text
 cargo node run --target android --example showcase
 ```
-
-## Documentation
-
-### Build and open documentation
-
-You can build and view the latest documentation by executing the following command:
-
-```text
-cargo doc --no-deps --open
-```
-
-### OrbTk book
-
-The OrbTk book is written from a developers perspective. It aims to
-introduce the basic concept, beside a bird's eye view of the toolkit
-structure. An in depth discussion of the provided crates is followed
-by example listings. This section collects example code with annotated
-blocks. The annotations are targeting best practice usage of available
-widgets, their interaction with other modules coupled with a
-descriptive text where reasonable.
-
-A precompiled version is available for [online](https://github.com/redox-os/orbtk-book/wiki) reading.
-You are invited to checkout its repository at [OrbTk book](https://github.com/redox-os/orbtk-book).
-
-Please do **not** expect at finalized version. It is not complete at
-all. The given statis is `marked as work in progress` (WIP). Any help to
-improve the chapters and/or translations are quite welcome.
 
 ## crates structure
 
