@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## 0.3.1 (OrbTk next) wip
 
+### 0.3.1-alpha5 (wip)
+
 ### 0.3.1-alpha4
 
 * Switch structure to `Workspace` organized crates:
@@ -17,11 +19,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - renamed shell crate to orbtk_orbclient
   - created toplevel workspace Crago.toml
 * `tiny-skia` is integrated as 2D render engine
-* new `PasswordBox` widget
-* new `Pager`navigation widget
-* new `Clipboard` service
-* new `MasterDetail` navigation widget
-* improved `TextBehavior` event handling
+* New `PasswordBox` widget
+* New `Pager`navigation widget
+* New `Clipboard` service
+* New `MasterDetail` navigation widget
+* Improved `TextBehavior` event handling
   - Copy Ctrl+C, Paste Ctrl+V, Cut Ctrl+X
 * Remove `glupath` backend
 * Refactor `on_changed` callback, add key parameter

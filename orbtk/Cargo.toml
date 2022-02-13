@@ -1,6 +1,6 @@
 [package]
 name = "orbtk"
-version = "0.3.1-alpha4"
+version = "0.3.1-alpha5"
 authors = [
     "Florian Blasius <flovanpt@posteo.de>",
     "Jeremy Soller <jackpot51@gmail.com>"
@@ -26,12 +26,12 @@ opt-level = 1
 
 [dependencies]
 dces = { version = "0.3.1" }
-orbtk_proc_macros = { version = "0.3.1-alpha4", path = "../proc_macros" }
-orbtk_core = { version = "0.3.1-alpha4", path = "../orbtk_core", default-features = false }
-orbtk_tinyskia = { version = "0.3.1-alpha4", path = "../orbtk_tinyskia", default-features = false }
-orbtk_orbclient = { version = "0.3.1-alpha4", path = "../orbtk_orbclient", default-features = false }
-orbtk_utils = { version = "0.3.1-alpha4", path = "../utils" }
-orbtk_widgets = { version = "0.3.1-alpha4", path="../orbtk_widgets", default-features = false }
+orbtk_proc_macros = { version = "0.3.1-alpha5", path = "../proc_macros" }
+orbtk_core = { version = "0.3.1-alpha5", path = "../orbtk_core", default-features = false }
+orbtk_tinyskia = { version = "0.3.1-alpha5", path = "../orbtk_tinyskia", default-features = false }
+orbtk_orbclient = { version = "0.3.1-alpha5", path = "../orbtk_orbclient", default-features = false }
+orbtk_utils = { version = "0.3.1-alpha5", path = "../utils" }
+orbtk_widgets = { version = "0.3.1-alpha5", path="../orbtk_widgets", default-features = false }
 
 [dev-dependencies]
 euc = "0.5.0"
