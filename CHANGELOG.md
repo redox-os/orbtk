@@ -6,45 +6,47 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## 0.3.1 (OrbTk next) wip
 
-### 0.3.1-alpha4 (wip)
+### 0.3.1-alpha4
 
-* removed crates dir
-* moved stuff of localization crate to orbtk_core crate
-* moved stuff of theming crate to orbtk_core crate
-* renamed orbtk_api to orbtk_core
-* renamed render crate to orbtk_tinyskia
-* renamed shell crate to orbtk_orbclient
-* created workspace Crago.toml
-* use tiny-skia as only renderer
-* `PasswordBox` widget
-* `Pager `navigation widget
-* `Clipboard` service
-* `MasterDetail `responsive navigation widget
-* TextBehavior: Copy Ctrl+C, Paste Ctrl+V, Cut Ctrl+X
-* Temporary remove `glupath` backend
-* Refactor on_changed callback, add key parameter
+* Switch structure to `Workspace` organized crates:
+  - removed crates dir
+  - moved localization code to orbtk_core crate
+  - moved theming code to orbtk_core crate
+  - renamed orbtk_api to orbtk_core
+  - renamed render crate to orbtk_tinyskia
+  - renamed shell crate to orbtk_orbclient
+  - created toplevel workspace Crago.toml
+* `tiny-skia` is integrated as 2D render engine
+* new `PasswordBox` widget
+* new `Pager`navigation widget
+* new `Clipboard` service
+* new `MasterDetail` navigation widget
+* improved `TextBehavior` event handling
+  - Copy Ctrl+C, Paste Ctrl+V, Cut Ctrl+X
+* Remove `glupath` backend
+* Refactor `on_changed` callback, add key parameter
 * Access RawWindowHandle from Context
-* Select colors in themes through of CSS-like functions
+* Adopt Themes `colors selection` via CSS-like functions
 * Create `Color` from HSV and HSL values
 * Create a `Color` by its CSS name
 * Gradient coordinates become relative to the path
-* Add gradients defined by angle
-* The possibility of using gradients in themes is being introduced
-* Text mark with Shift + Left | Shift + Right
-* Select text my mouse (experimental)
+* Add `gradients` defined by angle
+* Introduce optional `gradients` selection in themes
+* Improve `KeyboardHandler` to mark text
+  - Shift + Left | Shift + Right
+* Improve `MouseHandler` to select text via mouse (experimental)
 * Select all character on text input by mouse double click
 * Replace String16 with std::string::String
-* Raise on_changed callback also on shared widgets
-* Localization
-* Custom theme names for types Brush, String, Thickness, f32, f64
-* Add focus_state property to Window
-* Add theme property to Window
-* MasterDetail responsive navigation widget
+* Raise `on_changed` callback also on shared widgets
+* Introduce Localization
+* Custom theme names for types
+  - Brush, String, Thickness, f32, f64
+* Add `focus_state` property to Window
+* Add `theme` property to Window
 * Rename `lost_focus_on_activation` to `lose_focus_on_activation`
-* Temporary remove `glupath` backend
-* Fix "auto" width of grid layout
+* Fix `Grid layout` for "auto" width
 * Add thread safe `EventAdapter`
-* Add thread safe `MessageAdapter`, `MessageReader`
+* Add thread safe `MessageAdapter` and `MessageReader`
 * Add `load_async` and `save_async` to `Settings` service
 * Add `TextInputEvent`
 * Add `EnterEvent` and `LeaveEvent`
@@ -68,7 +70,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Add new popup code (version 2: new placement and offset properties)
 * Add `bundled` feature
 * Rename `resizeable` to `resizable`
-* Fix thumb position not updating when window is resized 
+* Fix thumb position not updating when window is resized
 
 ### 0.3.1-alpha3
 
@@ -88,9 +90,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Measure distance between two Points
 * Improve: Mouse event arguments
 * Fix: Crash when a child widget is removed
-* TabWidget widget
-* Add on_changed property change callback to all widgets
-* OrbTk book (manual) wip
+* New `TabWidget` widget
+* Add `on_changed` property change callback to all widgets
+* Linking to OrbTk book
 
 ### 0.3.1-alpha2
 
