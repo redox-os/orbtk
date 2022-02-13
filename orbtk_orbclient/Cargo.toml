@@ -16,14 +16,14 @@ doctest = false
 lazy_static = "1.4.0"
 raw-window-handle = "0.3"
 image = { version = "0.23",  default-features = false, features = ["ico"] }
-orbclient = { version = "0.3.31", default-features = false }
+orbclient = { version = "0.3.32", default-features = false }
 
 # orbtk
 orbtk_tinyskia = { path = "../orbtk_tinyskia", version = "0.3.1-alpha4", default-features = false }
 orbtk_utils = { path = "../utils", version = "0.3.1-alpha4" }
 
 [target.'cfg(not(target_os = "redox"))'.dependencies]
-sdl2 = { version = "0.34", features = ["raw-window-handle"] }
+sdl2 = { version = "0.35", features = ["raw-window-handle"] }
 
 [features]
 log = []
