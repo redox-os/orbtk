@@ -1,6 +1,6 @@
 [package]
 name = "orbtk_core"
-version = "0.3.1-alpha4"
+version = "0.3.1-alpha5"
 authors = ["Florian Blasius <flovanpt@posteo.de>"]
 description = "Core crate that provides base api and elements for OrbTk like widgets basis."
 repository = "https://github.com/redox-os/orbtk"
@@ -24,10 +24,10 @@ smallvec = { version = "1", default-features = false }
 
 # orbtk
 dces = { git = "https://gitlab.redox-os.org/redox-os/dces-rust.git",  branch = "before_resource" }
-orbtk_proc_macros = { path = "../proc_macros", version = "0.3.1-alpha4" }
-orbtk_utils = { path = "../utils", version = "0.3.1-alpha4" }
-orbtk_tinyskia = { path = "../orbtk_tinyskia", version = "0.3.1-alpha4", default-features = false }
-orbtk_orbclient = { path = "../orbtk_orbclient", version = "0.3.1-alpha4", default-features = false }
+orbtk_proc_macros = { path = "../proc_macros", version = "0.3.1-alpha5" }
+orbtk_utils = { path = "../utils", version = "0.3.1-alpha5" }
+orbtk_tinyskia = { path = "../orbtk_tinyskia", version = "0.3.1-alpha5", default-features = false }
+orbtk_orbclient = { path = "../orbtk_orbclient", version = "0.3.1-alpha5", default-features = false }
 raw-window-handle = "0.3"
 
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
