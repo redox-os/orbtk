@@ -23,7 +23,7 @@ serde_derive = "1.0"
 smallvec = { version = "1", default-features = false }
 
 # orbtk
-dces = { git = "https://gitlab.redox-os.org/redox-os/dces-rust.git",  branch = "before_resource" }
+dces = { version = "0.3.1-alpha4" }
 orbtk_proc_macros = { path = "../proc_macros", version = "0.3.1-alpha4" }
 orbtk_utils = { path = "../utils", version = "0.3.1-alpha4" }
 orbtk_tinyskia = { path = "../orbtk_tinyskia", version = "0.3.1-alpha4", default-features = false }
