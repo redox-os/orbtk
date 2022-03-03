@@ -72,7 +72,7 @@ Theme (
 
         // -- [START] Button --
 
-        "button": ( 
+        "button": (
             base: "base",
             properties: {
                 "height": 30,
@@ -84,7 +84,7 @@ Theme (
                 "border_brush": "$BORDER_DFAULT",
                 "font_size": "$FONT_SIZE_12",
                 "icon_size": "$ICON_SIZE_16"
-            }, 
+            },
             states: [
                 (
                     key: "selected",
@@ -161,11 +161,11 @@ Theme (
                 "height": 24
             },
         ),
-        "button_square": ( 
+        "button_square": (
             base: "button",
             properties: {
                 "border_radius": 1,
-            }, 
+            },
         ),
         "button_small": (
             base: "button",
@@ -244,7 +244,7 @@ Theme (
                 )
             ]
         ),
-        
+
         // -- [END] Button --
 
         "container": (
@@ -255,7 +255,7 @@ Theme (
         ),
 
         // -- [START] (Numeric)TextBox --
-       
+
         "text_box": (
             base: "base",
             properties: {
@@ -359,17 +359,18 @@ Theme (
         "combo_box": (
             base: "base",
             properties: {
-                "font_size": "$FONT_SIZE_12",
-                "foreground": "$CONTENT_FOREGROUND",
-                "icon_brush": "$CONTENT_FOREGROUND",
                 "background": "$BUTTON_BACKGROUND",
                 "border_brush": "$BORDER_DFAULT",
                 "border_width": 1,
                 "border_radius": 2,
+                "font_size": "$FONT_SIZE_12",
+                "foreground": "$CONTENT_FOREGROUND",
                 "height": 32,
+                "icon_brush": "$CONTENT_FOREGROUND",
+                "icon": "$MD_KEYBOARD_ARROW_DOWN",
                 "padding_left": 6,
                 "padding_right": 6,
-                "icon": "$MD_KEYBOARD_ARROW_DOWN",
+                "offset": 1,
             },
             states: [
                 (
@@ -412,7 +413,7 @@ Theme (
         // -- [END] Lists --
 
         // -- [START] TabWidget --
-        
+
         "tab_widget": (
             properties: {
                 "border_brush": "transparent",
@@ -530,7 +531,7 @@ Theme (
                 "border_radius": 2,
             },
         ),
-        "popup": ( 
+        "popup": (
             properties: {
                 "background": "$POPUP_BACKGROUND",
                 "border_brush": "$POPUP_BORDER",

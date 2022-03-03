@@ -87,10 +87,11 @@ pub enum ParentType {
 
 /// The `Widget` trait is used to define and handle widgets.
 ///
-/// Widgets are structured UI elements inside OrbTK, that are
-/// dedicated to a given task. The given model is dynamicaly
-/// structured. You are free to implement your own widget type
-/// or consume the predefinded implementations.
+/// When you construct an OrbTk application, you are essentially
+/// combining `widgets`. Widgets are the building blocks of the user
+/// interfaces in OrbTk, dedicated to a given task. The given model is
+/// dynamically structured. You are free to implement your own widget
+/// type or consume the predefinded implementations.
 ///
 /// This version is using procedural macros, to preset addressed
 /// types, enums and properties.

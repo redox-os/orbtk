@@ -14,12 +14,13 @@ pub trait AsAny: Any {
 /// static.
 ///
 /// When defining a `state` of a widget, it inherits the values of its
-/// associated properties (`current values`), as well as the implemented system  To gain access, each
-/// state has to derive or implement the [`Default`] and the [`AsAny`]
-/// traits. You are free to implement associated functions to the
-/// `state`, that react on triggered events or adapt current
-/// values. The `properties` are stored via ECM. They are organized in
-/// a tree (parent, children or level entities).
+/// associated properties (`current values`), as well as the
+/// implemented system. To gain access, each state has to derive or
+/// implement the [`Default`] and the [`AsAny`] traits. You are free
+/// to implement associated functions to the `state`, that react on
+/// triggered events or adapt current values. The `properties` are
+/// stored via ECM. They are organized in a tree (parent, children or
+/// level entities).
 ///
 /// # Example
 ///

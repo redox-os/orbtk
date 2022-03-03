@@ -104,7 +104,7 @@ fn main() {
                 .title("OrbTk - stack example")
                 .position((100.0, 100.0))
                 .size(420.0, 730.0)
-                .resizeable(true)
+                .resizable(true)
                 .child(MainView::new().margin(4.0).build(ctx))
                 .build(ctx)
         })

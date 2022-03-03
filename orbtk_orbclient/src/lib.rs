@@ -45,14 +45,14 @@ use std::{collections::HashMap, sync::mpsc};
 /// Used to send a request to the window.
 #[derive(Clone, Debug, PartialEq)]
 pub enum WindowRequest {
-    /// Request redraw of the `Windows`s content.
-    Redraw,
+    /// Request to change the title of the `Windows`.
+    ChangeTitle(String),
 
     /// Request to close the `Windows`.
     Close,
 
-    /// Request to change the title of the `Windows`.
-    ChangeTitle(String),
+    /// Request redraw of the `Windows`s content.
+    Redraw,
 }
 
 /// Used to send a request to the application shell.
@@ -78,24 +78,24 @@ where
 /// Contains settings of a window.
 #[derive(Clone, Debug, Default)]
 pub struct WindowSettings {
-    /// Title of the window.
-    pub title: String,
+    /// Will the window always shown on top of other windows.
+    pub always_on_top: bool,
 
     /// Is the window borderless / without decorations?
     pub borderless: bool,
 
-    /// Is the window resizable?
-    pub resizeable: bool,
-
-    /// Will the window always shown on top of other windows.
-    pub always_on_top: bool,
+    /// List of fonts to register.
+    pub fonts: HashMap<String, &'static [u8]>,
 
     /// The initial position of the window.
     pub position: (f64, f64),
 
+    /// Is the window resizable?
+    pub resizeable: bool,
+
     /// The initial size of the window.
     pub size: (f64, f64),
 
-    /// List of fonts to register.
-    pub fonts: HashMap<String, &'static [u8]>,
+    /// Title of the window.
+    pub title: String,
 }

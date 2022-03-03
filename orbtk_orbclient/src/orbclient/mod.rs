@@ -30,14 +30,6 @@ impl<A> Shell<A>
 where
     A: WindowAdapter,
 {
-    /// Creates a new application shell.
-    pub fn new(requests: mpsc::Receiver<ShellRequest<A>>) -> Self {
-        Shell {
-            window_shells: vec![],
-            requests,
-        }
-    }
-
     /// Creates a window builder, that could be used to create a window and add it to the application shell.
     pub fn create_window(&mut self, adapter: A) -> WindowBuilder<A> {
         WindowBuilder::new(self, adapter)
@@ -50,6 +42,14 @@ where
         adapter: A,
     ) -> WindowBuilder<A> {
         WindowBuilder::from_settings(settings, self, adapter)
+    }
+
+    /// Creates a new application shell.
+    pub fn new(requests: mpsc::Receiver<ShellRequest<A>>) -> Self {
+        Shell {
+            window_shells: vec![],
+            requests,
+        }
     }
 
     /// Receives window request from the application and handles them.

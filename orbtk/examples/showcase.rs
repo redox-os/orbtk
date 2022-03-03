@@ -14,8 +14,6 @@ static ID_BUTTON_TEXT: &str = "ButtonText";
 static ID_BUTTON_TOGGLE: &str = "ButtonToggle";
 static ID_CHECK_BOX: &str = "CheckBox";
 static ID_CHECK_BOX_DISABLED: &str = "CheckBoxDisabled";
-static ID_COMBO_BOX: &str = "ComboBox";
-static ID_COMBO_BOX_TEXT: &str = "ComboBoxText";
 static ID_IMAGE_WIDGET: &str = "ImageWidget";
 static ID_INTERACTIVE_VIEW: &str = "InteractiveView";
 static ID_INTERACTIVE_VIEW_BUTTON: &str = "InteractiveViewButton";
@@ -29,6 +27,8 @@ static ID_INTERACTIVE_VIEW_TEXT_BLOCK3: &str = "InteractiveViewTextBlock3";
 static ID_INTERACTIVE_VIEW_TEXT_BLOCK4: &str = "InteractiveViewTextBlock4";
 static ID_INTERACTIVE_VIEW_TEXT_BLOCK5: &str = "InteractiveViewTextBlock5";
 static ID_ITEMS_VIEW: &str = "ItemsView";
+static ID_ITEMS_VIEW_COMBO_BOX: &str = "ItemsViewComboBox";
+static ID_ITEMS_VIEW_COMBO_BOX_TEXT: &str = "ItemsViewComboBoxText";
 static ID_ITEMS_VIEW_STACK: &str = "ItemsViewStack";
 static ID_ITEMS_VIEW_TEXT_BLOCK: &str = "ItemsViewHeader";
 static ID_ITEMS_VIEW_TEXT_BLOCK_HEADER: &str = "ItemsViewTextBlockHeader";
@@ -142,7 +142,7 @@ fn main() {
                 .title("OrbTk - showcase example")
                 .position((100, 100))
                 .size(1000, 730)
-                .resizeable(true)
+                .resizable(true)
                 .child(
                     MainView::new()
                         .id(ID_MAIN_VIEW)
@@ -335,17 +335,24 @@ impl Template for ButtonView {
 type List = Vec<String>;
 
 // Represents an overview of list widgets like ListView, ItemsWidget and ComboBox.
-widget!(ItemsView { items: List });
+widget!(ItemsView {
+    /// Active seleced index of combo box.
+    selected_index: i32,
+
+    /// Valid list of items.
+    items: List
+});
 
 impl Template for ItemsView {
     fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {
         let items = vec![
             "Item 1".to_string(),
             "Item 2".to_string(),
+            "Item 3".to_string(),
             "Item 4".to_string(),
             "Item 5".to_string(),
         ];
-        let count = items.len();
+        let items_count = items.len();
 
         self.id(ID_ITEMS_VIEW)
             .name(ID_ITEMS_VIEW)
@@ -369,7 +376,7 @@ impl Template for ItemsView {
                         ItemsWidget::new()
                             .id(ID_ITEMS_VIEW_ITEMS_WIDGET)
                             .name(ID_ITEMS_VIEW_ITEMS_WIDGET)
-                            .count(count)
+                            .count(items_count)
                             .items_builder(move |bc, index| {
                                 let text =
                                     bc.get_widget(id).get::<Vec<String>>("items")[index].clone();
@@ -395,7 +402,7 @@ impl Template for ItemsView {
                         ListView::new()
                             .id(ID_LIST_VIEW)
                             .name(ID_LIST_VIEW)
-                            .count(count)
+                            .count(items_count)
                             .items_builder(move |bc, index| {
                                 let text =
                                     bc.get_widget(id).get::<Vec<String>>("items")[index].clone();
@@ -413,19 +420,19 @@ impl Template for ItemsView {
                     )
                     .child(
                         ComboBox::new()
-                            .id(ID_COMBO_BOX)
-                            .name(ID_COMBO_BOX)
-                            .count(count)
-                            .enabled(false)
+                            .id(ID_ITEMS_VIEW_COMBO_BOX)
+                            .name(ID_ITEMS_VIEW_COMBO_BOX)
+                            .count(items_count)
+                            //.enabled(false)
                             .items_builder(move |bc, index| {
                                 let text = ItemsView::items_ref(&bc.get_widget(id))[index].clone();
                                 TextBlock::new()
-                                    .id(ID_COMBO_BOX_TEXT)
+                                    .id(ID_ITEMS_VIEW_COMBO_BOX_TEXT)
                                     .text(text)
                                     .v_align("center")
                                     .build(bc)
                             })
-                            .selected_index(0)
+                            .selected_index(3)
                             .build(ctx),
                     )
                     .build(ctx),
@@ -711,8 +718,8 @@ impl Template for LocalizationView {
                             TextBlock::new()
                                 .id(ID_LOCALIZATION_VIEW_STACK_COMBO_BOX_TEXT_BLOCK)
                                 .name(ID_LOCALIZATION_VIEW_STACK_COMBO_BOX_TEXT_BLOCK)
-                                .v_align("center")
                                 .text(text)
+                                .v_align("center")
                                 .build(bc)
                         })
                         .on_changed("selected_index", move |states, _| {
@@ -929,10 +936,10 @@ impl Template for NavigationView {
 // Contains examples how interaction works in OrbTk.
 widget!(
     InteractiveView<InteractiveState> {
-        settings_text: String,
-        themes: List,
+        count_text: String,
         selected_index: i32,
-        count_text: String
+        settings_text: String,
+        themes: List
     }
 );
 

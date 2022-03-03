@@ -1,7 +1,7 @@
 use crate::{Angle, Color, OnLinePos, OnPlanePos, Point, RelativeDir};
 
 /// Describes a position on a colorful gradient.
-#[derive(Copy, Clone, PartialEq, Debug)]
+#[derive(Copy, Clone, Debug, Default, PartialEq)]
 pub struct GradientStop {
     pub pos: Option<OnLinePos>,
     pub color: Color,
@@ -35,15 +35,6 @@ impl From<(f64, Color)> for GradientStop {
 impl From<Color> for GradientStop {
     fn from(color: Color) -> Self {
         Self { pos: None, color }
-    }
-}
-
-impl Default for GradientStop {
-    fn default() -> GradientStop {
-        GradientStop {
-            pos: None,
-            color: Color::default(),
-        }
     }
 }
 

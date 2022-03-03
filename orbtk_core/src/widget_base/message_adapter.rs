@@ -18,26 +18,7 @@ pub struct MessageBox {
 }
 
 impl MessageBox {
-    /// Creates a new `MessageBox`.
-    pub fn new<M: Any + Send>(message: M, target: Entity) -> Self {
-        MessageBox {
-            message: Box::new(message),
-            target,
-            message_type: TypeId::of::<M>(),
-        }
-    }
-
-    /// Check if the given type is the type of the message.
-    pub fn is_type<M: Any>(&self) -> bool {
-        self.message_type == TypeId::of::<M>()
-    }
-
-    /// Returns the type of the event.
-    pub fn message_type(&self) -> TypeId {
-        self.message_type
-    }
-
-    /// Downcasts the box to an concrete message.
+    /// Downcasts the box to a concrete message.
     pub fn downcast<M: Any>(self) -> Result<M, String> {
         if self.message_type == TypeId::of::<M>() {
             return Ok(*self.message.downcast::<M>().unwrap());
@@ -46,13 +27,40 @@ impl MessageBox {
         Err("Wrong message type".to_string())
     }
 
-    /// Downcasts the box as reference of an concrete message.
+    /// Downcasts the box as reference of a concrete message.
     pub fn downcast_ref<M: Any>(&self) -> Result<&M, String> {
         if self.message_type == TypeId::of::<M>() {
             return Ok(&*self.message.downcast_ref::<M>().unwrap());
         }
 
         Err("Wrong message type".to_string())
+    }
+
+    /// Check if the given type is the type of the message.
+    pub fn is_type<M: Any>(&self) -> bool {
+        self.message_type == TypeId::of::<M>()
+    }
+
+    /// Creates a new `MessageBox`.
+    pub fn new<M>(message: M, target: Entity) -> Self
+    where
+        M: Any + Send,
+    {
+        MessageBox {
+            message: Box::new(message),
+            target,
+            message_type: TypeId::of::<M>(),
+        }
+    }
+
+    /// Returns the type of the event.
+    pub fn message_type(&self) -> TypeId {
+        self.message_type
+    }
+
+    /// Returns the target of the event.
+    pub fn target(&self) -> Entity {
+        self.target
     }
 }
 
@@ -104,38 +112,18 @@ impl MessageAdapter {
 
     /// Send a new message to the message pipeline.
     pub fn send_message<M: Any + Send>(&self, message: M, target: Entity) {
-        if !self.messages.lock().unwrap().contains_key(&target) {
-            self.messages
-                .lock()
-                .expect("MessageAdapter::send_message: Cannot lock messages.")
-                .insert(target, HashMap::new());
-        }
-
-        let type_id = TypeId::of::<M>();
-
-        if !self
+        // Docs say this method must be thread safe
+        // to ensure thread safety,
+        // do not release this lock until this method execution ends
+        let mut locked_messages = self
             .messages
             .lock()
-            .expect("MessageAdapter::send_message: Cannot lock messages.")
-            .get(&target)
-            .unwrap()
-            .contains_key(&type_id)
-        {
-            self.messages
-                .lock()
-                .expect("MessageAdapter::send_message: Cannot lock messages.")
-                .get_mut(&target)
-                .unwrap()
-                .insert(type_id, vec![]);
-        }
-
-        self.messages
-            .lock()
-            .expect("MessageAdapter::send_message: Cannot lock messages.")
-            .get_mut(&target)
-            .unwrap()
-            .get_mut(&type_id)
-            .unwrap()
+            .expect("MessageAdapter::send_message: Cannot lock messages.");
+        locked_messages
+            .entry(target)
+            .or_insert_with(HashMap::new)
+            .entry(TypeId::of::<M>())
+            .or_insert_with(Vec::new)
             .push(MessageBox::new(message, target));
 
         self.window_sender

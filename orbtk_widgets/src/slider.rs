@@ -19,6 +19,7 @@ pub struct SliderState {
     val: f64,
     min: f64,
     max: f64,
+    width: f64,
     thumb: Entity,
     track: Entity,
     accent_track: Entity,
@@ -63,6 +64,15 @@ impl SliderState {
             );
             ctx.widget().set("val", val);
             self.val = val;
+            has_changes = true;
+        }
+
+        // We need to check if the width has changed and update the thumb
+        // accordingly, otherwise we end up with the thumb stuck in one location
+        // and other similar weird behavior. See:
+        // https://github.com/redox-os/orbtk/issues/468
+        if get_widget_width(ctx, self.track) != self.width {
+            self.width = get_widget_width(ctx, self.track);
             has_changes = true;
         }
 
@@ -111,14 +121,8 @@ impl State for SliderState {
             match action {
                 SliderAction::Move { mouse_x } => {
                     if *ctx.get_widget(self.thumb).get::<bool>("pressed") {
-                        let thumb_width = ctx
-                            .get_widget(self.thumb)
-                            .get::<Rectangle>("bounds")
-                            .width();
-                        let track_width = ctx
-                            .get_widget(self.track)
-                            .get::<Rectangle>("bounds")
-                            .width();
+                        let thumb_width = get_widget_width(ctx, self.thumb);
+                        let track_width = get_widget_width(ctx, self.track);
                         let slider_x = ctx.widget().get::<Point>("position").x();
 
                         let thumb_x =
@@ -267,6 +271,10 @@ impl Template for Slider {
 }
 
 // --- Helpers --
+
+fn get_widget_width(ctx: &mut Context, widget: Entity) -> f64 {
+    ctx.get_widget(widget).get::<Rectangle>("bounds").width()
+}
 
 fn adjust_val(val: f64, min: f64, max: f64) -> f64 {
     if val < min {

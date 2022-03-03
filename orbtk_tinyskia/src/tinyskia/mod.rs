@@ -3,7 +3,7 @@
 use smallvec::SmallVec;
 use std::{
     collections::HashMap,
-    f64::consts::{FRAC_PI_2, PI},
+    f64::consts::{FRAC_PI_2, PI, TAU},
     ptr,
 };
 use tiny_skia::{
