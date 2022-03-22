@@ -92,9 +92,9 @@ impl From<(u32, u32, Vec<u32>)> for Image {
 
 pub fn os_path(path: String) -> String {
     if cfg!(windows) {
-        path.replace("/", "\\")
+        path.replace('/', '\\')
     } else {
-        path.replace("\\", "/")
+        path.replace('\', '/')
     }
 }
 

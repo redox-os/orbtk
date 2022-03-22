@@ -234,7 +234,7 @@ impl Blocks {
 
 impl From<&str> for Blocks {
     fn from(blocks: &str) -> Self {
-        let blocks = blocks.replace(" ", "");
+        let blocks = blocks.replace(' ', "");
         let mut block_builder = BlocksBuilder::new();
         for block in blocks.split(BLOCK_SEPARATOR) {
             block_builder = block_builder.push(Block::from(block));
