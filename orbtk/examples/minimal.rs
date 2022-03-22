@@ -30,12 +30,12 @@ fn main() {
                         .text("Hey OrbTk!")
                         .v_align("center")
                         // ANCHOR_END: Properties
-                .build(ctx)
+                        .build(ctx),
                 )
-                // ANCHOR_END: Child
                 // ANCHOR: Build
                 .build(ctx)
                 // ANCHOR_END: Build
+            // ANCHOR_END: Child
         })
         // ANCHOR: Run
         .run();

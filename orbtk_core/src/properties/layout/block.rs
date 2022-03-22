@@ -156,7 +156,7 @@ impl BlocksBuilder {
 
     /// Inserts a list of blocks.
     pub fn blocks<R: Into<Block> + Clone>(mut self, blocks: &[R]) -> Self {
-        for block in blocks.to_vec() {
+        for block in blocks.iter().cloned() {
             self.blocks.push(block.into());
         }
         self
@@ -234,7 +234,7 @@ impl Blocks {
 
 impl From<&str> for Blocks {
     fn from(blocks: &str) -> Self {
-        let blocks = blocks.replace(" ", "");
+        let blocks = blocks.replace(' ', "");
         let mut block_builder = BlocksBuilder::new();
         for block in blocks.split(BLOCK_SEPARATOR) {
             block_builder = block_builder.push(Block::from(block));
