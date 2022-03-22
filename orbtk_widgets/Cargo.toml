@@ -18,7 +18,7 @@ rust_decimal = "1.15"
 lazy_static = "1.4"
 
 # orbtk
-dces = { git = "https://gitlab.redox-os.org/redox-os/dces-rust.git",  branch = "before_resource" }
+dces = { version = "0.3.1" }
 orbtk_core = { path = "../orbtk_core", version = "0.3.1-alpha4" }
 orbtk_orbclient = { path = "../orbtk_orbclient", version = "0.3.1-alpha4", default-features = false }
 orbtk_tinyskia = { path = "../orbtk_tinyskia", version = "0.3.1-alpha4", default-features = false }

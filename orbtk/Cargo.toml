@@ -25,13 +25,13 @@ path = "src/lib.rs"
 opt-level = 1
 
 [dependencies]
+dces = { version = "0.3.1" }
 orbtk_proc_macros = { version = "0.3.1-alpha4", path = "../proc_macros" }
 orbtk_core = { version = "0.3.1-alpha4", path = "../orbtk_core", default-features = false }
 orbtk_tinyskia = { version = "0.3.1-alpha4", path = "../orbtk_tinyskia", default-features = false }
 orbtk_orbclient = { version = "0.3.1-alpha4", path = "../orbtk_orbclient", default-features = false }
 orbtk_utils = { version = "0.3.1-alpha4", path = "../utils" }
 orbtk_widgets = { version = "0.3.1-alpha4", path="../orbtk_widgets", default-features = false }
-dces = { git = "https://gitlab.redox-os.org/redox-os/dces-rust.git", branch = "before_resource" }
 
 [dev-dependencies]
 euc = "0.5.0"
