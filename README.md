@@ -473,9 +473,9 @@ cargo node run --target android --example showcase
 
 ## Showcases
 
-* [Plural Planner](https://codeberg.org/PluralTools/Plural): Task app
-* [twin-commander](https://github.com/kivimango/twin-commander): A twin-panel file manager specifically for the Redox OS
+* [Plural Planner](https://codeberg.org/flovanco/Plural): Task app
 * [Space Editor](https://codeberg.org/flovanco/space-editor): 2D Tile Map Editor compatible with OrbGame
+* [twin-commander](https://github.com/kivimango/twin-commander): A twin-panel file manager specifically for the Redox OS
 
 ## Contribution
 
