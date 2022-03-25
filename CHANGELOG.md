@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### 0.3.1-alpha5 (wip)
 
+* Upgrade cargo definition to use rust edition 2021
+
 ### 0.3.1-alpha4
 
 * Switch structure to `Workspace` organized crates:
@@ -73,7 +75,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Add `bundled` feature
 * Rename `resizeable` to `resizable`
 * Fix thumb position not updating when window is resized
-* Upgrade cargo definitions to use rust edition 2021
 
 ### 0.3.1-alpha3
 
