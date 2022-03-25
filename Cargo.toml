@@ -8,3 +8,6 @@ members = [
     "proc_macros",
     "utils",
 ]
+
+[profile.dev]
+opt-level = 1

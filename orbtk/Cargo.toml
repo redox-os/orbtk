@@ -21,9 +21,6 @@ edition = "2021"
 name = "orbtk"
 path = "src/lib.rs"
 
-[profile.dev]
-opt-level = 1
-
 [dependencies]
 orbtk_proc_macros = { version = "0.3.1-alpha5", path = "../proc_macros" }
 orbtk_core = { version = "0.3.1-alpha5", path = "../orbtk_core", default-features = false }
