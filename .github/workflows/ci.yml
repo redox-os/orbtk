@@ -53,16 +53,16 @@ jobs:
         with:
           command: test
           args: --features bundled
-          
+
   build_redox:
     name: Build (redox)
     runs-on: ubuntu-latest
     container: redoxos/redoxer
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v3
       - name: redoxer build
         run: redoxer build
-        
+
   # build_web:
   #   name: Build (web)
   #   runs-on: ubuntu-latest
