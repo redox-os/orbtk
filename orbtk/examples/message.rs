@@ -6,6 +6,12 @@ enum Message {
     Increment,
 }
 
+// constants
+pub static ID_MESSAGE: &str = "message";
+pub static ID_MESSAGE_STACK: &str = "message_stack";
+pub static ID_MESSAGE_TEXTBLOCK_COUNTER: &str = "message_counter";
+pub static ID_MESSAGE_TEXTBLOCK_LABEL: &str = "message_counter_label";
+
 #[derive(Default, AsAny)]
 struct MainState {
     count: i32,
@@ -47,18 +53,24 @@ widget!(MainView<MainState> { text: String });
 
 impl Template for MainView {
     fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {
-        self.text("0").child(
+        self.id(ID_MESSAGE).name(ID_MESSAGE).text("0").child(
             Stack::new()
+                .id(ID_MESSAGE_STACK)
+                .name(ID_MESSAGE_STACK)
                 .margin(8)
                 .spacing(4)
                 .child(
                     TextBlock::new()
+                        .id(ID_MESSAGE_TEXTBLOCK_LABEL)
+                        .name(ID_MESSAGE_TEXTBLOCK_LABEL)
                         .text("Message counter example")
                         .style("header")
                         .build(ctx),
                 )
                 .child(
                     TextBlock::new()
+                        .id(ID_MESSAGE_TEXTBLOCK_COUNTER)
+                        .name(ID_MESSAGE_TEXTBLOCK_COUNTER)
                         .style("body")
                         .margin((0, 8, 0, 0))
                         .text(id)
