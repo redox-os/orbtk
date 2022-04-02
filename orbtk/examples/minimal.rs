@@ -34,11 +34,11 @@ fn main() {
                 )
                 // ANCHOR: Build
                 .build(ctx)
-                // ANCHOR_END: Build
+            // ANCHOR_END: Build
             // ANCHOR_END: Child
         })
         // ANCHOR: Run
         .run();
-        // ANCHOR_END: Run
+    // ANCHOR_END: Run
 }
 // ANCHOR_END: All
