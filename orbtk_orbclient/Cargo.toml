@@ -10,12 +10,18 @@ keywords = ["shell", "window", "ui"]
 edition = "2018"
 
 [dependencies]
-orbclient = { version = "0.3.32", default-features = false }
-lazy_static = { version = "1.4.0" }
-image = { version = "0.24",  default-features = false, features = ["ico"] }
+image = { version = "0.24", default-features = false, features = ["ico"] }
+lazy_static = "1.4.0"
 orbtk_tinyskia = { path = "../orbtk_tinyskia", version = "0.3.1-alpha5", default-features = false }
 orbtk_utils = { path = "../utils", version = "0.3.1-alpha5" }
 raw-window-handle = { version = "0.4" }
+
+[dependencies.orbclient]
+#version = "0.3.33"
+# git reference is needed until PR is merged upstream
+git = "https://gitlab.redox-os.org/rzerres/orbclient.git"
+branch = "master"
+default-features = false
 
 [features]
 log = []
