@@ -18,13 +18,18 @@ repository = "https://github.com/redox-os/orbtk"
 version = "0.3.1-alpha5"
 
 [dependencies]
-dces = { version = "0.3.1" }
 orbtk_proc_macros = { version = "0.3.1-alpha5", path = "../proc_macros" }
 orbtk_core = { version = "0.3.1-alpha5", path = "../orbtk_core", default-features = false }
 orbtk_tinyskia = { version = "0.3.1-alpha5", path = "../orbtk_tinyskia", default-features = false }
 orbtk_orbclient = { version = "0.3.1-alpha5", path = "../orbtk_orbclient", default-features = false }
 orbtk_utils = { version = "0.3.1-alpha5", path = "../utils" }
 orbtk_widgets = { version = "0.3.1-alpha5", path="../orbtk_widgets", default-features = false }
+
+[dependencies.dces]
+#version = "0.3.1"
+git = "https://gitlab.redox-os.org/redox-os/dces-rust.git"
+tag = "0.3.1-alpha4"
+#branch = "develop"
 
 [dev-dependencies]
 euc = "0.5.0"

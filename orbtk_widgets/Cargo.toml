@@ -10,7 +10,6 @@ readme = "README.md"
 repository = "https://github.com/redox-os/orbtk"
 
 [dependencies]
-dces = { version = "0.3.1" }
 lazy_static = "1.4"
 orbtk_core = { path = "../orbtk_core", version = "0.3.1-alpha5" }
 orbtk_orbclient = { path = "../orbtk_orbclient", version = "0.3.1-alpha5", default-features = false }
@@ -19,6 +18,12 @@ orbtk_utils = { path = "../utils", version = "0.3.1-alpha5" }
 orbtk_proc_macros = { version = "0.3.1-alpha5", path = "../proc_macros" }
 rust_decimal = "1.15"
 #rust_decimal_macros = "1.15"
+
+[dependencies.dces]
+#version = "0.3.1"
+git = "https://gitlab.redox-os.org/redox-os/dces-rust.git"
+tag =  "0.3.1-alpha4"
+#branch = "develop"
 
 [lib]
 doctest = false

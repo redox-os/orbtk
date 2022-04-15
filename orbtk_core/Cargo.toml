@@ -18,7 +18,6 @@ doctest = false
 [dependencies]
 dirs-next = { version = "2.0" }
 derive_more = { version = "0.99", default-features = false, features = ["constructor"] }
-dces = { version = "0.3.1" }
 memchr = {version = "2"}
 orbtk_proc_macros = { path = "../proc_macros", version = "0.3.1-alpha5" }
 orbtk_utils = { path = "../utils", version = "0.3.1-alpha5" }
@@ -30,6 +29,12 @@ rust_decimal = { version = "1.15" }
 serde = { version = "1.0" }
 serde_derive = { version = "1.0" }
 smallvec = { version = "1", default-features = false }
+
+[dependencies.dces]
+#version = "0.3.1"
+git = "https://gitlab.redox-os.org/redox-os/dces-rust.git"
+tag =  "0.3.1-alpha4"
+#branch = "develop"
 
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
 threadpool = { version = "1.8" }
