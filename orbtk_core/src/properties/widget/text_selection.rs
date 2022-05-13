@@ -39,7 +39,7 @@ impl TextSelection {
 
     /// Gets the length of the selection.
     pub fn len(&self) -> usize {
-        (self.start as i32 - self.end as i32).abs() as usize
+        (self.start as i32 - self.end as i32).unsigned_abs() as usize
     }
 
     /// Check if the selection is empty (start == end).

@@ -19,7 +19,7 @@ pub struct ThemeConfig {
     pub resources: HashMap<String, Value>,
 }
 
-impl<'a> ThemeConfig {
+impl ThemeConfig {
     /// Extends the given theme with another theme. Replaces the
     /// current name with the new choosen name `other`.  If `other`
     /// contains a style with the same key entry, this key will be
