@@ -9,22 +9,20 @@ license = "MIT"
 keywords = ["shell", "window", "ui"]
 edition = "2018"
 
-[lib]
-doctest = false
-
 [dependencies]
-lazy_static = "1.4.0"
-raw-window-handle = "0.3"
-image = { version = "0.23",  default-features = false, features = ["ico"] }
 orbclient = { version = "0.3.32", default-features = false }
-
-# orbtk
+lazy_static = { version = "1.4.0" }
+image = { version = "0.24",  default-features = false, features = ["ico"] }
 orbtk_tinyskia = { path = "../orbtk_tinyskia", version = "0.3.1-alpha5", default-features = false }
 orbtk_utils = { path = "../utils", version = "0.3.1-alpha5" }
-
-[target.'cfg(not(target_os = "redox"))'.dependencies]
-sdl2 = { version = "0.35", features = ["raw-window-handle"] }
+raw-window-handle = { version = "0.4" }
 
 [features]
 log = []
 bundled = ["sdl2/bundled", "sdl2/static-link", "orbclient/bundled"]
+
+[lib]
+doctest = false
+
+[target.'cfg(not(target_os = "redox"))'.dependencies]
+sdl2 = { version = "0.35", features = ["raw-window-handle"] }

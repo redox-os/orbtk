@@ -1,40 +1,38 @@
 [package]
-name = "orbtk_core"
-version = "0.3.1-alpha5"
 authors = ["Florian Blasius <flovanpt@posteo.de>"]
 description = "Core crate that provides base api and elements for OrbTk like widgets basis."
-repository = "https://github.com/redox-os/orbtk"
-readme = "README.md"
-license = "MIT"
-keywords = ["ui", "api"]
 edition = "2018"
+keywords = ["ui", "api"]
+license = "MIT"
+name = "orbtk_core"
+readme = "README.md"
+repository = "https://github.com/redox-os/orbtk"
+version = "0.3.1-alpha5"
+
+[features]
+debug = []
 
 [lib]
 doctest = false
 
 [dependencies]
-memchr = "2"
-dirs-next = "2.0"
+dirs-next = { version = "2.0" }
 derive_more = { version = "0.99", default-features = false, features = ["constructor"] }
-ron = "0.6"
-rust_decimal = "1.15"
-serde = "1.0"
-serde_derive = "1.0"
-smallvec = { version = "1", default-features = false }
-
-# orbtk
 dces = { version = "0.3.1" }
+memchr = {version = "2"}
 orbtk_proc_macros = { path = "../proc_macros", version = "0.3.1-alpha5" }
 orbtk_utils = { path = "../utils", version = "0.3.1-alpha5" }
 orbtk_tinyskia = { path = "../orbtk_tinyskia", version = "0.3.1-alpha5", default-features = false }
 orbtk_orbclient = { path = "../orbtk_orbclient", version = "0.3.1-alpha5", default-features = false }
-raw-window-handle = "0.3"
+raw-window-handle = "0.4"
+ron = { version = "0.7" }
+rust_decimal = { version = "1.15" }
+serde = { version = "1.0" }
+serde_derive = { version = "1.0" }
+smallvec = { version = "1", default-features = false }
 
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
-threadpool = "1.8"
+threadpool = { version = "1.8" }
 
 [target.wasm32-unknown-unknown.dependencies]
-stdweb = "0.4"
-
-[features]
-debug = []
+stdweb = { version = "0.4" }

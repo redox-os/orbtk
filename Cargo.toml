@@ -1,3 +1,6 @@
+[profile.dev]
+opt-level = 1
+
 [workspace]
 members = [
     "orbtk",

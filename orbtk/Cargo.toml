@@ -1,28 +1,21 @@
 [package]
-name = "orbtk"
-version = "0.3.1-alpha5"
 authors = [
     "Florian Blasius <flovanpt@posteo.de>",
     "Jeremy Soller <jackpot51@gmail.com>"
 ]
 description = "The Orbital Widget Toolkit"
 documentation = "https://docs.rs/orbtk"
-repository = "https://github.com/redox-os/orbtk"
-readme = "README.md"
-license = "MIT"
+edition = "2018"
 keywords = [
     "orbital",
     "redox",
     "ui",
 ]
-edition = "2018"
-
-[lib]
+license = "MIT"
 name = "orbtk"
-path = "src/lib.rs"
-
-[profile.dev]
-opt-level = 1
+readme = "README.md"
+repository = "https://github.com/redox-os/orbtk"
+version = "0.3.1-alpha5"
 
 [dependencies]
 dces = { version = "0.3.1" }
@@ -35,7 +28,7 @@ orbtk_widgets = { version = "0.3.1-alpha5", path="../orbtk_widgets", default-fea
 
 [dev-dependencies]
 euc = "0.5.0"
-vek = { version = "0.12.1", default-features = false, features = ["rgb", "rgba"] }
+vek = { version = "0.15.7", default-features = false, features = ["rgb", "rgba"] }
 serde = "1.0.106"
 serde_derive = "1.0.106"
 
@@ -43,3 +36,7 @@ serde_derive = "1.0.106"
 log = ["orbtk_orbclient/log"]
 debug = ["orbtk_core/debug"]
 bundled = ["orbtk_orbclient/bundled"]
+
+[lib]
+name = "orbtk"
+path = "src/lib.rs"
