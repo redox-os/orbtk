@@ -28,7 +28,7 @@ orbtk_widgets = { version = "0.3.1-alpha5", path="../orbtk_widgets", default-fea
 [dependencies.dces]
 #version = "0.3.1"
 git = "https://gitlab.redox-os.org/redox-os/dces-rust.git"
-tag = "0.3.1-alpha4"
+branch = "master"
 #branch = "develop"
 
 [dev-dependencies]
