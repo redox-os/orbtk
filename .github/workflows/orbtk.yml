@@ -1,0 +1,150 @@
+name: OrbTk
+
+on:
+  # trigger for any new pull request
+  pull_request:
+  # trigger on pushes with changes to branch master
+  push:
+    branches:
+      - develop
+  # trigger manually trigger from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  lint:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        rust: [stable]
+
+    steps:
+    - name: Checkout repro
+      uses: actions/checkout@v3
+
+    # nice reusable workflow to get rust ready
+    - name: Setup rust toolchain
+      uses: hecrj/setup-rust-action@master
+      with:
+        rust-version: ${{ matrix.rust }}
+        components: 'clippy, rustfmt'
+
+    # make sure all code has been formatted with rustfmt
+    - name: Check formatting (rustfmt)
+      run: cargo fmt --check -- --color always
+
+    # run a collection of lints
+    - name: Check against available lints (clippy)
+      run: cargo clippy --all-targets -- -D warnings
+
+  build:
+    needs: lint
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [macOS-latest, windows-latest, ubuntu-latest]
+        #rust: [stable, nightly]
+        rust: [stable]
+        include:
+          - os: macOS-latest
+            rust: 'stable'
+            #components: 'rustfmt, clippy'
+            targets: 'x86_64-apple-darwin'
+          - os: ubuntu-latest
+            container: redoxos/redoxer
+            rust: 'stable'
+            targets: 'x86_64-unknown-linux-musl'
+          - os: ubuntu-latest
+            rust: 'stable'
+            targets: 'x86_64-unknown-linux-musl'
+          - os: windows-latest
+            rust: 'stable'
+            targets: 'x86_64-pc-windows-msvc'
+
+    steps:
+    - name: Checkout repro
+      uses: actions/checkout@v3
+
+    - name: Setup rust toolchain
+      uses: hecrj/setup-rust-action@master
+      with:
+        rust-version: ${{ matrix.rust }}
+        components: ${{ matrix.components || '' }}
+        targets: ${{ matrix.targets || '' }}
+
+    - name: Build 'redox-os'
+      if: ${{ (matrix.os == 'ubuntu-latest') && (matrix.container == 'redoxos/redoxer') }}
+      run: |
+        echo "OS: ${{ matrix.os }}"
+        echo "Container: ${{ matrix.container }}"
+        cargo --version
+        #redoxer build
+
+    - name: Build '${{ matrix.os }}'
+      if: ${{ (matrix.os == 'ubuntu-latest') && (matrix.container != 'redoxos/redoxer') }}
+      run: |
+        echo "OS: ${{ matrix.os }}"
+        echo "Container: ${{ matrix.container }}"
+        cargo build --color auto
+
+    - name: Build '${{ matrix.os}}'
+      if: ${{ (matrix.os != 'ubuntu-latest') }}
+      run: |
+        echo "OS: ${{ matrix.os }}"
+        cargo build --color auto
+
+  test:
+    needs: [lint, build]
+    strategy:
+      matrix:
+        #os: [ubuntu-latest, windows-latest, macOS-latest]
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+    - name: Checkout repro
+      uses: actions/checkout@v3
+
+    - name: Setup rust toolchain
+      uses: hecrj/setup-rust-action@master
+      with:
+        rust-version: ${{ matrix.rust }}
+        components: 'clippy, rustfmt'
+
+    - name: Test OrbTk crates
+      run: cargo test --features bundled
+
+  build_redox:
+    #if: ${{ false }}  # uncomment to disable job run
+    name: Build (redox)
+    runs-on: ubuntu-latest
+    container: redoxos/redoxer
+
+    steps:
+    - name: Checkout repro
+      uses: actions/checkout@v3
+
+    - name: redoxer build
+      run: redoxer build
+
+  # build_web:
+  #   if: ${{ false }}  # uncomment to disable job run
+  #   name: Build (web)
+  #   runs-on: ubuntu-latest
+
+  #   steps:
+  #   - name: Checkout repro
+  #     uses: actions/checkout@v3
+
+  #   - name: Setup rust toolchain
+  #     uses: hecrj/setup-rust-action@master
+  #     with:
+  #       rust-version: ${{ matrix.rust }}
+
+  #   - name: Install cargo-web
+  #     run: cargo install --force cargo-web
+
+  #   - name: Build web instance
+  #     run: cargo web build
+
+# end
