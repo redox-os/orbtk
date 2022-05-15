@@ -1,13 +1,13 @@
 [package]
-name = "orbtk_orbclient"
-version = "0.3.1-alpha5"
 authors = ["Florian Blasius <flovanpt@posteo.de>"]
 description = "Window shell crate used by OrbTk."
-repository = "https://github.com/redox-os/orbtk"
-readme = "README.md"
-license = "MIT"
+edition = "2021"
 keywords = ["shell", "window", "ui"]
-edition = "2018"
+license = "MIT"
+name = "orbtk_orbclient"
+readme = "README.md"
+repository = "https://github.com/redox-os/orbtk"
+version = "0.3.1-alpha5"
 
 [dependencies]
 image = { version = "0.24", default-features = false, features = ["ico"] }

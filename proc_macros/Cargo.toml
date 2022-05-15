@@ -1,13 +1,13 @@
 [package]
-name = "orbtk_proc_macros"
-version = "0.3.1-alpha5"
 authors = ["Florian Blasius <flovanpt@posteo.de>"]
 description = "Procedural macros used by OrbTk."
-repository = "https://github.com/redox-os/orbtk"
-readme = "README.md"
+edition = "2021"
 license = "MIT"
 keywords = ["ui", "api"]
-edition = "2018"
+name = "orbtk_proc_macros"
+readme = "README.md"
+repository = "https://github.com/redox-os/orbtk"
+version = "0.3.1-alpha5"
 
 [lib]
 proc-macro = true

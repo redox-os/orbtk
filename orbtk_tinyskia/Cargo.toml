@@ -1,7 +1,7 @@
 [package]
 authors = ["Florian Blasius <flovanpt@posteo.de>"]
 description = "2D Render library use by OrbTk."
-edition = "2018"
+edition = "2021"
 keywords = ["2D", "orbtk_tinyskia", "canvas"]
 license = "MIT"
 name = "orbtk_tinyskia"

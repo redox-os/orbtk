@@ -5,7 +5,7 @@ authors = [
 ]
 description = "The Orbital Widget Toolkit"
 documentation = "https://docs.rs/orbtk"
-edition = "2018"
+edition = "2021"
 keywords = [
     "orbital",
     "redox",

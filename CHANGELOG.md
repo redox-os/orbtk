@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### 0.3.1-alpha5 (wip)
 
+* Enable usage of rust editon = 2021
+
 ### 0.3.1-alpha4
 
 * Switch structure to `Workspace` organized crates:

@@ -1,7 +1,7 @@
 [package]
 authors = ["Florian Blasius <flovanpt@posteo.de>"]
 description = "Core crate that provides base api and elements for OrbTk like widgets basis."
-edition = "2018"
+edition = "2021"
 keywords = ["ui", "api"]
 license = "MIT"
 name = "orbtk_core"
