@@ -26,7 +26,7 @@ pub use self::render_target::*;
 
 mod render_target;
 
-/// Defines the current configuration of the render ctx.
+/// Defines the current configuration used inside a render resource.
 #[derive(Debug, Clone)]
 pub struct RenderConfig {
     pub fill_style: utils::Brush,
@@ -68,7 +68,7 @@ impl ToString for FontConfig {
     }
 }
 
-// Handle render pipeline tasks.
+/// Provides methods to handle the 2D render pipeline.
 pub trait RenderPipeline {
     /// Draws the ctx of the pipeline.
     fn draw(&self, image: &mut RenderTarget);
