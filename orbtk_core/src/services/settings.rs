@@ -34,11 +34,13 @@ pub enum SettingsError {
 /// Returns a value or the error message.
 pub type SettingsResult<T> = Result<T, SettingsError>;
 
-/// `Settings` represents a global settings service that could be use
-/// to serialize and deserialize data in the `ron` file
-/// format. Settings are stored in the user settings directory
-/// (depending on the operating system) under the a folder with the
-/// given application name.
+/// `Settings` represent a global service used to serialize and
+/// deserialize application config data that are stored in `ron` file
+/// format.
+///
+/// The storage location of the settings file respects operating
+/// system defaults. It is placed inside a subdirectory where its name
+/// is deduced and correspondant to the application name.
 #[derive(Debug, Clone)]
 pub struct Settings {
     app_name: String,

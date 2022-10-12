@@ -1,7 +1,7 @@
 /*!
 
 This module provides an index (entity) based tree structure compatible
-to the Entity Component System ([DCES]). OrbTk methods will use
+to the Entity Component System ([DCES]). OrbTk functions will use
 **DCES** for entity and property storage.
 
 [DCES]: https://gitlab.redox-os.org/redox-os/dces-rust
@@ -39,68 +39,25 @@ pub enum NotFound {
 /// Base data structure to manage the entities of a window in a tree based structure.
 #[derive(Clone, Default, Debug)]
 pub struct Tree {
+    /// Stores an unique entity id of the root element of the tree structure.
     pub root: Option<Entity>,
+
+    /// Stores the entity id of an overlay widget.
     pub overlay: Option<Entity>,
+
+    /// Stores an ordered map based on a [B-Tree], representing the
+    /// entity id and a vector of assoiated child entities.
     pub children: BTreeMap<Entity, Vec<Entity>>,
+
+    /// Stores an ordered map based on a [B-Tree], representing the
+    /// entity id and an option value of the associated parent entity
+    /// id. If the given enitity is the root element, option value of the parent will be 'None'.
     pub parent: BTreeMap<Entity, Option<Entity>>,
+
     iterator_start_node: Cell<Option<Entity>>,
 }
 
 impl Tree {
-    /// Creates a new tree with default values.
-    pub fn new() -> Self {
-        Tree::default()
-    }
-
-    /// Returns the root of the tree.
-    pub fn root(&self) -> Entity {
-        if let Some(root) = self.root {
-            return root;
-        }
-
-        if let Some(root) = self.parent.keys().next() {
-            return *root;
-        }
-
-        0.into()
-    }
-
-    // /// Configure the tree iterator with a start node.
-    pub fn start_node(&self, start_node: impl Into<Entity>) -> &Self {
-        self.iterator_start_node.set(Some(start_node.into()));
-        self
-    }
-
-    /// Registers a new entity `entity` as node.
-    pub fn register_node(&mut self, entity: impl Into<Entity>) {
-        let entity = entity.into();
-        self.children.insert(entity, vec![]);
-        self.parent.insert(entity, None);
-    }
-
-    /// Sets the root.
-    pub fn set_root(&mut self, root: impl Into<Entity>) {
-        let root = root.into();
-        self.root = Some(root);
-
-        if let Some(overlay) = self.overlay {
-            if let Some(p) = self.children.get_mut(&root) {
-                p.push(overlay);
-            }
-        }
-    }
-
-    pub fn set_overlay(&mut self, overlay: impl Into<Entity>) {
-        let overlay = overlay.into();
-        self.overlay = Some(overlay);
-
-        if let Some(root) = self.root {
-            if let Some(p) = self.children.get_mut(&root) {
-                p.push(overlay);
-            }
-        }
-    }
-
     /// Appends a `child` entity to the given `parent` entity.
     /// Raised `NotFound` error if the parent is not part of the tree.
     pub fn append_child(
@@ -131,14 +88,69 @@ impl Tree {
         Ok(child)
     }
 
+    /// Returns true if the tree has no entities.
+    pub fn is_empty(&self) -> bool {
+        self.children.is_empty()
+    }
+
     /// Returns the number of all entities in the tree.
     pub fn len(&self) -> usize {
         self.children.len()
     }
 
-    /// Returns true if the tree has no entities.
-    pub fn is_empty(&self) -> bool {
-        self.children.is_empty()
+    /// Creates a new tree with default values.
+    pub fn new() -> Self {
+        Tree::default()
+    }
+
+    /// Registers a new entity `entity` as node.
+    pub fn register_node(&mut self, entity: impl Into<Entity>) {
+        let entity = entity.into();
+        self.children.insert(entity, vec![]);
+        self.parent.insert(entity, None);
+    }
+
+    /// Returns the root of the tree.
+    pub fn root(&self) -> Entity {
+        if let Some(root) = self.root {
+            return root;
+        }
+
+        if let Some(root) = self.parent.keys().next() {
+            return *root;
+        }
+
+        0.into()
+    }
+
+    /// Configure the tree iterator with a start node.
+    pub fn start_node(&self, start_node: impl Into<Entity>) -> &Self {
+        self.iterator_start_node.set(Some(start_node.into()));
+        self
+    }
+
+    /// Assign an overlay child to the given root node.
+    pub fn set_overlay(&mut self, overlay: impl Into<Entity>) {
+        let overlay = overlay.into();
+        self.overlay = Some(overlay);
+
+        if let Some(root) = self.root {
+            if let Some(p) = self.children.get_mut(&root) {
+                p.push(overlay);
+            }
+        }
+    }
+
+    /// Sets the root.
+    pub fn set_root(&mut self, root: impl Into<Entity>) {
+        let root = root.into();
+        self.root = Some(root);
+
+        if let Some(overlay) = self.overlay {
+            if let Some(p) = self.children.get_mut(&root) {
+                p.push(overlay);
+            }
+        }
     }
 }
 

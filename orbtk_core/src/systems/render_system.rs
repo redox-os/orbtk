@@ -5,7 +5,10 @@ use dces::prelude::*;
 use crate::{prelude::*, render::RenderContext2D, tree::Tree};
 
 /// The `RenderSystem` iterates over all visual widgets.
-/// Its calculated render objects are then drawn on the screen.
+///
+/// For any widgets that have been marked dirty, new bounds have to be
+/// recalculated. The resulting tree is rendered to the render buffer
+/// which is then drawn to the screen.
 #[derive(Constructor)]
 pub struct RenderSystem {
     context_provider: ContextProvider,
@@ -25,6 +28,9 @@ impl System<Tree, RenderContext2D> for RenderSystem {
             .unwrap()
             .clone();
 
+        // Only process, if
+        // * there are `dirty` elements inside the entity vector
+        // * context_provider it marked for first_run.
         if dirty_widgets.is_empty() && !self.context_provider.first_run.get() {
             return;
         }
