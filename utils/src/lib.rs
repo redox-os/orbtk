@@ -41,7 +41,10 @@ mod gradients;
 mod number;
 mod orientation;
 mod point;
+
+/// This module pre-selects commonly used OrbTk crates and put them into scope.
 pub mod prelude;
+
 mod rectangle;
 mod relative_direction;
 mod selection_mode;
