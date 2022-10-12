@@ -2,6 +2,7 @@
    Base OrbTk widget library.
 */
 
+/// This module pre-selects commonly used OrbTk crates and put them into scope.
 pub mod prelude;
 
 pub(crate) use orbtk_core as api;
