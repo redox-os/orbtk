@@ -30,7 +30,7 @@ impl MessageBox {
     /// Downcasts the box as reference of a concrete message.
     pub fn downcast_ref<M: Any>(&self) -> Result<&M, String> {
         if self.message_type == TypeId::of::<M>() {
-            return Ok(&*self.message.downcast_ref::<M>().unwrap());
+            return Ok(self.message.downcast_ref::<M>().unwrap());
         }
 
         Err("Wrong message type".to_string())
