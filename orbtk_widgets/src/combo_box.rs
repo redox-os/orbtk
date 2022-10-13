@@ -10,6 +10,7 @@ use crate::{
 };
 
 type SelectedItem = Option<Entity>;
+type RefCellCtx = RefCell<dyn Fn(&mut BuildContext, usize) -> Entity + 'static>;
 
 // /// The `ComboBoxItemAction` represent actions that can be sent to `ComboBoxItemState`.
 // #[derive(Debug, Copy, Clone)]
@@ -31,7 +32,7 @@ pub struct ComboBoxItemState {
     combo_box: Entity,
     // ugly work around for item builder context clone.
     // TODO: improve the used algo 😉
-    builder: Option<Arc<RefCell<dyn Fn(&mut BuildContext, usize) -> Entity + 'static>>>,
+    builder: Option<Arc<RefCellCtx>>,
 }
 
 /// The `ComboBoxItemState` handles the selection of a `ComboBoxItem`
@@ -246,7 +247,7 @@ enum ComboBoxAction {
 #[derive(AsAny, Default)]
 pub struct ComboBoxState {
     action: Option<ComboBoxAction>,
-    builder: Option<Arc<RefCell<dyn Fn(&mut BuildContext, usize) -> Entity + 'static>>>,
+    builder: Option<Arc<RefCellCtx>>,
     count: usize,
     items_popup: Entity,
     popup: Entity,
