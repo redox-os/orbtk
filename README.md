@@ -1,3 +1,13 @@
+## OrbTk is Sunsetting
+
+It is with great sadness that I announce that OrbTk is sunsetting. In the many years since I first made OrbTk, the Rust GUI ecosystem has grown at an amazing rate. Toolkits with more features have developed, and which are more actively maintained. I first created this project to bootstrap UI development on Redox OS. Many of the applications on Redox use OrbTk. [@FloVanGH](https://github.com/FloVanGH) stepped in to do large refactoring between the 0.2 and 0.3 release, which modernized the OrbTk API. [@rzerres](https://github.com/rzerres) stepped in to add many features and maintain OrbTk since the 0.3 release.
+
+I have since moved on to working with iced. [@FloVanGH](https://github.com/FloVanGH) has taken a job working on slint. And [@rzerres](https://github.com/rzerres) has expressed interest in using slint for their projects. Both iced and slint provide renderer agnostic toolkits that will be compatible with Redox OS, but they also support more features than OrbTk. So, I have decided, with agreement from @rzerres, that OrbTk is to stop being actively maintained, in favor of these other Rust native toolkits.
+
+-- [Jeremy Soller](https://github.com/jackpot51/)
+
+## Original README
+
 <img alt="OrbTk" width="380" src="https://raw.githubusercontent.com/redox-os/orbtk/develop/orbtk/images/orbtk_logo_dark.png">
 
 [![Build and test](https://github.com/redox-os/orbtk/workflows/CI/badge.svg)](https://github.com/redox-os/orbtk/actions)
