@@ -10,11 +10,11 @@ repository = "https://github.com/redox-os/orbtk"
 version = "0.3.1-alpha5"
 
 [dependencies]
-ron = { version = "0.7" }
+ron = { version = "0.8" }
 serde = { version = "1.0" }
 derive_more = { version = "0.99", default-features = false, features = ["add", "constructor", "from", "mul"] }
 lexical-core = { version = "0.8" }
 phf = { version = "0.10", default-features = false }
 
 [build-dependencies]
-phf_codegen = { version = "0.10", default-features = false }
+phf_codegen = { version = "0.11", default-features = false }

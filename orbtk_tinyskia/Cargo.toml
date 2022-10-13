@@ -16,4 +16,4 @@ orbtk_utils = { path = "../utils", version = "0.3.1-alpha5" }
 image = { version = "0.24",  default-features = false, features = ["ico"] }
 rusttype = { version = "0.9" }
 smallvec = "1"
-tiny-skia = { version = "0.6.1" }
+tiny-skia = { version = "0.8.1" }
