@@ -32,7 +32,7 @@ where
 }
 
 /// Used to build or share a property.
-#[derive(Debug, PartialEq)]
+#[derive(Debug, Eq, PartialEq)]
 pub enum PropertySource<P: Component + Debug> {
     Source(Entity),
     KeySource(String, Entity),

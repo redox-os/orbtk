@@ -1,7 +1,7 @@
 use crate::Value;
 
 /// Used to align a widget vertical or horizontal.
-#[derive(Copy, Clone, PartialEq, Debug)]
+#[derive(Copy, Clone, Eq, PartialEq, Debug)]
 pub enum Alignment {
     Start,
     Center,

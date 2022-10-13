@@ -1,5 +1,5 @@
 /// Is used to control the visibility of a widget
-#[derive(Debug, Copy, Clone, PartialEq)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub enum Visibility {
     /// The widget is visible.
     Visible,

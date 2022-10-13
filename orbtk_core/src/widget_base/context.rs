@@ -2,8 +2,6 @@ use std::{collections::BTreeMap, sync::mpsc};
 
 use dces::prelude::*;
 
-use raw_window_handle::RawWindowHandle;
-
 use crate::{
     application::{create_window, ContextProvider},
     prelude::*,
@@ -80,10 +78,10 @@ impl<'a> Context<'a> {
 
     /// Access the raw window handle.
     ///
-    /// Some operating systems (like `Redox`) do not make use of
-    /// raw-window-handles. For this platforms the function will
-    /// return the option value `None`.
-    pub fn raw_window_handle(&self) -> Option<RawWindowHandle> {
+    /// Returns an OS dependend mutable pointer to a window_handler struct.
+    /// For platforms that do not support the window handler concept, this
+    /// function will return the option value `None`.
+    pub fn raw_window_handle(&self) -> Option<raw_window_handle::RawWindowHandle> {
         if let Some(handle) = self.provider.raw_window_handle {
             return Some(handle);
         }

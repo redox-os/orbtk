@@ -5,7 +5,7 @@ use serde_derive::{Deserialize, Serialize};
 use ron::Value;
 
 /// Contains a list of properties corresponding to the state key.
-#[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, Deserialize, Eq, PartialEq, Serialize)]
 pub struct ThemeState {
     #[serde(default)]
     pub key: String,

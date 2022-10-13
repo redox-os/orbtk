@@ -7,7 +7,7 @@ use std::{convert::TryFrom, str::Chars};
 // Describes a String declared expression either be a method, a color, a number or anything.
 /// This object represents an `expression` used to define
 /// something. E.g. brushes are defined using an expression in there themes definition.
-#[derive(Clone, PartialEq, PartialOrd, Debug)]
+#[derive(Clone, PartialEq, Eq, PartialOrd, Debug)]
 pub enum Expression {
     Method(String, Vec<Expression>),
     Complex(Vec<Expression>),
@@ -473,7 +473,7 @@ where
 }
 
 /// This only is used to communicate the kind of `OnLinePos` we are using
-#[derive(Debug, Copy, Clone, PartialOrd, PartialEq)]
+#[derive(Debug, Copy, Clone, PartialOrd, PartialEq, Eq)]
 pub enum OnLinePosKind {
     /// A number from 0.0 to 100.0
     Percentage,

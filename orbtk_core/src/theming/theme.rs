@@ -9,7 +9,7 @@ use crate::theming::{
 
 /// Theme is used to read properties for a given selector with an
 /// internal state.
-#[derive(Debug, Clone, Default, PartialEq)]
+#[derive(Clone, Debug, Default, Eq, PartialEq)]
 pub struct Theme {
     styles: HashMap<String, Style>,
     fonts: HashMap<String, &'static [u8]>,

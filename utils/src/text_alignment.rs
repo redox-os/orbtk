@@ -1,5 +1,5 @@
 /// Used to align a text.
-#[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Clone, Copy, Eq, Debug, PartialEq)]
 pub enum TextAlignment {
     Left,
     Right,

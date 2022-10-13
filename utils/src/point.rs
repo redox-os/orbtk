@@ -138,6 +138,8 @@ impl Div<Point> for Point {
     }
 }
 
+impl Eq for Point {}
+
 impl Neg for Point {
     type Output = Point;
 

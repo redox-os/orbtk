@@ -53,7 +53,7 @@ impl EventBox {
     /// Downcasts the box as reference of an concrete event.
     pub fn downcast_ref<E: Any>(&self) -> Result<&E, EventError> {
         if self.event_type == TypeId::of::<E>() {
-            return Ok(&*self.event.downcast_ref::<E>().unwrap());
+            return Ok(self.event.downcast_ref::<E>().unwrap());
         }
 
         Err(EventError::WrongType(TypeId::of::<E>()))

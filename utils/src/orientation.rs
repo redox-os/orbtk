@@ -1,5 +1,5 @@
 /// Is used to control the orientation of the `Stack`.
-#[derive(Debug, Copy, Clone, PartialEq)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub enum Orientation {
     /// Vertical orientation.
     Vertical,

@@ -31,7 +31,7 @@ mod text_input;
 mod window;
 
 /// Defines the strategy of an event how it moves through the tree.
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, Eq, PartialEq)]
 pub enum EventStrategy {
     // /// From root to leaf.
     // TopDown,

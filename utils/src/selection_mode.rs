@@ -1,5 +1,5 @@
 /// Represents a selection mode.
-#[derive(Copy, Clone, PartialEq, Debug)]
+#[derive(Copy, Clone, Eq, PartialEq, Debug)]
 pub enum SelectionMode {
     None,
     Single,

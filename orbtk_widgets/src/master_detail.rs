@@ -5,7 +5,7 @@ static CONTENT_GRID: &str = "id_content_grid";
 // --- KEYS --
 
 /// Use this enum to trigger navigation actions on a master detail widget.
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub enum MasterDetailAction {
     /// Shows the master. If the master is shown nothing will happen.
     ShowMaster,

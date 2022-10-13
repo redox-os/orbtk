@@ -1,5 +1,5 @@
 /// The `ScrollMode` defines the mode of a scroll direction.
-#[derive(Copy, Debug, Clone, PartialEq)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum ScrollMode {
     /// Scrolling will process by `ScrollViewer` logic
     Auto,
@@ -30,7 +30,7 @@ impl From<&str> for ScrollMode {
 
 /// `ScrollViewerMode` describes the vertical and horizontal scroll
 /// behavior of the `ScrollViewer`.
-#[derive(Debug, Copy, Clone, PartialEq)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct ScrollViewerMode {
     /// Vertical scroll mode.
     pub vertical: ScrollMode,

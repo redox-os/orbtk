@@ -1,5 +1,5 @@
 /// Mark the selection inside a text object.
-#[derive(Copy, Clone, Default, Debug, PartialEq)]
+#[derive(Debug, Default, Copy, Clone, Eq, PartialEq)]
 pub struct TextSelection {
     start: usize,
     end: usize,

@@ -5,7 +5,7 @@ use dces::prelude::Entity;
 /// Contains the state information of the current focused element.
 ///
 /// Provides methods to request and remove focus.
-#[derive(Default, Clone, Debug, PartialEq)]
+#[derive(Debug, Default, Clone, Eq, PartialEq)]
 pub struct FocusState {
     focused_entity: Option<Entity>,
 }

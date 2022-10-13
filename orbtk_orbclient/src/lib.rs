@@ -43,7 +43,7 @@ pub use orbtk_tinyskia::prelude as render;
 use std::{collections::HashMap, sync::mpsc};
 
 /// Used to send a request to the window.
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub enum WindowRequest {
     /// Request to change the title of the `Windows`.
     ChangeTitle(String),

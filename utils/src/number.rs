@@ -1,7 +1,7 @@
 use std::ops::Neg;
 
 /// Valid number types (64bit)
-#[derive(Debug, PartialOrd, PartialEq, Copy, Clone)]
+#[derive(Debug, Copy, Clone, PartialEq, PartialOrd)]
 pub enum Number {
     Real(i64),
     Float(f64),
@@ -12,6 +12,8 @@ impl Default for Number {
         Self::Real(0)
     }
 }
+
+impl Eq for Number {}
 
 impl Neg for Number {
     type Output = Number;

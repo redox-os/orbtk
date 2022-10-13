@@ -132,20 +132,7 @@ impl Color {
     }
 }
 
-impl ToString for Color {
-    fn to_string(&self) -> String {
-        if self.a() == 0 {
-            return String::from("transparent");
-        }
-
-        let data = self.data;
-
-        let mut color = format!("#{:x}", data);
-        color.remove(1);
-        color.remove(1);
-        color
-    }
-}
+impl Eq for Color {}
 
 impl From<&str> for Color {
     fn from(s: &str) -> Color {
@@ -197,6 +184,21 @@ impl From<String> for Color {
 impl PartialEq for Color {
     fn eq(&self, other: &Color) -> bool {
         self.r() == other.r() && self.g() == other.g() && self.b() == other.b()
+    }
+}
+
+impl ToString for Color {
+    fn to_string(&self) -> String {
+        if self.a() == 0 {
+            return String::from("transparent");
+        }
+
+        let data = self.data;
+
+        let mut color = format!("#{:x}", data);
+        color.remove(1);
+        color.remove(1);
+        color
     }
 }
 

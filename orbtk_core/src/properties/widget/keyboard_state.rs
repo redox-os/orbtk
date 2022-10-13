@@ -115,7 +115,7 @@ use crate::shell::Key;
 /// // ... your view code
 ///
 /// ```
-#[derive(Default, Clone, Debug, PartialEq)]
+#[derive(Debug, Default, Clone, Eq, PartialEq)]
 pub struct KeyboardState {
     key_list: HashMap<Key, bool>,
 }

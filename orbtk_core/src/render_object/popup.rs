@@ -1,7 +1,7 @@
 use crate::{render_object::*, utils::Point};
 
 /// The target of the popup, given as an entity or as fixed point coordinate.
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Debug, Clone, Eq, PartialEq)]
 pub enum PopupTarget {
     /// the entity of the target (Entity).
     Entity(Entity),
@@ -41,7 +41,7 @@ impl IntoPropertySource<PopupTarget> for Point {
 }
 
 /// Defines popup placement options relative to its target.
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Debug, Clone, Eq, PartialEq)]
 pub enum Placement {
     Bottom,
     Left,

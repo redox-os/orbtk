@@ -5,7 +5,7 @@ use std::char;
 use orbtk_utils::Point;
 
 /// Represents a keyboard key.
-#[derive(Copy, Clone, Debug, Hash, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, Eq, Hash, PartialEq)]
 pub enum Key {
     A(bool),
     B(bool),
@@ -374,7 +374,7 @@ impl From<char> for Key {
 }
 
 /// Describes a specific mouse button.
-#[derive(PartialEq, Eq, Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum MouseButton {
     Left,
     Middle,
@@ -382,14 +382,14 @@ pub enum MouseButton {
 }
 
 /// Describes the position / state of a button.
-#[derive(PartialEq, Eq, Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum ButtonState {
     Down,
     Up,
 }
 
 /// Represents a mouse event.
-#[derive(PartialEq, Clone, Copy, Debug)]
+#[derive(Clone, Copy, Eq, PartialEq)]
 pub struct MouseEvent {
     /// The mouse Button
     pub button: MouseButton,

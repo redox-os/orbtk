@@ -1,7 +1,7 @@
 use crate::{api::prelude::*, proc_macros::*};
 
 /// Use this enum to trigger navigation actions on a pager.
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, Eq, PartialEq)]
 pub enum PagerAction {
     /// Navigates to the next child. If the current child is the last in the list nothing will happen.
     Next,

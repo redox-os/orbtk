@@ -1,5 +1,5 @@
 /// Used to filter stuff such as the `on_changed` callback.
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, Eq, PartialEq)]
 pub enum Filter {
     // Everting will be filtered. No element will be available.
     Complete,
