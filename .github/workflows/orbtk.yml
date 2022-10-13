@@ -15,7 +15,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest]
+        os: [ubuntu-22.04]
         rust: [stable]
 
     steps:
@@ -42,7 +42,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [macOS-latest, windows-latest, ubuntu-latest]
+        os: [macOS-latest, windows-latest, ubuntu-22.04]
         #rust: [stable, nightly]
         rust: [stable]
         include:
@@ -50,11 +50,11 @@ jobs:
             rust: 'stable'
             #components: 'rustfmt, clippy'
             targets: 'x86_64-apple-darwin'
-          - os: ubuntu-latest
+          - os: ubuntu-22.04
             container: redoxos/redoxer
             rust: 'stable'
             targets: 'x86_64-unknown-linux-musl'
-          - os: ubuntu-latest
+          - os: ubuntu-22.04
             rust: 'stable'
             targets: 'x86_64-unknown-linux-musl'
           - os: windows-latest
@@ -73,7 +73,7 @@ jobs:
         targets: ${{ matrix.targets || '' }}
 
     - name: Build 'redox-os'
-      if: ${{ (matrix.os == 'ubuntu-latest') && (matrix.container == 'redoxos/redoxer') }}
+      if: ${{ (matrix.os == 'ubuntu-22.04') && (matrix.container == 'redoxos/redoxer') }}
       run: |
         echo "OS: ${{ matrix.os }}"
         echo "Container: ${{ matrix.container }}"
@@ -81,14 +81,14 @@ jobs:
         #redoxer build
 
     - name: Build '${{ matrix.os }}'
-      if: ${{ (matrix.os == 'ubuntu-latest') && (matrix.container != 'redoxos/redoxer') }}
+      if: ${{ (matrix.os == 'ubuntu-22.04') && (matrix.container != 'redoxos/redoxer') }}
       run: |
         echo "OS: ${{ matrix.os }}"
         echo "Container: ${{ matrix.container }}"
         cargo build --color auto
 
     - name: Build '${{ matrix.os}}'
-      if: ${{ (matrix.os != 'ubuntu-latest') }}
+      if: ${{ (matrix.os != 'ubuntu-22.04') }}
       run: |
         echo "OS: ${{ matrix.os }}"
         cargo build --color auto
@@ -98,7 +98,7 @@ jobs:
     strategy:
       matrix:
         #os: [ubuntu-latest, windows-latest, macOS-latest]
-        os: [ubuntu-latest, windows-latest]
+        os: [ubuntu-22.04, windows-latest]
     runs-on: ${{ matrix.os }}
 
     steps:
@@ -117,7 +117,7 @@ jobs:
   build_redox:
     #if: ${{ false }}  # uncomment to disable job run
     name: Build (redox)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     container: redoxos/redoxer
 
     steps:
